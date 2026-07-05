@@ -167,6 +167,8 @@ export default function AdminPage() {
     <BlogTab posts={blogPosts} />
   ) : tab === "settings" ? (
     <SettingsTab session={session} />
+  ) : tab === "strategy" ? (
+    <StrategyTab />
   ) : null}
     </div>
   )
@@ -568,6 +570,376 @@ function SettingsTab({ session }: { session: any }) {
           <p>PAYSTACK_SECRET_KEY <span className="text-amber-500 ml-2">not set</span></p>
           <p>RESEND_API_KEY <span className="text-amber-500 ml-2">not set</span></p>
           <p>UPLOADTHING_SECRET <span className="text-amber-500 ml-2">not set</span></p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ── Strategy ── */
+function StrategyTab() {
+  const [subTab, setSubTab] = useState("gtm")
+  const subTabs = [
+    { id: "gtm", label: "GTM Strategy" },
+    { id: "revenue", label: "Revenue & Monetization" },
+    { id: "diaspora", label: "Diaspora Market" },
+    { id: "growth", label: "Content & Growth" },
+    { id: "launch", label: "Launch Plan" },
+    { id: "investor", label: "Investor Strategy" },
+    { id: "product", label: "Product Strategy" },
+  ]
+
+  const strategies: Record<string, { title: string; sections: { heading: string; items: string[] }[] }> = {
+    gtm: {
+      title: "Go-to-Market Strategy",
+      sections: [
+        {
+          heading: "Target Audience",
+          items: [
+            "Primary: Ghanaians in diaspora planning to build or renovate a home in Ghana",
+            "Secondary: Local Ghanaian property developers and real estate agents",
+            "Tertiary: Architects, quantity surveyors, and contractors in Ghana",
+            "Focus on cost-conscious DIY planners who want transparency before committing",
+          ],
+        },
+        {
+          heading: "Value Proposition",
+          items: [
+            "Save 2–4 weeks of research — get a detailed cost estimate in under 5 minutes",
+            "Transparent, data-backed pricing — no more guesswork or inflated quotes",
+            "First construction cost estimator purpose-built for the Ghanaian market",
+            "Diaspora-friendly — pay with mobile money, cards, or PayPal via Paystack",
+          ],
+        },
+        {
+          heading: "Distribution Channels",
+          items: [
+            "SEO-first content strategy targeting 'cost of building in Ghana', 'building a house in Ghana cost', etc.",
+            "Ghana-focused diaspora Facebook groups (Ghanaians Abroad, Ghana Association USA, etc.)",
+            "LinkedIn outreach to Ghanaian real estate, construction, and diaspora professionals",
+            "Partner with Ghanaian architects and quantity surveyors who refer clients",
+            "WhatsApp sharing — reports are easy to forward within family WhatsApp groups",
+            "YouTube — short videos showing sample estimates and walkthroughs",
+          ],
+        },
+        {
+          heading: "Early Traction Tactics",
+          items: [
+            "Free limited reports (1–2 rooms) to build trust and email list",
+            "Discount code for first 100 users ('LAUNCH100')",
+            "Collect testimonials from early paying users for social proof",
+            "Publish 10+ SEO blog posts targeting long-tail keywords before paid ads",
+          ],
+        },
+      ],
+    },
+    revenue: {
+      title: "Revenue & Monetization Strategy",
+      sections: [
+        {
+          heading: "Core Product Tiers",
+          items: [
+            "Starter ($29) — Basic cost estimate for a single room or small project",
+            "Standard ($79) — Full house estimate with breakdown by trade (foundation, roofing, finishing, etc.)",
+            "Premium ($199) — Detailed estimate + materials list + timeline + PDF report",
+            "Enterprise (Custom) — Multi-project estimates for developers; API access",
+          ],
+        },
+        {
+          heading: "Upsell Opportunities",
+          items: [
+            "PDF report download ($9.99 add-on for Starter tier)",
+            "Excel spreadsheet export ($14.99 add-on)",
+            "Professional review by a quantity surveyor ($49 consultation)",
+            "Custom material cost analysis for specific regions ($99)",
+          ],
+        },
+        {
+          heading: "Recurring Revenue Paths",
+          items: [
+            "Monthly subscription ($19/mo) — unlimited estimates for DIY homeowners",
+            "Pro plan ($49/mo) — for contractors and real estate agents (bulk estimates + client reports)",
+            "Marketplace listing fees — connect users with verified contractors for a referral fee",
+          ],
+        },
+        {
+          heading: "Payment Infrastructure",
+          items: [
+            "Paystack for cards, mobile money (MTN, Vodafone, AirtelTigo), and bank transfers",
+            "Multi-currency pricing: USD for diaspora, GHS for local users",
+            "Automatic receipt and invoice generation on successful payment",
+          ],
+        },
+      ],
+    },
+    diaspora: {
+      title: "Diaspora Market Strategy",
+      sections: [
+        {
+          heading: "Why the Diaspora?",
+          items: [
+            "Ghanaians abroad send over $3.5B in remittances annually — a significant portion for home construction",
+            "Diaspora homeowners face the most uncertainty: they can't easily visit sites, compare quotes, or verify costs",
+            "Higher willingness to pay for reliable information to avoid being overcharged",
+            "English-fluent, digitally native, and accustomed to paying for SaaS tools",
+          ],
+        },
+        {
+          heading: "Acquisition Channels",
+          items: [
+            "Facebook groups: Ghanaians in USA, Ghanaians in Canada, Ghanaians in UK, Ghana Association networks",
+            "Diaspora-focused WhatsApp groups for real estate and construction",
+            "Partnership with diaspora remittance services (Wise, WorldRemit, Azimo) for cross-promotion",
+            "Sponsored content in diaspora digital media (Joy Online, GhanaWeb, Citinewsroom)",
+            "YouTube ads targeting Ghanaian diaspora keywords",
+          ],
+        },
+        {
+          heading: "Trust Building for Diaspora Users",
+          items: [
+            "Display sample reports on landing page so users know exactly what they'll get",
+            "Include local Ghanaian references (cedi prices, regional cost variations like Accra vs Kumasi)",
+            "Publish case studies of real projects with actual cost data",
+            "Offer money-back guarantee if estimate is significantly off (builds confidence)",
+            "Provide WhatsApp support line — diaspora users value direct communication",
+          ],
+        },
+        {
+          heading: "Seasonal Timing",
+          items: [
+            "Peak interest during Ghanaian holidays (Christmas, Easter) when diaspora travel home",
+            "Back-to-school season (Aug-Sept) — parents planning home improvements",
+            "January — New Year resolutions to build/renovate",
+            "Run targeted campaigns 4–6 weeks before these periods",
+          ],
+        },
+      ],
+    },
+    growth: {
+      title: "Content & Growth Strategy",
+      sections: [
+        {
+          heading: "SEO Content Pillars",
+          items: [
+            "Cost guides: 'Cost to Build a 3-Bedroom House in Ghana 2025' (high-volume, high-intent)",
+            "Comparison posts: 'Building in Accra vs Kumasi — Cost Comparison'",
+            "How-to guides: 'How to Estimate Construction Costs for Your Dream Home'",
+            "Regional breakdowns: 'Cost of Building Materials in Ghana — 2025 Prices'",
+            "Process guides: 'Step-by-Step Guide to Building a House in Ghana from Abroad'",
+          ],
+        },
+        {
+          heading: "Social Media Strategy",
+          items: [
+            "LinkedIn: Share construction cost insights, data-driven posts, industry partnerships",
+            "YouTube: 'I estimated the cost of a 4-bedroom house in Ghana in 3 minutes' (demo videos)",
+            "TikTok/Instagram Reels: Short-form educational content ('How much does it cost to build in Ghana?')",
+            "Twitter/X: Share industry facts, cost statistics, and engage construction community",
+            "Facebook: Long-form posts in diaspora groups with report examples",
+          ],
+        },
+        {
+          heading: "Viral Loops & Referrals",
+          items: [
+            "Referral program: Give $5 credit for every friend who purchases a report",
+            "Shareable reports: Each PDF includes a branded footer with a referral link",
+            "Group buying: Discount when family members pool to estimate multiple properties",
+            "User-generated content: Encourage users to share their report results on social media",
+          ],
+        },
+        {
+          heading: "Partnerships",
+          items: [
+            "Ghana Real Estate Developers Association (GREDA) — official estimator tool partner",
+            "Ghana Institution of Surveyors — professional endorsement for data accuracy",
+            "Ghanaian banks (GCB, Stanbic) — tool for home loan applicants to estimate construction costs",
+            "Diaspora associations (Ghana USA Chamber of Commerce, Ghana Canada Association)",
+            "Real estate portals (Meqasa, Tonaton) — embed calculator widget on property listings",
+          ],
+        },
+      ],
+    },
+    launch: {
+      title: "Launch Plan",
+      sections: [
+        {
+          heading: "Phase 1: Soft Launch (Current — Week 1–2)",
+          items: [
+            "Verify: core estimate calculator works end-to-end with correct pricing",
+            "Verify: payment flow (Paystack) produces successful transactions",
+            "Verify: PDF report generation and email delivery (Resend)",
+            "Fix all critical bugs and security issues from audit (Phase 2 of Roadmap)",
+            "Set production API keys for Paystack, Resend, UploadThing",
+            "Manual testing by founder: run 10+ different estimates, pay, verify reports",
+          ],
+        },
+        {
+          heading: "Phase 2: Beta Launch (Week 3–4)",
+          items: [
+            "Invite 50–100 trusted users (friends, family, diaspora network) for free access",
+            "Collect feedback on pricing accuracy, UI clarity, and report usefulness",
+            "Iterate on pricing model based on willingness-to-pay signals",
+            "Publish 3–5 SEO blog posts to start building organic presence",
+            "Set up analytics (Vercel Analytics + Google Analytics) to track user behavior",
+          ],
+        },
+        {
+          heading: "Phase 3: Public Launch (Week 5–6)",
+          items: [
+            "LAUNCH100 discount: 50% off first report for first 100 paid users",
+            "Push across all diaspora channels simultaneously",
+            "Pitch to Ghanaian tech media (TechCabal, Benjamindada, GhanaTech)",
+            "Launch referral program with $5 credit",
+            "Begin YouTube content creation with 2–3 estimate walkthrough videos",
+          ],
+        },
+        {
+          heading: "Phase 4: Growth (Week 7+)",
+          items: [
+            "Scale SEO content to 20+ articles targeting long-tail keywords",
+            "Begin paid acquisition (Facebook/Instagram ads targeting diaspora interests)",
+            "Reach out to GREDA and Ghana Surveyors for partnership discussions",
+            "Develop subscription pricing tier for recurring users",
+            "Explore contractor marketplace feature for Phase 2 of product",
+          ],
+        },
+      ],
+    },
+    investor: {
+      title: "Investor Strategy",
+      sections: [
+        {
+          heading: "Fundraising Roadmap",
+          items: [
+            "Pre-seed ($50K–$100K): Founder / friends & family / diaspora angel investors — build MVP, validate demand, 100 paid users",
+            "Seed ($300K–$500K): AngelList / African diaspora VCs — scale content, hire, build contractor marketplace",
+            "Series A ($1M–$2M): Institutional VCs focused on African proptech — expand to Nigeria, Kenya, other African markets",
+          ],
+        },
+        {
+          heading: "Key Metrics for Fundraising",
+          items: [
+            "Monthly active users (MAU) and estimate completion rate",
+            "Conversion rate: visitor → estimate → paid report",
+            "Customer acquisition cost (CAC) by channel (SEO, paid, referral)",
+            "Lifetime value (LTV): average reports purchased per user × average order value",
+            "Gross margin (should be 80%+ — hosting costs are low)",
+            "Net revenue retention (target 100%+ through upsells and subscriptions)",
+          ],
+        },
+        {
+          heading: "Target Investor Profile",
+          items: [
+            "African diaspora-focused funds: Founders Factory Africa, TLcom Capital, Ventures Platform",
+            "Proptech and construction-tech funds: MetaProp, Fifth Wall, Pi Labs",
+            "Angel investors from Ghanaian / Nigerian diaspora with construction or real estate background",
+            "Ghana-based VC: Jaza Ripple, Equinox Partners, MEST Africa",
+          ],
+        },
+        {
+          heading: "Pitch Narrative",
+          items: [
+            "Problem: Building a home in Ghana as a diaspora is opaque, expensive, and trust-deficient",
+            "Solution: 5-minute detailed cost estimate with accurate local pricing data",
+            "Market size: $3.5B+ in annual remittances to Ghana; 2M+ Ghanaians in diaspora",
+            "Traction: [X] paid users, [Y]% conversion, [Z]% repeat rate (update as available)",
+            "Moats: Local pricing data network, SEO content moat, partnership integrations with real estate platforms",
+            "Ask: $XXXK for 18 months runway to reach 10K paid users",
+          ],
+        },
+      ],
+    },
+    product: {
+      title: "Product Strategy",
+      sections: [
+        {
+          heading: "MVP (Current — Shipped)",
+          items: [
+            "Multi-step construction cost calculator (All-in, Room-by-Room, Materials)",
+            "3 pricing tiers ($29 / $79 / $199) with Paystack payment",
+            "PDF report download with cost breakdown",
+            "Admin dashboard with orders, messages, leads, newsletter",
+            "Blog with SEO-optimized content",
+            "Maintenance mode for site updates",
+          ],
+        },
+        {
+          heading: "Phase 2: Engagement (Next 3 Months)",
+          items: [
+            "User dashboard with order history and report re-downloads",
+            "Email delivery of reports via Resend",
+            "Payment receipts and invoices",
+            "Interactive cost breakdown charts in the browser (no PDF required)",
+            "Save and compare multiple estimates side-by-side",
+            "Regional cost selector (Accra, Kumasi, Takoradi, other regions)",
+          ],
+        },
+        {
+          heading: "Phase 3: Marketplace (6–9 Months)",
+          items: [
+            "Verified contractor directory with profiles, reviews, and past projects",
+            "Request quotes from contractors based on your estimate",
+            "Contractor bidding system for larger projects",
+            "Commission/fee on successful contractor matches",
+            "Project management dashboard for active builds",
+          ],
+        },
+        {
+          heading: "Phase 4: Platform (12+ Months)",
+          items: [
+            "AI-powered cost prediction based on historical project data",
+            "Real-time material price tracking from Ghanaian suppliers",
+            "Mobile app (React Native) for on-site estimating",
+            "Multi-market expansion (Nigeria, Kenya, other African countries)",
+            "API for real estate platforms and banks to embed estimates",
+          ],
+        },
+      ],
+    },
+  }
+
+  const current = strategies[subTab]
+  if (!current) return null
+
+  return (
+    <div className="space-y-6">
+      {/* Sub-tab navigation */}
+      <div className="flex flex-wrap gap-1.5">
+        {subTabs.map((st) => (
+          <button
+            key={st.id}
+            onClick={() => setSubTab(st.id)}
+            className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${
+              subTab === st.id
+                ? "bg-emerald-100 text-emerald-800 shadow-sm"
+                : "text-slate-500 hover:text-slate-700 hover:bg-slate-100"
+            }`}
+          >
+            {st.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Content */}
+      <div className="space-y-6">
+        <h2 className="text-xl font-bold text-slate-900">{current.title}</h2>
+        <div className="grid gap-6 sm:grid-cols-2">
+          {current.sections.map((section) => (
+            <div key={section.heading} className="rounded-xl border bg-white p-5 shadow-sm">
+              <h3 className="font-semibold text-slate-800 mb-3 flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                {section.heading}
+              </h3>
+              <ul className="space-y-2">
+                {section.items.map((item) => (
+                  <li key={item} className="text-sm text-slate-600 leading-relaxed flex gap-2">
+                    <span className="text-emerald-500 mt-1 flex-shrink-0">•</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
       </div>
     </div>
