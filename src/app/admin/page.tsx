@@ -1651,30 +1651,56 @@ function AnnualRevenueView() {
 
 /* ── Pricing Audit (sub-view) ── */
 function PricingAuditView() {
+  const [currency, setCurrency] = useState<"USD" | "GHS">("USD")
+  const [rates, setRates] = useState<{ GHS: number }>({ GHS: 15.5 })
+  const [rateDate, setRateDate] = useState("")
+
+  useEffect(() => {
+    fetch("https://api.frankfurter.app/latest?from=USD&to=GHS")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data?.rates?.GHS) {
+          setRates({ GHS: data.rates.GHS })
+          setRateDate(data.date || "")
+        }
+      })
+      .catch(() => {})
+  }, [])
+
+  const rate = rates.GHS || 15.5
+  const f = (usd: number) =>
+    currency === "USD"
+      ? `$${usd.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: usd >= 1 ? 0 : 2 })}`
+      : `₵${(usd * rate).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
+  const fn = (usd: number) =>
+    currency === "USD"
+      ? usd
+      : Math.round(usd * rate)
+
   const tiers = [
-    { name: "Starter", price: "$29", target: "DIY homeowners, single-room estimate", value: "Basic cost breakdown by trade", competitors: "$0–$19 (freemium tools)", margin: "92%", vol: "High", score: 7 },
-    { name: "Standard", price: "$79", target: "Full house estimate, diaspora users", value: "Detailed estimate + regional costing", competitors: "N/A (unique to Ghana)", margin: "90%", vol: "Medium", score: 9 },
-    { name: "Premium", price: "$199", target: "Serious builders, property developers", value: "Full report + materials list + PDF + Excel", competitors: "N/A (no direct competitor)", margin: "88%", vol: "Low", score: 8 },
+    { name: "Starter", price: 29, target: "DIY homeowners, single-room estimate", value: "Basic cost breakdown by trade", competitors: "$0–$19 (freemium tools)", margin: "92%", vol: "High", score: 7 },
+    { name: "Standard", price: 79, target: "Full house estimate, diaspora users", value: "Detailed estimate + regional costing", competitors: "N/A (unique to Ghana)", margin: "90%", vol: "Medium", score: 9 },
+    { name: "Premium", price: 199, target: "Serious builders, property developers", value: "Full report + materials list + PDF + Excel", competitors: "N/A (no direct competitor)", margin: "88%", vol: "Low", score: 8 },
   ]
 
   const riskFactors = [
-    { factor: "Willingness to Pay (WTP)", verdict: "POSITIVE", color: "text-emerald-600", detail: "Diaspora users pay $200+ for visa consultations, $500+ for legal fees. A $79–$199 report that saves them thousands in overcharges is well within WTP threshold." },
+    { factor: "Willingness to Pay (WTP)", verdict: "POSITIVE", color: "text-emerald-600", detail: `Diaspora users pay $200+ for visa consultations, $500+ for legal fees. A ${f(79)}–${f(199)} report that saves them thousands in overcharges is well within WTP threshold.` },
     { factor: "Competitive Landscape", verdict: "FAVORABLE", color: "text-emerald-600", detail: "No direct competitor serving the Ghanaian market. International estimators (HomeAdvisor, CostCertified) don't have Ghana pricing data. Free alternatives (manual research) take 2–4 weeks." },
-    { factor: "Value Perception", verdict: "STRONG", color: "text-emerald-600", detail: "Report saves users 2–4 weeks of research and prevents being overcharged by 20–50%. The $79 report on a $50K build is 0.16% of project cost — negligible relative to value." },
-    { factor: "Price Anchoring", verdict: "EFFECTIVE", color: "text-emerald-600", detail: "Three-tier structure ($29 → $79 → $199) anchors users to the middle tier. $29 feels low-risk, $199 feels premium, $79 feels like the 'smart choice'." },
-    { factor: "Regional Pricing (GHS)", verdict: "NEEDS WORK", color: "text-amber-600", detail: "Current pricing is USD-only. Ghanaian local users find $29–$199 expensive (GHS 350–2,400). Need local pricing tier at 40–50% of USD rates for local market penetration." },
-    { factor: "Subscription Viability", verdict: "UNTESTED", color: "text-amber-600", detail: "Monthly subscription ($19/mo) for unlimited estimates assumes high repeat usage. Unclear if users need multiple estimates. Consider annual prepaid plans at $99/yr to reduce churn risk." },
+    { factor: "Value Perception", verdict: "STRONG", color: "text-emerald-600", detail: `Report saves users 2–4 weeks of research and prevents being overcharged by 20–50%. The ${f(79)} report on a $50K build is 0.16% of project cost — negligible relative to value.` },
+    { factor: "Price Anchoring", verdict: "EFFECTIVE", color: "text-emerald-600", detail: `Three-tier structure (${f(29)} → ${f(79)} → ${f(199)}) anchors users to the middle tier. ${f(29)} feels low-risk, ${f(199)} feels premium, ${f(79)} feels like the 'smart choice'.` },
+    { factor: "Regional Pricing (GHS)", verdict: "NEEDS WORK", color: "text-amber-600", detail: `Current pricing is USD-only. Ghanaian local users find ${f(29)}–${f(199)} expensive (GHS ${fn(29).toLocaleString()}–${fn(199).toLocaleString()}). Need local pricing tier at 40–50% of USD rates for local market penetration.` },
+    { factor: "Subscription Viability", verdict: "UNTESTED", color: "text-amber-600", detail: "Monthly subscription for unlimited estimates assumes high repeat usage. Unclear if users need multiple estimates. Consider annual prepaid plans to reduce churn risk. All subscription tiers are PROPOSED — not yet built." },
     { factor: "Conversion Friction", verdict: "MODERATE RISK", color: "text-amber-600", detail: "Users complete 5-step calculator → see results → pay to unlock. Dropoff at payment screen is likely. Consider paywall placement: free summary + paid full report." },
-    { factor: "Add-on Pricing", verdict: "OPPORTUNITY", color: "text-emerald-600", detail: "PDF download ($9.99), Excel ($14.99), QS review ($49) as add-ons increase AOV by 15–30%. Low marginal cost, high perceived value." },
-    { factor: "Enterprise / B2B Pricing", verdict: "UNPRICED", color: "text-amber-600", detail: "No pricing for real estate developers, banks, or government agencies who might need bulk estimates. Potential $500–$2,000/mo enterprise tier with API access." },
+    { factor: "Add-on Pricing", verdict: "OPPORTUNITY", color: "text-emerald-600", detail: `PDF download (${f(10)}), Excel (${f(15)}), QS review (${f(49)}) as add-ons increase AOV by 15–30%. Low marginal cost, high perceived value.` },
+    { factor: "Enterprise / B2B Pricing", verdict: "UNPRICED", color: "text-amber-600", detail: "No pricing for real estate developers, banks, or government agencies who might need bulk estimates. Potential $500–$2,000/mo enterprise tier with API access. This is PROPOSED." },
     { factor: "Price Elasticity", verdict: "LOW (FAVORABLE)", color: "text-emerald-600", detail: "Target diaspora segment is price-insensitive relative to value received. A 20% price increase would reduce volume by <5% (inelastic demand at current levels)." },
   ]
 
   const recommendations = [
-    { priority: "High", action: "Introduce GHS pricing tier at 50% of USD rates", impact: "Unlocks local market (50%+ of Ghana's addressable users)", effort: "Low", timeline: "Week 1" },
+    { priority: "High", action: `Introduce GHS pricing tier at 50% of USD rates (e.g. ${f(40)} instead of ${f(79)})`, impact: "Unlocks local market (50%+ of Ghana's addressable users)", effort: "Low", timeline: "Week 1" },
     { priority: "High", action: "Add free estimate summary (20% of data) before paywall", impact: "Increases conversion by building trust & demonstrating value", effort: "Medium", timeline: "Week 2–3" },
-    { priority: "High", action: "Launch annual subscription ($99/yr) for unlimited estimates", impact: "Creates recurring revenue, reduces churn vs monthly", effort: "Low", timeline: "Week 2" },
-    { priority: "Medium", action: "Introduce 'Team' plan ($29/mo, 5 users) for contractors", impact: "Opens B2B sales channel, increases MRR", effort: "Medium", timeline: "Month 2" },
+    { priority: "High", action: "Build & launch annual subscription ($99/yr = $8.25/mo) for unlimited estimates", impact: "Creates recurring revenue, reduces churn vs monthly", effort: "Medium", timeline: "Week 3–4" },
+    { priority: "Medium", action: "Introduce monthly subscription ($19/mo, unlimited basic estimates)", impact: "Opens recurring revenue stream, increases LTV 3–6x", effort: "Medium", timeline: "Month 2" },
     { priority: "Medium", action: "Run LAUNCH100 discount (50% off) — measure conversion uplift", impact: "Validates price sensitivity, builds initial user base", effort: "Low", timeline: "Week 1" },
     { priority: "Medium", action: "Create enterprise tier ($500–$2K/mo) with API access", impact: "High-value contracts with developers, banks, government", effort: "High", timeline: "Month 3–4" },
     { priority: "Low", action: "A/B test paywall placement (after step 3 vs after full calculation)", impact: "Data-driven optimization of conversion funnel", effort: "Medium", timeline: "Month 2–3" },
@@ -1683,29 +1709,69 @@ function PricingAuditView() {
 
   return (
     <div className="space-y-8">
+      {/* Currency toggle + header */}
       <div className="rounded-2xl border bg-gradient-to-br from-rose-50 to-amber-50 p-6">
-        <h2 className="text-xl font-bold text-slate-900 mb-2">Pricing Audit & Sustainability Analysis</h2>
-        <p className="text-slate-600 text-sm leading-relaxed max-w-3xl">
-          Evaluation of our current pricing model ($29/$79/$199 tiers) for market viability, competitive positioning,
-          and long-term sustainability. Based on value-based pricing principles, competitor analysis, and willingness-to-pay
-          assumptions for the Ghanaian diaspora market.
-        </p>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-bold text-slate-900 mb-1">Pricing Audit & Sustainability Analysis</h2>
+            <p className="text-slate-600 text-sm leading-relaxed max-w-2xl">
+              Evaluation of our current pricing model for market viability, competitive positioning,
+              and long-term sustainability.
+            </p>
+          </div>
+          <div className="flex items-center gap-3 bg-white rounded-xl px-4 py-2.5 shadow-sm border flex-shrink-0">
+            <span className={`text-sm font-medium ${currency === "USD" ? "text-slate-800" : "text-slate-400"}`}>USD</span>
+            <button
+              onClick={() => setCurrency(currency === "USD" ? "GHS" : "USD")}
+              className={`relative w-12 h-6 rounded-full transition-colors ${currency === "GHS" ? "bg-emerald-500" : "bg-slate-300"}`}
+            >
+              <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform ${currency === "GHS" ? "translate-x-6" : ""}`} />
+            </button>
+            <span className={`text-sm font-medium ${currency === "GHS" ? "text-slate-800" : "text-slate-400"}`}>GHS</span>
+            {rateDate && (
+              <span className="text-[10px] text-slate-400 hidden sm:block ml-1">
+                Rate: 1 USD = {rate} GHS
+                <br />{rateDate}
+              </span>
+            )}
+          </div>
+        </div>
       </div>
 
-      {/* Current pricing breakdown */}
+      {/* CURRENT MODEL — critical clarification banner */}
+      <div className="rounded-xl border-2 border-amber-300 bg-amber-50 p-5">
+        <div className="flex items-start gap-3">
+          <div className="text-2xl">⚠️</div>
+          <div>
+            <div className="font-bold text-amber-800 text-sm uppercase tracking-wide mb-1">Current Pricing Model: Per-Report (One-Time Purchase)</div>
+            <p className="text-sm text-amber-700">
+              We currently charge <strong>a single fee per report download</strong> — no subscriptions, no recurring billing.
+              Users pay <strong>{f(29)} (Starter)</strong>, <strong>{f(79)} (Standard)</strong>, or <strong>{f(199)} (Premium)</strong> once and receive their report.
+              There is <strong>no monthly or annual plan</strong> built yet.
+            </p>
+            <div className="mt-2 flex flex-wrap gap-2 text-xs">
+              <span className="bg-white px-2.5 py-1 rounded-full border border-amber-200 text-amber-700">🟢 Per-report works for MVP validation</span>
+              <span className="bg-white px-2.5 py-1 rounded-full border border-amber-200 text-amber-700">🟡 Subscriptions are PROPOSED — not shipped</span>
+              <span className="bg-white px-2.5 py-1 rounded-full border border-amber-200 text-amber-700">🔴 No recurring revenue stream exists yet</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Current pricing tiers — sustainability scorecard */}
       <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
-        <div className="px-5 py-4 border-b bg-slate-50">
-          <h3 className="font-bold text-slate-900">Current Pricing Tiers — Sustainability Scorecard</h3>
+        <div className="px-5 py-4 border-b bg-slate-50 flex items-center justify-between">
+          <h3 className="font-bold text-slate-900">Current Tiers (Per-Report) — Sustainability Scorecard</h3>
+          <span className="text-xs text-slate-400">All prices in {currency}</span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b bg-slate-50/50">
                 <th className="text-left px-5 py-3 font-semibold text-slate-600">Tier</th>
-                <th className="text-left px-5 py-3 font-semibold text-slate-600">Price</th>
+                <th className="text-left px-5 py-3 font-semibold text-slate-600">Price (per report)</th>
                 <th className="text-left px-5 py-3 font-semibold text-slate-600">Target</th>
                 <th className="text-left px-5 py-3 font-semibold text-slate-600">Value Delivered</th>
-                <th className="text-left px-5 py-3 font-semibold text-slate-600">Competitors</th>
                 <th className="text-left px-5 py-3 font-semibold text-slate-600">Margin</th>
                 <th className="text-left px-5 py-3 font-semibold text-slate-600">Volume</th>
                 <th className="text-left px-5 py-3 font-semibold text-slate-600">Score</th>
@@ -1715,10 +1781,9 @@ function PricingAuditView() {
               {tiers.map((t, i) => (
                 <tr key={t.name} className={`border-b last:border-0 ${i % 2 === 0 ? "bg-white" : "bg-slate-50/30"}`}>
                   <td className="px-5 py-3 font-semibold text-slate-800">{t.name}</td>
-                  <td className="px-5 py-3 font-bold text-emerald-600">{t.price}</td>
+                  <td className="px-5 py-3 font-bold text-emerald-600">{f(t.price)} <span className="text-[10px] font-normal text-slate-400">/report</span></td>
                   <td className="px-5 py-3 text-slate-600 text-xs">{t.target}</td>
                   <td className="px-5 py-3 text-slate-600 text-xs">{t.value}</td>
-                  <td className="px-5 py-3 text-slate-500 text-xs">{t.competitors}</td>
                   <td className="px-5 py-3 text-emerald-600 font-medium">{t.margin}</td>
                   <td className="px-5 py-3 text-slate-600">{t.vol}</td>
                   <td className="px-5 py-3">
@@ -1772,6 +1837,7 @@ function PricingAuditView() {
       <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
         <div className="px-5 py-4 border-b bg-slate-50">
           <h3 className="font-bold text-slate-900">Pricing Recommendations</h3>
+          <p className="text-xs text-amber-600 mt-0.5">* Items mentioning subscriptions are PROPOSED — requires development</p>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -1804,20 +1870,20 @@ function PricingAuditView() {
         </div>
       </div>
 
-      {/* Unit economics validation */}
+      {/* Unit economics + recommended pricing */}
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="rounded-xl border bg-white p-5 shadow-sm">
-          <h3 className="font-bold text-slate-900 mb-3">Unit Economics Validation</h3>
+          <h3 className="font-bold text-slate-900 mb-3">Unit Economics (USD)</h3>
           <div className="space-y-3">
             {[
-              { metric: "Avg Revenue Per Paying User (ARPPU)", value: "$79", note: "Standard tier is the anchor. Upsells push to ~$95." },
-              { metric: "Cost to Serve (hosting + payment fees)", value: "$3.50", note: "~$0.50 hosting + ~$3.00 Paystack fees. Near-zero marginal cost." },
-              { metric: "Gross Profit Per Report", value: "$75.50", note: "$79 - $3.50. 95.6% gross margin on standard tier." },
-              { metric: "Customer Acquisition Cost (organic)", value: "$0–$5", note: "SEO-driven acquisition. ~$50/article produces 200+ visits/mo for years." },
-              { metric: "Customer Acquisition Cost (paid)", value: "$15–$30", note: "Facebook/IG ads targeting diaspora. CPA varies by creative quality." },
-              { metric: "LTV (one-time report buyer)", value: "$95", note: "Single report + add-ons. No recurring revenue." },
-              { metric: "LTV (subscription user)", value: "$228–$588", note: "$19–$49/mo × 12 months. Assumes 50% annual churn." },
-              { metric: "Payback Period (organic)", value: "1 day", note: "Report is sold before any cost is incurred. Negative cash conversion cycle." },
+              { metric: "Avg Revenue Per Paying User (ARPPU)", value: `$${95}`, note: "Standard tier anchor + upsells push to ~$95" },
+              { metric: "Cost to Serve (hosting + Paystack fees)", value: `$${3.50}`, note: "~$0.50 hosting + ~$3.00 fees. Near-zero marginal cost." },
+              { metric: "Gross Profit Per Report", value: `$${75.50}`, note: "$79 - $3.50 = 95.6% gross margin" },
+              { metric: "CAC (organic — SEO)", value: "$0–$5", note: "~$50/article generates 200+ visits/mo for years." },
+              { metric: "CAC (paid — FB/IG)", value: "$15–$30", note: "Diaspora targeting. Varies by creative quality." },
+              { metric: "LTV (one-time buyer, current)", value: "$95", note: "Single report + add-ons. No recurring revenue." },
+              { metric: "LTV (subscription, proposed)", value: "$228–$588", note: "$19–$49/mo × 12mo × ~50% annual churn" },
+              { metric: "Payback Period (organic)", value: "1 day", note: "Report sold before any cost incurred. Negative cash cycle." },
             ].map((m) => (
               <div key={m.metric} className="flex justify-between items-center border-b border-dashed pb-2 last:border-0">
                 <div>
@@ -1831,21 +1897,36 @@ function PricingAuditView() {
         </div>
 
         <div className="rounded-xl border bg-white p-5 shadow-sm">
-          <h3 className="font-bold text-slate-900 mb-3">Recommended Pricing Structure</h3>
-          <div className="space-y-4">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-bold text-slate-900">Recommended Pricing Structure</h3>
+            <div className="flex gap-1 text-[10px]">
+              <span className="bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded">Current</span>
+              <span className="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">Proposed</span>
+            </div>
+          </div>
+          <div className="space-y-3">
             {[
-              { tier: "Free", price: "$0", items: "Summary report (20% of data), blog access, cost calculator demo", target: "Top of funnel — capture email, build trust" },
-              { tier: "Starter", price: "$19 ($29→$19)", items: "Full estimate for 1–2 rooms, basic PDF", target: "Budget-conscious, single-room builders" },
-              { tier: "Standard", price: "$79", items: "Full house estimate, regional costing, PDF + Excel", target: "Diaspora homeowners (sweet spot — keep)" },
-              { tier: "Premium", price: "$149 ($199→$149)", items: "Full report + materials list + QS review + 3D viz", target: "Serious builders, price-sensitive to $199" },
-              { tier: "Annual Unlimited", price: "$99/yr", items: "Unlimited estimates, all add-ons included", target: "Repeat users, contractors, property managers" },
-              { tier: "Team", price: "$29/mo", items: "5 seats, shared project dashboard", target: "Architecture firms, real estate agencies" },
-              { tier: "Enterprise", price: "$500–$2K/mo", items: "API access, white-label reports, dedicated support", target: "Banks, developers, government agencies" },
+              { tier: "Free (Summary)", price: 0, freq: "—", items: "20% of report data, blog access, calculator demo", target: "Funnel top — capture email", tag: "Current" as const },
+              { tier: "Starter", price: 19, freq: "/report", items: "1–2 room estimate, basic PDF", target: "Budget-conscious", tag: "Current" as const },
+              { tier: "Standard", price: 79, freq: "/report", items: "Full house estimate, regional pricing, PDF + Excel", target: "Diaspora homeowners (sweet spot)", tag: "Current" as const },
+              { tier: "Premium", price: 149, freq: "/report", items: "Full report + materials + QS review + 3D viz", target: "Serious builders", tag: "Current" as const },
+              { tier: "Monthly Unlimited", price: 19, freq: "/mo", items: "Unlimited basic estimates + all add-ons", target: "Repeat users, contractors", tag: "Proposed" as const },
+              { tier: "Annual Unlimited", price: 99, freq: "/yr ($8.25/mo)", items: "Same as monthly — 57% discount vs monthly", target: "Commitment-friendly users", tag: "Proposed" as const },
+              { tier: "Team", price: 29, freq: "/mo (5 seats)", items: "Shared dashboard, bulk reports", target: "Architecture firms, agencies", tag: "Proposed" as const },
+              { tier: "Enterprise", price: 500, freq: "/mo", items: "API access, white-label, dedicated support", target: "Banks, developers, govt", tag: "Proposed" as const },
             ].map((p) => (
-              <div key={p.tier} className="border rounded-lg p-3">
+              <div key={p.tier} className={`border rounded-lg p-3 ${p.tag === "Proposed" ? "border-blue-200 bg-blue-50/30" : ""}`}>
                 <div className="flex justify-between items-center mb-1">
-                  <span className="font-semibold text-slate-800">{p.tier}</span>
-                  <span className="font-bold text-emerald-600">{p.price}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-slate-800">{p.tier}</span>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${
+                      p.tag === "Current" ? "bg-emerald-100 text-emerald-700" : "bg-blue-100 text-blue-700"
+                    }`}>{p.tag}</span>
+                  </div>
+                  <span className="font-bold text-emerald-600">
+                    {p.price === 0 ? "Free" : `${f(p.price)}`}
+                    <span className="text-[10px] font-normal text-slate-400 ml-0.5">{p.freq}</span>
+                  </span>
                 </div>
                 <div className="text-xs text-slate-500">{p.items}</div>
                 <div className="text-xs text-slate-400 mt-0.5">{p.target}</div>
