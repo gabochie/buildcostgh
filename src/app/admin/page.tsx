@@ -169,6 +169,8 @@ export default function AdminPage() {
     <SettingsTab session={session} />
   ) : tab === "strategy" ? (
     <StrategyTab />
+  ) : tab === "ecosystem" ? (
+    <EcosystemTab />
   ) : null}
     </div>
   )
@@ -940,6 +942,295 @@ function StrategyTab() {
               </ul>
             </div>
           ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ── Product Ecosystem ── */
+function EcosystemTab() {
+  const stages = [
+    {
+      phase: "1. Dream & Discovery",
+      emoji: "💭",
+      color: "from-sky-400 to-sky-600",
+      pain: "I want to build in Ghana but have no idea where to start, what it costs, or if it's even feasible.",
+      products: [
+        "Free cost estimator (entry point — current MVP)",
+        "Educational blog & video library ('Building in Ghana 101')",
+        "ROI calculator for rental properties",
+        "Feasibility quiz that recommends the right path",
+      ],
+      revenue: "Free / Lead generation",
+      link: "→ connects to Cost Estimation",
+    },
+    {
+      phase: "2. Land Acquisition",
+      emoji: "🌍",
+      color: "from-emerald-400 to-emerald-600",
+      pain: "Finding genuine land with clean title is nearly impossible from abroad. Scams are rampant.",
+      products: [
+        "Verified land listing marketplace (vetted titles, GPS-tagged)",
+        "Title search & due diligence service (partner with surveyors)",
+        "Legal document review (partner law firms)",
+        "Land valuation report",
+      ],
+      revenue: "Commission (3–5% per sale) + Legal referral fee",
+      link: "→ feeds into Design & Permits",
+    },
+    {
+      phase: "3. Design & Permits",
+      emoji: "📐",
+      color: "from-violet-400 to-violet-600",
+      pain: "I need architectural plans that meet Ghanaian building codes and I can't manage the permit process remotely.",
+      products: [
+        "Pre-designed house plan catalog (buy & download, then customize)",
+        "Custom architectural design service (partner architects)",
+        "Building permit application assistant (submit on your behalf)",
+        "Community bylaw compliance check",
+      ],
+      revenue: "Per-plan sale ($99–$499) + Permit processing fee",
+      link: "→ feeds into Budgeting & Financing",
+    },
+    {
+      phase: "4. Budgeting & Financing",
+      emoji: "💰",
+      color: "from-amber-400 to-amber-600",
+      pain: "I don't know the true cost and I can't get a mortgage as a diaspora buyer.",
+      products: [
+        "Detailed cost estimate (CORE PRODUCT — shipped)",
+        "Diaspora mortgage facilitation (partner with banks)",
+        "Savings plan generator (how much to save monthly)",
+        "Bank loan comparison tool",
+        "Payment plan builder for staged construction",
+      ],
+      revenue: "Report sales + Affiliate fee from bank referrals",
+      link: "→ feeds into Contractor Hiring",
+    },
+    {
+      phase: "5. Contractor Marketplace",
+      emoji: "👷",
+      color: "from-orange-400 to-orange-600",
+      pain: "Who do I trust? Every diaspora story includes a contractor who disappeared or overcharged.",
+      products: [
+        "Vetted contractor directory with profiles & past projects",
+        "Bid comparison tool (get 3 quotes, compare side-by-side)",
+        "Contractor background check (criminal, past litigation)",
+        "Client review & rating system",
+        "Escrow payment protection",
+      ],
+      revenue: "Contractor subscription ($29/mo) + Commission on matched projects (5%)",
+      link: "→ feeds into Construction Management",
+    },
+    {
+      phase: "6. Construction Management",
+      emoji: "📊",
+      color: "from-blue-400 to-blue-600",
+      pain: "I'm 5,000 miles away. How do I know they're actually building? Is the money being used properly?",
+      products: [
+        "Project dashboard with milestone tracking (foundation → roofing → finishing)",
+        "Scheduled photo/video progress reports",
+        "Milestone-based payment release (hold funds, release on completion)",
+        "Material delivery verification (photo of delivered materials)",
+        "Weekly written status report for diaspora owners",
+        "On-site coordinator visits (partner network)",
+      ],
+      revenue: "Monthly subscription ($19–$49/mo per project)",
+      link: "→ feeds into Materials Procurement",
+    },
+    {
+      phase: "7. Materials Procurement",
+      emoji: "🏗️",
+      color: "from-stone-400 to-stone-600",
+      pain: "Where do I buy quality materials without getting overcharged? Contractors inflate material prices.",
+      products: [
+        "Real-time material price index (cement, steel, roofing, tiles, paint)",
+        "Verified supplier directory (wholesale prices)",
+        "Bulk procurement coordination (buy together, save 10–15%)",
+        "Material delivery tracking",
+        "Quality verification (product testing partnership)",
+      ],
+      revenue: "Supplier listing fee + Commission on orders (2–5%)",
+      link: "→ feeds into Quality Assurance",
+    },
+    {
+      phase: "8. Quality Assurance",
+      emoji: "✅",
+      color: "from-green-400 to-green-600",
+      pain: "Is the foundation correct? Are the electricals up to code? I can't inspect it myself.",
+      products: [
+        "Independent site inspection service (engineer visits site)",
+        "Photo documentation package (time-stamped, geo-tagged)",
+        "Snag list / punch list management",
+        "Engineer sign-off coordination for permits",
+        "Structural integrity report",
+      ],
+      revenue: "Per-inspection fee ($49–$149)",
+      link: "→ feeds into Interior & Finishing",
+    },
+    {
+      phase: "9. Interior & Finishing",
+      emoji: "✨",
+      color: "from-pink-400 to-pink-600",
+      pain: "I want a beautiful home. Where do I find quality fixtures, furniture, and skilled finishers in Ghana?",
+      products: [
+        "Interior design consultation (virtual — partner designers)",
+        "Furniture & fixture marketplace (delivered to site)",
+        "Specialized contractor listing (tilers, painters, cabinet makers)",
+        "Smart home installation service",
+        "Landscaping design & execution",
+      ],
+      revenue: "Commission on sales (10–15%) + Designer referral fee",
+      link: "→ feeds into Move-in & Property Management",
+    },
+    {
+      phase: "10. Move-in & Property Management",
+      emoji: "🏠",
+      color: "from-teal-400 to-teal-600",
+      pain: "I need to move in, maintain the property, or rent it out. I can't do this from abroad.",
+      products: [
+        "Moving services (partner network)",
+        "Home maintenance & repair directory (plumbers, electricians, etc.)",
+        "Full property management service (tenant finding, rent collection, maintenance)",
+        "Rental listing platform (if building for investment)",
+        "Home insurance referral",
+        "Security system installation partner",
+      ],
+      revenue: "Property management fee (8–12% of rent) + Insurance commission",
+      link: "→ Returns to Dream: refer friends, start next project",
+    },
+  ]
+
+  const totalRevenue = stages.reduce((sum, s) => {
+    const nums = s.revenue.match(/\d+/g)
+    return sum + (nums ? nums.reduce((a, b) => a + parseInt(b), 0) : 0)
+  }, 0)
+
+  return (
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="rounded-2xl border bg-gradient-to-br from-emerald-50 to-teal-50 p-6">
+        <h2 className="text-xl font-bold text-slate-900 mb-2">Product Ecosystem</h2>
+        <p className="text-slate-600 text-sm leading-relaxed max-w-3xl">
+          The complete value chain for a Ghanaian diaspora user — from dreaming about a home to moving in.
+          Each stage is a product opportunity. Our ecosystem captures the user early and monetizes them
+          repeatedly across the entire journey.
+        </p>
+      </div>
+
+      {/* Ecosystem flywheel summary */}
+      <div className="grid gap-4 sm:grid-cols-4">
+        <div className="rounded-xl border bg-white p-4 shadow-sm text-center">
+          <div className="text-2xl font-bold text-emerald-600">10</div>
+          <div className="text-xs text-slate-500 mt-1">Value Chain Stages</div>
+        </div>
+        <div className="rounded-xl border bg-white p-4 shadow-sm text-center">
+          <div className="text-2xl font-bold text-emerald-600">
+            ~${totalRevenue / 10}K–${totalRevenue / 5}K
+          </div>
+          <div className="text-xs text-slate-500 mt-1">Est. Revenue per User (lifetime)</div>
+        </div>
+        <div className="rounded-xl border bg-white p-4 shadow-sm text-center">
+          <div className="text-2xl font-bold text-emerald-600">35+</div>
+          <div className="text-xs text-slate-500 mt-1">Shippable Products</div>
+        </div>
+        <div className="rounded-xl border bg-white p-4 shadow-sm text-center">
+          <div className="text-2xl font-bold text-emerald-600">10x</div>
+          <div className="text-xs text-slate-500 mt-1">LTV vs Single Report Purchase</div>
+        </div>
+      </div>
+
+      {/* Value chain stages */}
+      <div className="relative">
+        {/* Vertical connector line */}
+        <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-emerald-200 hidden md:block" />
+
+        <div className="space-y-6">
+          {stages.map((stage, i) => (
+            <div key={stage.phase} className="relative md:pl-16">
+              {/* Timeline dot */}
+              <div className={`absolute left-4 top-6 w-4 h-4 rounded-full border-2 border-white shadow-md bg-gradient-to-br ${stage.color} hidden md:block`} />
+
+              {/* Connector arrow */}
+              {i < stages.length - 1 && (
+                <div className="hidden md:flex items-center justify-center text-emerald-400 text-xs font-medium mt-1 mb-1 ml-1">
+                  ↓
+                </div>
+              )}
+
+              <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
+                {/* Stage header */}
+                <div className={`bg-gradient-to-r ${stage.color} p-4 text-white`}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">{stage.emoji}</span>
+                      <h3 className="font-bold">{stage.phase}</h3>
+                    </div>
+                    <span className="text-xs bg-white/20 px-2.5 py-1 rounded-full font-medium">
+                      {stage.revenue}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-4">
+                  {/* Pain point */}
+                  <div className="mb-3">
+                    <div className="text-xs font-semibold text-rose-500 uppercase tracking-wide mb-1">Pain Point</div>
+                    <p className="text-sm text-slate-600 italic">"{stage.pain}"</p>
+                  </div>
+
+                  {/* Products */}
+                  <div>
+                    <div className="text-xs font-semibold text-emerald-600 uppercase tracking-wide mb-2">Our Products</div>
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      {stage.products.map((p) => (
+                        <div key={p} className="flex items-start gap-2 text-sm text-slate-700">
+                          <span className="text-emerald-500 mt-0.5 flex-shrink-0">✦</span>
+                          <span>{p}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Flow link */}
+                  <div className="mt-3 pt-3 border-t border-dashed text-xs text-slate-400">
+                    {stage.link}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Ecosystem dynamics */}
+      <div className="rounded-2xl border bg-white p-6 shadow-sm">
+        <h3 className="font-bold text-slate-900 mb-4">Ecosystem Flywheel Dynamics</h3>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div className="p-4 rounded-xl bg-slate-50">
+            <div className="text-lg font-bold text-emerald-600 mb-1">Data Moat</div>
+            <p className="text-sm text-slate-600">
+              Each stage generates proprietary data: real material prices, contractor performance scores,
+              actual project costs. This data makes our estimates more accurate and our marketplace more
+              valuable — competitors can't replicate it.
+            </p>
+          </div>
+          <div className="p-4 rounded-xl bg-slate-50">
+            <div className="text-lg font-bold text-emerald-600 mb-1">Network Effects</div>
+            <p className="text-sm text-slate-600">
+              More homeowners → more contractors → better matching → more homeowners.
+              More suppliers → better prices → more material orders → more suppliers.
+              Each marketplace feeds the next.
+            </p>
+          </div>
+          <div className="p-4 rounded-xl bg-slate-50">
+            <div className="text-lg font-bold text-emerald-600 mb-1">LTV Expansion</div>
+            <p className="text-sm text-slate-600">
+              A single report buyer ($29) becomes a contractor finder (5% commission), then a project
+              management subscriber ($49/mo × 12 months). LTV grows from $29 to $2,000+ per user.
+            </p>
+          </div>
         </div>
       </div>
     </div>
