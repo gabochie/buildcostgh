@@ -4,6 +4,8 @@ import { useSession, signIn, signOut } from "next-auth/react"
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Roadmap } from "@/components/admin/Roadmap"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -119,15 +121,7 @@ export default function AdminPage() {
   }
 
   if (!session) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)] gap-4">
-        <h1 className="text-2xl font-heading font-bold text-charcoal">Admin Access</h1>
-        <p className="text-gray-500 text-sm">Sign in to manage your store</p>
-        <Button onClick={() => signIn("google")} className="bg-gradient-primary text-white border-0">
-          Sign in with Google
-        </Button>
-      </div>
-    )
+    return <AdminLogin />
   }
 
   const tabs = [
@@ -425,6 +419,67 @@ export default function AdminPage() {
           </div>
         ) : null}
       </div>
+    </div>
+  )
+}
+
+function AdminLogin() {
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
+  const [loggingIn, setLoggingIn] = useState(false)
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError("")
+    setLoggingIn(true)
+    const res = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    })
+    setLoggingIn(false)
+    if (res?.error) {
+      setError("Invalid email or password")
+    } else {
+      window.location.reload()
+    }
+  }
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)]">
+      <form onSubmit={handleLogin} className="w-full max-w-sm space-y-4 p-6">
+        <div className="text-center mb-2">
+          <h1 className="text-2xl font-heading font-bold text-charcoal">Admin Access</h1>
+          <p className="text-gray-500 text-sm mt-1">Sign in to manage your store</p>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="login-email">Email</Label>
+          <Input
+            id="login-email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="admin@example.com"
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="login-password">Password</Label>
+          <Input
+            id="login-password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Enter password"
+            required
+          />
+        </div>
+        {error && <p className="text-sm text-red-600">{error}</p>}
+        <Button type="submit" disabled={loggingIn} className="w-full bg-gradient-primary text-white border-0">
+          {loggingIn ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Signing in...</> : "Sign In"}
+        </Button>
+      </form>
     </div>
   )
 }
