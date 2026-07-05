@@ -7,77 +7,58 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Roadmap } from "@/components/admin/Roadmap"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import {
-  LogOut, Loader2, ShoppingBag, MessageSquare, Users, Mail, TrendingUp,
-  BarChart3, FileText, Eye, ExternalLink, ListChecks, Shield
-} from "lucide-react"
 import { formatCurrency } from "@/lib/utils"
+import {
+  Loader2, TrendingUp, ShoppingBag, MessageSquare, Users, Mail,
+  FileText, ExternalLink, Eye, Shield, CheckCircle, Clock,
+  AlertCircle, ArrowRight, Plus, Search, Download,
+} from "lucide-react"
 
 type Stats = {
-  totalOrders: number
-  completedOrders: number
-  pendingOrders: number
-  totalRevenue: number
-  totalMessages: number
-  unreadMessages: number
-  totalLeads: number
-  totalSubscribers: number
+  totalOrders: number; completedOrders: number; pendingOrders: number
+  totalRevenue: number; totalMessages: number; unreadMessages: number
+  totalLeads: number; totalSubscribers: number
 }
 
 type Order = {
-  id: string
-  fullName: string
-  email: string
-  package: string
-  amount: number
-  status: string
-  reference: string
-  reportUrl: string | null
-  createdAt: string
+  id: string; fullName: string; email: string; package: string
+  amount: number; status: string; reference: string; reportUrl: string | null; createdAt: string
 }
 
 type ContactMessage = {
-  id: string
-  name: string
-  email: string
-  subject: string
-  message: string
-  read: boolean
-  createdAt: string
+  id: string; name: string; email: string; subject: string
+  message: string; read: boolean; createdAt: string
 }
 
 type BlogPostItem = {
-  id: string
-  title: string
-  slug: string
-  published: boolean
-  author: string
-  category: string
-  createdAt: string
+  id: string; title: string; slug: string; published: boolean
+  author: string; category: string; createdAt: string
 }
 
 type CalculatorLead = {
-  id: string
-  email: string
-  bedrooms: string | null
-  location: string | null
-  completed: boolean
-  createdAt: string
+  id: string; email: string; bedrooms: string | null
+  location: string | null; completed: boolean; createdAt: string
 }
 
 type NewsletterSubscriber = {
-  id: string
-  email: string
-  name: string | null
-  subscribed: boolean
-  createdAt: string
+  id: string; email: string; name: string | null; subscribed: boolean; createdAt: string
+}
+
+const statusStyles: Record<string, string> = {
+  completed: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  pending: "bg-amber-50 text-amber-700 border-amber-200",
+  failed: "bg-red-50 text-red-700 border-red-200",
+}
+
+const statusIcons: Record<string, any> = {
+  completed: CheckCircle,
+  pending: Clock,
+  failed: AlertCircle,
 }
 
 export default function AdminPage() {
   const { data: session, status } = useSession()
-  const [tab, setTab] = useState<"overview" | "orders" | "messages" | "blog" | "leads" | "newsletter" | "roadmap">("overview")
+  const [tab, setTab] = useState<string>("overview")
   const [maintenanceMode, setMaintenanceMode] = useState(false)
   const [toggling, setToggling] = useState(false)
   const [stats, setStats] = useState<Stats | null>(null)
@@ -87,6 +68,12 @@ export default function AdminPage() {
   const [leads, setLeads] = useState<CalculatorLead[]>([])
   const [subscribers, setSubscribers] = useState<NewsletterSubscriber[]>([])
   const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const t = params.get("tab")
+    if (t) setTab(t)
+  }, [])
 
   useEffect(() => {
     if (!session) return
@@ -101,12 +88,8 @@ export default function AdminPage() {
       fetch("/api/admin/maintenance").then(r => r.json()).catch(() => ({ enabled: false })),
     ])
       .then(([s, o, m, b, l, n, mt]) => {
-        setStats(s)
-        setOrders(o)
-        setMessages(m)
-        setBlogPosts(b)
-        setLeads(l)
-        setSubscribers(n)
+        setStats(s); setOrders(o); setMessages(m)
+        setBlogPosts(b); setLeads(l); setSubscribers(n)
         setMaintenanceMode(mt.enabled)
       })
       .finally(() => setLoading(false))
@@ -124,305 +107,421 @@ export default function AdminPage() {
     return <AdminLogin />
   }
 
-  const tabs = [
-    { id: "overview" as const, label: "Overview", icon: BarChart3, count: null },
-    { id: "orders" as const, label: "Orders", icon: ShoppingBag, count: stats?.totalOrders },
-    { id: "messages" as const, label: "Messages", icon: MessageSquare, count: stats?.unreadMessages },
-    { id: "leads" as const, label: "Leads", icon: Users, count: stats?.totalLeads },
-    { id: "newsletter" as const, label: "Newsletter", icon: Mail, count: stats?.totalSubscribers },
-    { id: "blog" as const, label: "Blog", icon: FileText, count: blogPosts.length },
-    { id: "roadmap" as const, label: "Roadmap", icon: ListChecks, count: null },
+  return (
+    <div className="p-6 lg:p-8 max-w-7xl mx-auto">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">
+            {tab === "overview" ? "Dashboard" : tab.charAt(0).toUpperCase() + tab.slice(1)}
+          </h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Welcome back, {session.user?.name || session.user?.email}
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          {tab === "blog" && (
+            <Link href="/admin/blog/new">
+              <Button className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-200">
+                <Plus className="h-4 w-4 mr-1.5" /> New Post
+              </Button>
+            </Link>
+          )}
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center py-20">
+          <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
+        </div>
+      ) : tab === "overview" ? (
+        <OverviewTab
+          stats={stats} orders={orders} messages={messages}
+          maintenanceMode={maintenanceMode} toggling={toggling}
+          toggleMaintenance={async () => {
+            setToggling(true)
+            try {
+              const res = await fetch("/api/admin/maintenance", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ enabled: !maintenanceMode }),
+              })
+              const data = await res.json()
+              setMaintenanceMode(data.enabled)
+            } catch (e) { console.error(e) }
+            finally { setToggling(false) }
+          }}
+        />
+      ) : tab === "orders" ? (
+        <OrdersTab orders={orders} />
+      ) : tab === "messages" ? (
+        <MessagesTab messages={messages} />
+      ) : tab === "leads" ? (
+        <LeadsTab leads={leads} />
+      ) : tab === "newsletter" ? (
+        <NewsletterTab subscribers={subscribers} />
+      ) : tab === "roadmap" ? (
+        <Roadmap />
+      ) : tab === "blog" ? (
+        <BlogTab posts={blogPosts} />
+      ) : null}
+    </div>
+  )
+}
+
+/* ── Overview ── */
+function OverviewTab({ stats, orders, messages, maintenanceMode, toggling, toggleMaintenance }: {
+  stats: Stats | null; orders: Order[]; messages: ContactMessage[];
+  maintenanceMode: boolean; toggling: boolean; toggleMaintenance: () => void
+}) {
+  const cards = [
+    { label: "Total Revenue", value: formatCurrency(stats?.totalRevenue || 0), icon: TrendingUp, gradient: "from-emerald-500 to-emerald-600" },
+    { label: "Orders", value: String(stats?.totalOrders || 0), sub: `${stats?.completedOrders || 0} completed`, icon: ShoppingBag, gradient: "from-blue-500 to-blue-600" },
+    { label: "Messages", value: String(stats?.totalMessages || 0), sub: `${stats?.unreadMessages || 0} unread`, icon: MessageSquare, gradient: "from-violet-500 to-violet-600" },
+    { label: "Leads", value: String(stats?.totalLeads || 0), sub: `${stats?.totalSubscribers || 0} subscribers`, icon: Users, gradient: "from-amber-500 to-amber-600" },
   ]
 
-  const toggleMaintenance = async () => {
-    setToggling(true)
-    try {
-      const res = await fetch("/api/admin/maintenance", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ enabled: !maintenanceMode }),
-      })
-      const data = await res.json()
-      setMaintenanceMode(data.enabled)
-    } catch (e) {
-      console.error(e)
-    } finally {
-      setToggling(false)
-    }
-  }
-
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8">
+    <div className="space-y-6">
+      {/* Stats Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {cards.map((card) => (
+          <div
+            key={card.label}
+            className="relative overflow-hidden rounded-2xl bg-gradient-to-br p-5 text-white shadow-lg transition-all duration-200 hover:shadow-xl hover:-translate-y-0.5"
+            style={{ backgroundImage: `linear-gradient(135deg, var(--tw-gradient-stops))`, [`--tw-gradient-from`]: `var(--${card.gradient.split(" ")[0].replace("from-", "")})`, [`--tw-gradient-to`]: `var(--${card.gradient.split(" ")[1].replace("to-", "")})` } as React.CSSProperties}
+          >
+            <div className="relative z-10">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-medium text-white/80">{card.label}</p>
+                <card.icon className="h-5 w-5 text-white/60" />
+              </div>
+              <p className="text-2xl font-bold">{card.value}</p>
+              {card.sub && <p className="text-xs text-white/70 mt-1">{card.sub}</p>}
+            </div>
+            <div className="absolute -bottom-3 -right-3 w-24 h-24 rounded-full bg-white/5" />
+            <div className="absolute -bottom-6 -right-6 w-32 h-32 rounded-full bg-white/5" />
+          </div>
+        ))}
+      </div>
+
+      {/* Maintenance Toggle */}
+      <div className="rounded-2xl border border-amber-200 bg-amber-50/50 p-5 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600">
+            <Shield className="h-5 w-5" />
+          </div>
           <div>
-            <h1 className="text-2xl font-heading font-bold text-charcoal">Admin Dashboard</h1>
-            <p className="text-sm text-gray-500">Welcome, {session.user?.name || session.user?.email}</p>
+            <h3 className="font-semibold text-slate-900">Maintenance Mode</h3>
+            <p className="text-sm text-slate-500">
+              {maintenanceMode ? "Site is offline — visitors see the maintenance page" : "Site is live and accessible"}
+            </p>
           </div>
-          <Button variant="outline" size="sm" onClick={() => signOut()}>
-            <LogOut className="mr-2 h-4 w-4" /> Sign Out
-          </Button>
         </div>
+        <button
+          onClick={toggleMaintenance}
+          disabled={toggling}
+          className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500/50 ${
+            maintenanceMode ? "bg-amber-500" : "bg-slate-300"
+          }`}
+        >
+          <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
+            maintenanceMode ? "translate-x-6" : "translate-x-1"
+          }`} />
+        </button>
+      </div>
 
-        <div className="flex gap-2 mb-6 flex-wrap">
-          {tabs.map((t) => (
-            <Button
-              key={t.id}
-              variant={tab === t.id ? "default" : "outline"}
-              size="sm"
-              onClick={() => setTab(t.id)}
-              className={tab === t.id ? "bg-emerald-600" : ""}
-            >
-              <t.icon className="mr-1.5 h-4 w-4" />
-              {t.label}
-              {t.count !== null && t.count !== undefined && (
-                <span className="ml-1.5 px-1.5 py-0.5 text-xs rounded-full bg-white/20">{t.count}</span>
-              )}
-            </Button>
-          ))}
-        </div>
-
-        {loading ? (
-          <div className="flex justify-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
-          </div>
-        ) : tab === "overview" ? (
-          <div className="space-y-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <StatCard title="Total Revenue" value={formatCurrency(stats?.totalRevenue || 0)} icon={TrendingUp} />
-              <StatCard title="Orders" value={String(stats?.totalOrders || 0)} sub={`${stats?.completedOrders || 0} completed`} icon={ShoppingBag} />
-              <StatCard title="Messages" value={String(stats?.totalMessages || 0)} sub={`${stats?.unreadMessages || 0} unread`} icon={MessageSquare} />
-              <StatCard title="Leads" value={String(stats?.totalLeads || 0)} sub={`${stats?.totalSubscribers || 0} subscribers`} icon={Users} />
-            </div>
-
-            <Card className="border-amber-200 bg-amber-50/30">
-              <CardContent className="p-5 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center text-amber-600">
-                    <Shield className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900">Maintenance Mode</h3>
-                    <p className="text-sm text-gray-500">
-                      {maintenanceMode
-                        ? "Site is currently in maintenance — visitors see the maintenance page"
-                        : "Site is live and accessible to everyone"}
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={toggleMaintenance}
-                  disabled={toggling}
-                  className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none ${
-                    maintenanceMode ? "bg-amber-500" : "bg-gray-300"
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
-                      maintenanceMode ? "translate-x-6" : "translate-x-1"
-                    }`}
-                  />
-                </button>
-              </CardContent>
-            </Card>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardContent className="p-5">
-                  <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <ShoppingBag className="h-4 w-4 text-emerald-600" /> Recent Orders
-                  </h3>
-                  {orders.length === 0 ? (
-                    <p className="text-sm text-gray-400">No orders yet</p>
-                  ) : (
-                    <div className="space-y-2">
-                      {orders.slice(0, 5).map((o) => (
-                        <div key={o.id} className="flex justify-between text-sm py-1.5 border-b border-gray-100 last:border-0">
-                          <span className="text-gray-700">{o.fullName} — {o.package}</span>
-                          <Badge className={o.status === "completed" ? "bg-emerald-500" : "bg-amber-500"}>
-                            {o.status}
-                          </Badge>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-5">
-                  <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <MessageSquare className="h-4 w-4 text-emerald-600" /> Unread Messages
-                  </h3>
-                  {messages.filter(m => !m.read).length === 0 ? (
-                    <p className="text-sm text-gray-400">All caught up!</p>
-                  ) : (
-                    <div className="space-y-2">
-                      {messages.filter(m => !m.read).slice(0, 5).map((m) => (
-                        <div key={m.id} className="text-sm py-1.5 border-b border-gray-100 last:border-0">
-                          <span className="font-medium text-gray-900">{m.name}</span>
-                          <p className="text-gray-500 truncate">{m.message}</p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        ) : tab === "orders" ? (
-          <div className="space-y-3">
-            {orders.map((order) => (
-              <Card key={order.id}>
-                <CardContent className="flex items-center justify-between p-4">
-                  <div>
-                    <p className="font-medium text-gray-900">{order.fullName}</p>
-                    <p className="text-sm text-gray-500">{order.email} &middot; {order.package} &middot; GHS {order.amount}</p>
-                    <p className="text-xs text-gray-400">Ref: {order.reference}</p>
-                  </div>
-                  <div className="text-right">
-                    <Badge className={order.status === "completed" ? "bg-emerald-500" : order.status === "pending" ? "bg-amber-500" : "bg-red-500"}>
-                      {order.status}
-                    </Badge>
-                    {order.reportUrl && (
-                      <a href={order.reportUrl} className="block text-xs text-emerald-600 hover:underline mt-1" target="_blank">
-                        View Report
-                      </a>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-            {orders.length === 0 && <p className="text-center text-gray-400 py-8">No orders yet</p>}
-          </div>
-        ) : tab === "messages" ? (
-          <div className="space-y-3">
-            {messages.map((msg) => (
-              <Card key={msg.id} className={!msg.read ? "border-emerald-200 bg-emerald-50/30" : ""}>
-                <CardContent className="p-4">
-                  <div className="flex justify-between mb-1">
-                    <p className="font-medium text-gray-900">{msg.name} {!msg.read && <span className="w-2 h-2 bg-emerald-500 rounded-full inline-block ml-1" />}</p>
-                    <span className="text-xs text-gray-400">{new Date(msg.createdAt).toLocaleDateString()}</span>
-                  </div>
-                  <p className="text-sm text-gray-500">{msg.email}</p>
-                  {msg.subject && <p className="text-sm font-medium text-gray-700 mt-1">{msg.subject}</p>}
-                  <p className="text-sm text-gray-600 mt-2">{msg.message}</p>
-                </CardContent>
-              </Card>
-            ))}
-            {messages.length === 0 && <p className="text-center text-gray-400 py-8">No messages yet</p>}
-          </div>
-        ) : tab === "leads" ? (
-          <div className="space-y-3">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-              <div className="bg-white rounded-xl border p-4">
-                <p className="text-2xl font-bold text-gray-900">{leads.length}</p>
-                <p className="text-sm text-gray-500">Total Leads Captured</p>
-              </div>
-              <div className="bg-white rounded-xl border p-4">
-                <p className="text-2xl font-bold text-gray-900">{leads.filter(l => l.completed).length}</p>
-                <p className="text-sm text-gray-500">Completed Calculations</p>
-              </div>
-              <div className="bg-white rounded-xl border p-4">
-                <p className="text-2xl font-bold text-gray-900">{leads.filter(l => !l.completed).length}</p>
-                <p className="text-sm text-gray-500">Abandoned (needs nurture)</p>
-              </div>
-            </div>
-            {leads.map((lead) => (
-              <Card key={lead.id}>
-                <CardContent className="flex items-center justify-between p-4">
-                  <div>
-                    <p className="font-medium text-gray-900">{lead.email}</p>
-                    <p className="text-sm text-gray-500">
-                      {lead.location || "No location"} &middot; {lead.bedrooms || "?"} bed
-                    </p>
-                  </div>
-                  <div className="text-right text-xs text-gray-400">
-                    <p>{new Date(lead.createdAt).toLocaleDateString()}</p>
-                    <Badge className={lead.completed ? "bg-emerald-500" : "bg-amber-500"}>
-                      {lead.completed ? "Completed" : "Abandoned"}
-                    </Badge>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-            {leads.length === 0 && <p className="text-center text-gray-400 py-8">No leads captured yet</p>}
-          </div>
-        ) : tab === "newsletter" ? (
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-              <div className="bg-white rounded-xl border p-4">
-                <p className="text-2xl font-bold text-gray-900">{subscribers.length}</p>
-                <p className="text-sm text-gray-500">Total Subscribers</p>
-              </div>
-              <div className="bg-white rounded-xl border p-4">
-                <p className="text-2xl font-bold text-gray-900">{subscribers.filter(s => s.subscribed).length}</p>
-                <p className="text-sm text-gray-500">Active</p>
-              </div>
-              <div className="bg-white rounded-xl border p-4">
-                <p className="text-2xl font-bold text-gray-900">{subscribers.filter(s => !s.subscribed).length}</p>
-                <p className="text-sm text-gray-500">Unsubscribed</p>
-              </div>
-            </div>
-            {subscribers.map((sub) => (
-              <Card key={sub.id}>
-                <CardContent className="flex items-center justify-between p-4">
-                  <div>
-                    <p className="font-medium text-gray-900">{sub.email}</p>
-                    <p className="text-sm text-gray-500">
-                      Subscribed {new Date(sub.createdAt).toLocaleDateString("en-GH", { year: "numeric", month: "long", day: "numeric" })}
-                    </p>
-                  </div>
-                  <Badge className={sub.subscribed ? "bg-emerald-500" : "bg-gray-400"}>
-                    {sub.subscribed ? "Active" : "Unsubscribed"}
-                  </Badge>
-                </CardContent>
-              </Card>
-            ))}
-            {subscribers.length === 0 && <p className="text-center text-gray-400 py-8">No subscribers yet</p>}
-          </div>
-        ) : tab === "roadmap" ? (
-          <Roadmap />
-        ) : tab === "blog" ? (
-          <div className="space-y-4">
-            <div className="flex justify-end">
-              <Link href="/admin/blog/new">
-                <Button className="bg-emerald-600 hover:bg-emerald-700">New Post</Button>
-              </Link>
-            </div>
-            {blogPosts.map((post) => (
-              <Card key={post.id}>
-                <CardContent className="flex items-center justify-between p-4">
-                  <div>
-                    <p className="font-medium text-gray-900">{post.title}</p>
-                    <p className="text-sm text-gray-500">
-                      /blog/{post.slug} &middot; by {post.author} &middot; {post.category?.replace(/-/g, " ")}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Badge className={post.published ? "bg-emerald-500" : "bg-gray-400"}>
-                      {post.published ? "Published" : "Draft"}
-                    </Badge>
-                    <div className="flex gap-1">
-                      <Link href={`/admin/blog/${post.id}`}>
-                        <Button variant="ghost" size="sm"><Eye className="h-4 w-4" /></Button>
-                      </Link>
-                      <Link href={post.published ? `/blog/${post.slug}` : `/blog/preview/${post.slug}`} target="_blank">
-                        <Button variant="ghost" size="sm"><ExternalLink className="h-4 w-4" /></Button>
-                      </Link>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-            {blogPosts.length === 0 && <p className="text-center text-gray-400 py-8">No blog posts yet</p>}
-          </div>
-        ) : null}
+      {/* Recent Activity */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <RecentOrdersCard orders={orders} />
+        <RecentMessagesCard messages={messages} />
       </div>
     </div>
   )
 }
 
+function RecentOrdersCard({ orders }: { orders: Order[] }) {
+  return (
+    <div className="rounded-2xl border bg-white p-5">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-semibold text-slate-900 flex items-center gap-2">
+          <ShoppingBag className="h-4 w-4 text-emerald-600" /> Recent Orders
+        </h3>
+        {orders.length > 0 && (
+          <button onClick={() => {}} className="text-xs text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-1">
+            View All <ArrowRight className="h-3 w-3" />
+          </button>
+        )}
+      </div>
+      {orders.length === 0 ? (
+        <p className="text-sm text-slate-400 py-6 text-center">No orders yet</p>
+      ) : (
+        <div className="space-y-1">
+          {orders.slice(0, 5).map((o) => {
+            const StatusIcon = statusIcons[o.status] || AlertCircle
+            return (
+              <div key={o.id} className="flex items-center justify-between py-2.5 border-b border-slate-100 last:border-0">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                    o.status === "completed" ? "bg-emerald-50 text-emerald-600" :
+                    o.status === "pending" ? "bg-amber-50 text-amber-600" : "bg-red-50 text-red-600"
+                  }`}>
+                    <StatusIcon className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-slate-900 truncate">{o.fullName}</p>
+                    <p className="text-xs text-slate-400">{o.package}</p>
+                  </div>
+                </div>
+                <div className="text-right flex-shrink-0 ml-3">
+                  <p className="text-sm font-semibold text-slate-900">GHS {o.amount}</p>
+                  <span className={`inline-block text-xs px-2 py-0.5 rounded-full border ${
+                    statusStyles[o.status] || "bg-slate-50 text-slate-600 border-slate-200"
+                  }`}>{o.status}</span>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function RecentMessagesCard({ messages }: { messages: ContactMessage[] }) {
+  const unread = messages.filter(m => !m.read)
+  return (
+    <div className="rounded-2xl border bg-white p-5">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-semibold text-slate-900 flex items-center gap-2">
+          <MessageSquare className="h-4 w-4 text-emerald-600" /> Unread Messages
+        </h3>
+        {unread.length > 0 && (
+          <span className="text-xs bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full font-medium">{unread.length}</span>
+        )}
+      </div>
+      {unread.length === 0 ? (
+        <p className="text-sm text-slate-400 py-6 text-center">All caught up!</p>
+      ) : (
+        <div className="space-y-1">
+          {unread.slice(0, 5).map((m) => (
+            <div key={m.id} className="py-2.5 border-b border-slate-100 last:border-0">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-slate-900">{m.name}</p>
+                <span className="text-xs text-slate-400">{new Date(m.createdAt).toLocaleDateString()}</span>
+              </div>
+              <p className="text-xs text-slate-500 mt-0.5 truncate">{m.message}</p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+/* ── Orders ── */
+function OrdersTab({ orders }: { orders: Order[] }) {
+  return (
+    <div className="space-y-3">
+      {orders.length === 0 ? (
+        <div className="text-center py-16">
+          <ShoppingBag className="h-12 w-12 text-slate-200 mx-auto mb-3" />
+          <p className="text-slate-400">No orders yet</p>
+        </div>
+      ) : (
+        orders.map((order) => {
+          const StatusIcon = statusIcons[order.status] || AlertCircle
+          return (
+            <div key={order.id} className="rounded-2xl border bg-white p-5 flex items-center justify-between hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-4 min-w-0">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                  order.status === "completed" ? "bg-emerald-50 text-emerald-600" :
+                  order.status === "pending" ? "bg-amber-50 text-amber-600" : "bg-red-50 text-red-600"
+                }`}>
+                  <StatusIcon className="h-5 w-5" />
+                </div>
+                <div className="min-w-0">
+                  <p className="font-medium text-slate-900">{order.fullName}</p>
+                  <p className="text-sm text-slate-500">{order.email}</p>
+                  <p className="text-xs text-slate-400 mt-0.5">{order.package} &middot; Ref: {order.reference}</p>
+                </div>
+              </div>
+              <div className="text-right flex-shrink-0 ml-4">
+                <p className="font-semibold text-slate-900">GHS {order.amount}</p>
+                <span className={`inline-block text-xs px-2.5 py-1 rounded-full border mt-1 ${
+                  statusStyles[order.status] || ""
+                }`}>{order.status}</span>
+                {order.reportUrl && (
+                  <a href={order.reportUrl} target="_blank" className="block text-xs text-emerald-600 hover:underline mt-1.5 font-medium">
+                    View Report &rarr;
+                  </a>
+                )}
+              </div>
+            </div>
+          )
+        })
+      )}
+    </div>
+  )
+}
+
+/* ── Messages ── */
+function MessagesTab({ messages }: { messages: ContactMessage[] }) {
+  return (
+    <div className="space-y-3">
+      {messages.length === 0 ? (
+        <div className="text-center py-16">
+          <MessageSquare className="h-12 w-12 text-slate-200 mx-auto mb-3" />
+          <p className="text-slate-400">No messages yet</p>
+        </div>
+      ) : (
+        messages.map((msg) => (
+          <div key={msg.id} className={`rounded-2xl border p-5 transition-shadow hover:shadow-md ${
+            !msg.read ? "border-emerald-200 bg-emerald-50/30" : "bg-white"
+          }`}>
+            <div className="flex items-start justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <p className="font-medium text-slate-900">{msg.name}</p>
+                {!msg.read && <span className="w-2 h-2 rounded-full bg-emerald-500" />}
+              </div>
+              <span className="text-xs text-slate-400">{new Date(msg.createdAt).toLocaleDateString()}</span>
+            </div>
+            <p className="text-sm text-slate-500">{msg.email}</p>
+            {msg.subject && <p className="text-sm font-medium text-slate-700 mt-1">{msg.subject}</p>}
+            <p className="text-sm text-slate-600 mt-2 bg-slate-50 rounded-xl p-3">{msg.message}</p>
+          </div>
+        ))
+      )}
+    </div>
+  )
+}
+
+/* ── Leads ── */
+function LeadsTab({ leads }: { leads: CalculatorLead[] }) {
+  const completed = leads.filter(l => l.completed).length
+  const abandoned = leads.filter(l => !l.completed).length
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {[
+          { label: "Total Leads", value: leads.length, gradient: "from-blue-500 to-blue-600" },
+          { label: "Completed", value: completed, gradient: "from-emerald-500 to-emerald-600" },
+          { label: "Abandoned", value: abandoned, gradient: "from-amber-500 to-amber-600" },
+        ].map((item) => (
+          <div key={item.label} className="rounded-2xl bg-gradient-to-br p-5 text-white shadow-lg" style={{ backgroundImage: `linear-gradient(135deg, var(--tw-gradient-stops))` } as React.CSSProperties}>
+            <p className="text-sm text-white/80">{item.label}</p>
+            <p className="text-3xl font-bold mt-1">{item.value}</p>
+          </div>
+        ))}
+      </div>
+      {leads.length === 0 ? (
+        <div className="text-center py-16">
+          <Users className="h-12 w-12 text-slate-200 mx-auto mb-3" />
+          <p className="text-slate-400">No leads captured yet</p>
+        </div>
+      ) : (
+        leads.map((lead) => (
+          <div key={lead.id} className="rounded-2xl border bg-white p-4 flex items-center justify-between hover:shadow-md transition-shadow">
+            <div>
+              <p className="font-medium text-slate-900">{lead.email}</p>
+              <p className="text-sm text-slate-500">{lead.location || "No location"} &middot; {lead.bedrooms || "?"} bedrooms</p>
+            </div>
+            <div className="text-right text-xs text-slate-400">
+              <p>{new Date(lead.createdAt).toLocaleDateString()}</p>
+              <span className={`inline-block mt-1 text-xs px-2.5 py-1 rounded-full border font-medium ${
+                lead.completed ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-amber-50 text-amber-700 border-amber-200"
+              }`}>{lead.completed ? "Completed" : "Abandoned"}</span>
+            </div>
+          </div>
+        ))
+      )}
+    </div>
+  )
+}
+
+/* ── Newsletter ── */
+function NewsletterTab({ subscribers }: { subscribers: NewsletterSubscriber[] }) {
+  const active = subscribers.filter(s => s.subscribed).length
+  const unsubscribed = subscribers.filter(s => !s.subscribed).length
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {[
+          { label: "Total Subscribers", value: subscribers.length, gradient: "from-blue-500 to-blue-600" },
+          { label: "Active", value: active, gradient: "from-emerald-500 to-emerald-600" },
+          { label: "Unsubscribed", value: unsubscribed, gradient: "from-slate-500 to-slate-600" },
+        ].map((item) => (
+          <div key={item.label} className="rounded-2xl bg-gradient-to-br p-5 text-white shadow-lg" style={{ backgroundImage: `linear-gradient(135deg, var(--tw-gradient-stops))` } as React.CSSProperties}>
+            <p className="text-sm text-white/80">{item.label}</p>
+            <p className="text-3xl font-bold mt-1">{item.value}</p>
+          </div>
+        ))}
+      </div>
+      {subscribers.length === 0 ? (
+        <div className="text-center py-16">
+          <Mail className="h-12 w-12 text-slate-200 mx-auto mb-3" />
+          <p className="text-slate-400">No subscribers yet</p>
+        </div>
+      ) : (
+        subscribers.map((sub) => (
+          <div key={sub.id} className="rounded-2xl border bg-white p-4 flex items-center justify-between hover:shadow-md transition-shadow">
+            <div>
+              <p className="font-medium text-slate-900">{sub.email}</p>
+              <p className="text-sm text-slate-500">
+                {sub.name && `${sub.name} \u00b7 `}Subscribed {new Date(sub.createdAt).toLocaleDateString("en-GH", { year: "numeric", month: "long", day: "numeric" })}
+              </p>
+            </div>
+            <span className={`text-xs px-2.5 py-1 rounded-full border font-medium ${
+              sub.subscribed ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-slate-50 text-slate-500 border-slate-200"
+            }`}>{sub.subscribed ? "Active" : "Unsubscribed"}</span>
+          </div>
+        ))
+      )}
+    </div>
+  )
+}
+
+/* ── Blog ── */
+function BlogTab({ posts }: { posts: BlogPostItem[] }) {
+  return (
+    <div className="space-y-3">
+      {posts.length === 0 ? (
+        <div className="text-center py-16">
+          <FileText className="h-12 w-12 text-slate-200 mx-auto mb-3" />
+          <p className="text-slate-400">No blog posts yet</p>
+        </div>
+      ) : (
+        posts.map((post) => (
+          <div key={post.id} className="rounded-2xl border bg-white p-4 flex items-center justify-between hover:shadow-md transition-shadow">
+            <div className="min-w-0 flex-1">
+              <p className="font-medium text-slate-900 truncate">{post.title}</p>
+              <p className="text-sm text-slate-500 truncate">
+                /blog/{post.slug} &middot; by {post.author} &middot; {post.category?.replace(/-/g, " ")}
+              </p>
+            </div>
+            <div className="flex items-center gap-3 flex-shrink-0 ml-4">
+              <span className={`text-xs px-2.5 py-1 rounded-full border font-medium ${
+                post.published ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-slate-50 text-slate-500 border-slate-200"
+              }`}>{post.published ? "Published" : "Draft"}</span>
+              <Link href={`/admin/blog/${post.id}`}>
+                <Button variant="ghost" size="sm" className="text-slate-400 hover:text-slate-700">
+                  <Eye className="h-4 w-4" />
+                </Button>
+              </Link>
+              <Link href={post.published ? `/blog/${post.slug}` : `/blog/preview/${post.slug}`} target="_blank">
+                <Button variant="ghost" size="sm" className="text-slate-400 hover:text-slate-700">
+                  <ExternalLink className="h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        ))
+      )}
+    </div>
+  )
+}
+
+/* ── Login ── */
 function AdminLogin() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -433,11 +532,7 @@ function AdminLogin() {
     e.preventDefault()
     setError("")
     setLoggingIn(true)
-    const res = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    })
+    const res = await signIn("credentials", { email, password, redirect: false })
     setLoggingIn(false)
     if (res?.error) {
       setError("Invalid email or password")
@@ -447,58 +542,32 @@ function AdminLogin() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)]">
-      <form onSubmit={handleLogin} className="w-full max-w-sm space-y-4 p-6">
-        <div className="text-center mb-2">
-          <h1 className="text-2xl font-heading font-bold text-charcoal">Admin Access</h1>
-          <p className="text-gray-500 text-sm mt-1">Sign in to manage your store</p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
+      <div className="w-full max-w-sm">
+        <div className="text-center mb-8">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-200">
+            <svg className="h-7 w-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <h1 className="text-2xl font-bold text-slate-900">Admin Access</h1>
+          <p className="text-sm text-slate-500 mt-1">Sign in to manage your store</p>
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="login-email">Email</Label>
-          <Input
-            id="login-email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="admin@example.com"
-            required
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="login-password">Password</Label>
-          <Input
-            id="login-password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter password"
-            required
-          />
-        </div>
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        <Button type="submit" disabled={loggingIn} className="w-full bg-gradient-primary text-white border-0">
-          {loggingIn ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Signing in...</> : "Sign In"}
-        </Button>
-      </form>
+        <form onSubmit={handleLogin} className="bg-white rounded-2xl shadow-xl shadow-slate-200/50 p-6 space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="login-email" className="text-sm font-medium text-slate-700">Email</Label>
+            <Input id="login-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="admin@example.com" required className="h-11" />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="login-password" className="text-sm font-medium text-slate-700">Password</Label>
+            <Input id="login-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter password" required className="h-11" />
+          </div>
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">{error}</div>
+          )}
+          <Button type="submit" disabled={loggingIn} className="w-full h-11 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-200 border-0 hover:from-emerald-600 hover:to-emerald-700">
+            {loggingIn ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Signing in...</> : "Sign In"}
+          </Button>
+        </form>
+      </div>
     </div>
-  )
-}
-
-function StatCard({ title, value, sub, icon: Icon }: { title: string; value: string; sub?: string; icon: any }) {
-  return (
-    <Card>
-      <CardContent className="p-4">
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-sm text-gray-500">{title}</p>
-            <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
-            {sub && <p className="text-xs text-gray-400 mt-1">{sub}</p>}
-          </div>
-          <div className="w-9 h-9 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
-            <Icon className="h-5 w-5" />
-          </div>
-        </div>
-      </CardContent>
-    </Card>
   )
 }
