@@ -593,6 +593,7 @@ function StrategyTab() {
     { id: "launch", label: "Launch Plan" },
     { id: "investor", label: "Investor Strategy" },
     { id: "product", label: "Product Strategy" },
+    { id: "ai", label: "AI/Agentic Strategy" },
   ]
 
   const strategies: Record<string, { title: string; sections: { heading: string; items: string[] }[] }> = {
@@ -898,6 +899,78 @@ function StrategyTab() {
             "Mobile app (React Native) for on-site estimating",
             "Multi-market expansion (Nigeria, Kenya, other African countries)",
             "API for real estate platforms and banks to embed estimates",
+          ],
+        },
+      ],
+    },
+    ai: {
+      title: "AI & Agentic Strategy",
+      sections: [
+        {
+          heading: "Vision",
+          items: [
+            "Make BuildCost GH the first autonomous construction cost intelligence platform in Africa",
+            "Eliminate manual estimation entirely — AI handles data collection, pricing updates, and report generation",
+            "Agents replace the workflow: user describes project → agent researches prices → agent generates estimate → agent delivers report",
+          ],
+        },
+        {
+          heading: "Phase 1: AI-Assisted (Now — 3 Months)",
+          items: [
+            "AI-powered material price suggestions from web-scraped Ghanaian supplier data",
+            "Smart location-based cost adjustments using historical estimate data",
+            "Automated PDF report generation with natural-language summary",
+            "Chat-based estimate refinement (user asks 'what if I add a second floor?')",
+          ],
+        },
+        {
+          heading: "Phase 2: Agentic Workflows (3–9 Months)",
+          items: [
+            "PriceBot agent: continuously monitors supplier pricing (cement, steel, roofing, etc.) and updates database",
+            "EstimateBot agent: accepts natural language project descriptions and returns complete estimates",
+            "ContractorMatch agent: finds and recommends verified contractors based on project scope and location",
+            "EmailBot agent: sends follow-ups, re-engagement campaigns, and report delivery via Resend",
+            "All agents coordinated by a simple orchestrator — human-in-the-loop for approvals",
+          ],
+        },
+        {
+          heading: "Phase 3: Autonomous Platform (9–18 Months)",
+          items: [
+            "Multi-agent system: PriceBot + EstimateBot + ContractorMatch + FinanceBot work together on a project",
+            "Agent memory: learns user preferences, frequent project types, and regional cost patterns",
+            "Auto-quoting: contractors receive AI-matched project leads and can auto-bid within parameters",
+            "Predictive analytics: forecasts cost trends by region, material, and season",
+            "API agents: expose agent capabilities to third-party platforms (real estate sites, banks, fintech apps)",
+          ],
+        },
+        {
+          heading: "Technical Approach",
+          items: [
+            "OpenAI / Claude API for natural language understanding and estimate reasoning",
+            "Vector embeddings on historical estimates for similarity-based cost prediction",
+            "Web scraping agents (Puppeteer/Playwright) for supplier price tracking",
+            "LangChain or custom agent framework for orchestrating multi-agent workflows",
+            "Postgres + pgvector for storing and querying cost embeddings",
+            "Human review layer for estimates above $50K or high-confidence discrepancy flags",
+          ],
+        },
+        {
+          heading: "Competitive Moat",
+          items: [
+            "Data network effect: each estimate improves model accuracy for the next user",
+            "Real-time pricing data no competitor can replicate without our supplier network",
+            "Agentic workflows reduce cost per estimate to near-zero over time",
+            "First-mover advantage in AI-powered construction estimation for West Africa",
+          ],
+        },
+        {
+          heading: "Key Metrics",
+          items: [
+            "AI-assisted estimate completion time: < 2 minutes (target)",
+            "Agent price accuracy: within 5% of manual QS benchmark",
+            "Percentage of fully automated estimates (no human review): target 70% by Phase 3",
+            "Supplier price data freshness: < 24 hours for top 50 materials",
+            "User satisfaction score for AI-generated reports: target 4.5 / 5",
           ],
         },
       ],
