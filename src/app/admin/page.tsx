@@ -12,7 +12,7 @@ import { formatCurrency } from "@/lib/utils"
 import {
   Loader2, TrendingUp, ShoppingBag, MessageSquare, Users, Mail,
   FileText, ExternalLink, Eye, Shield, CheckCircle, Clock,
-  AlertCircle, ArrowRight, Plus, Search, Download, Presentation, Printer,
+  AlertCircle, ArrowRight, Plus, Search, Download, Presentation, Printer, Crosshair, Zap, Target, Globe, Award, Lightbulb,
 } from "lucide-react"
 
 type Stats = {
@@ -175,6 +175,8 @@ export default function AdminPage() {
     <PrelaunchChecklist />
   ) : tab === "pitchdeck" ? (
     <PitchDeckView />
+  ) : tab === "competitiveanalysis" ? (
+    <CompetitiveAnalysisView />
   ) : null}
     </div>
   )
@@ -2803,6 +2805,586 @@ function PitchDeckView() {
           </div>
         ))}
       </div>
+    </div>
+  )
+}
+
+/* ── Competitive Analysis ── */
+function CompetitiveAnalysisView() {
+  const [section, setSection] = useState("overview")
+
+  const competitors = [
+    {
+      name: "GhanaHousePlanner",
+      url: "ghanahouseplanner.com",
+      tagline: "Free cost calculator + AI floor plans + project management",
+      tier: "Direct",
+      founders: "Emmanuel Apaaboah & Bernard Opoku",
+      backed: "UCC & KNUST Research",
+      launched: "2025/2026",
+      focus: "Consumer & Diaspora",
+      pricing: "Free + Pro/Starter",
+      strengths: ["Research-backed pricing (±5-10%)", "16-region coverage", "AI floor plan agent", "Project management tools", "BIM export (IFC/DXF/GLTF)", "CornerStore material sourcing", "Strong diaspora features"],
+      weaknesses: ["Newer platform, limited traction", "No payment integration for reports", "Free tier limits depth", "No contractor marketplace yet"],
+      threat: "High",
+    },
+    {
+      name: "CostmyBuild",
+      url: "costmybuild.com",
+      tagline: "Cost estimator + verified vendors + escrow payments",
+      tier: "Direct",
+      founders: "Henry Engmann",
+      backed: "Self-funded",
+      launched: "2025/2026",
+      focus: "Consumer & Diaspora",
+      pricing: "Free estimate + vendor fees",
+      strengths: ["100+ verified contractors", "Live material price guide", "Secure escrow payments", "Diaspora-first positioning", "Mobile-friendly"],
+      weaknesses: ["Ghana-only (launching)", "Platform commission model unclear", "No AI estimation reported", "Limited regional coverage data"],
+      threat: "High",
+    },
+    {
+      name: "BaniEstimations",
+      url: "baniestimations.com",
+      tagline: "Professional QS software for engineers",
+      tier: "Indirect - Professional",
+      founders: "N/A",
+      backed: "Self-funded",
+      launched: "Est. 2015",
+      focus: "Professional Engineers & QS",
+      pricing: "Paid software license",
+      strengths: ["Established since 2015", "Deep professional features (BOQ, valuations, IPCs)", "Localized for Ghana", "Project management tools"],
+      weaknesses: ["Desktop software (not SaaS)", "Professional-only audience", "No consumer calculator", "No diaspora features", "No AI capabilities visible"],
+      threat: "Low",
+    },
+    {
+      name: "ToSi",
+      url: "tosiapp.com",
+      tagline: "Ghana's premier construction app",
+      tier: "Direct",
+      founders: "N/A",
+      backed: "N/A",
+      launched: "2025/2026",
+      focus: "Consumer & Contractors",
+      pricing: "Free 30-day trial",
+      strengths: ["Material price locking feature", "'Buy bit by bit' approach", "Marketplace for materials/services", "Mobile-first (iOS + Android)", "Phase-based project tracking", "Surplus material resale"],
+      weaknesses: ["Savings-focused (not estimation-first)", "No AI estimation", "New platform, limited track record", "Diaspora features unclear"],
+      threat: "Medium",
+    },
+    {
+      name: "Backrow Calculator",
+      url: "backrowcalc.com",
+      tagline: "Ghana construction cost calculator",
+      tier: "Direct",
+      founders: "N/A",
+      backed: "N/A",
+      launched: "2025/2026",
+      focus: "Consumer",
+      pricing: "Free summary, £3.99 detailed",
+      strengths: ["Simple, fast calculator", "Multi-currency (GHS, GBP, EUR, USD)", "Monthly price updates", "Labour cost toggle", "Material brand options"],
+      weaknesses: ["Very basic feature set", "No diaspora features", "No project management", "No contractor network", "Low brand visibility"],
+      threat: "Low",
+    },
+    {
+      name: "HomeAccess",
+      url: "homeaccessgh.com",
+      tagline: "All-in-one construction platform",
+      tier: "Direct",
+      founders: "N/A",
+      backed: "N/A",
+      launched: "N/A",
+      focus: "Consumer",
+      pricing: "Report-based fees",
+      strengths: ["Business reports (build, complete, buy land)", "Material purchasing from suppliers", "Financing solutions", "Free house designs with 3D", "Cost tracking & budgeting"],
+      weaknesses: ["No instant calculator (report-based)", "No AI features", "Less modern UI/UX", "Diaspora features unclear"],
+      threat: "Medium",
+    },
+    {
+      name: "Genuine Stuffs",
+      url: "GitHub (open source)",
+      tagline: "Africa's first AI-native construction OS",
+      tier: "Pan-African",
+      founders: "N/A",
+      backed: "Open source",
+      launched: "2025",
+      focus: "Professional & Enterprise",
+      pricing: "Credits-based (2 credits/run)",
+      strengths: ["AI-native BoQ generation from design brief", "Live material procurement", "Paystack integration", "Credits billing model", "Technical calculators (concrete, steel)"],
+      weaknesses: ["GitHub project (early stage)", "No consumer-facing product", "No diaspora features", "Ghana pricing data unclear"],
+      threat: "Medium",
+    },
+    {
+      name: "Fara",
+      url: "farahq.com",
+      tagline: "AI cost estimation + project finance",
+      tier: "Pan-African",
+      founders: "N/A",
+      backed: "N/A",
+      launched: "2025/2026",
+      focus: "Diaspora & Developers",
+      pricing: "Platform fee",
+      strengths: ["AI estimation from floor plans", "Project wallets & vendor payouts", "Multi-currency support", "Budget vs actual tracking", "Strong diaspora positioning"],
+      weaknesses: ["Finance-focused (not estimation-first)", "Newer platform", "Limited regional coverage data", "No consumer calculator"],
+      threat: "Medium",
+    },
+    {
+      name: "DiasporaBuild",
+      url: "diasporabuild.com",
+      tagline: "Build in Africa with confidence",
+      tier: "Pan-African",
+      founders: "N/A",
+      backed: "N/A",
+      launched: "2025/2026",
+      focus: "Diaspora",
+      pricing: "0% commission (launch), then % fee",
+      strengths: ["500+ diaspora families", "Milestone-based payments", "AI assistant (DIBO)", "Verified contractor marketplace", "Real-time photo/video tracking", "Multi-country (Cameroon, Nigeria, Ghana, Kenya)"],
+      weaknesses: ["Not estimation-focused", "Platform commission after launch", "Newer to market", "Broker model (not DIY estimation)"],
+      threat: "High",
+    },
+    {
+      name: "TrueBuild",
+      url: "mytruebuild.com",
+      tagline: "Construction management for diaspora",
+      tier: "Pan-African",
+      founders: "N/A",
+      backed: "N/A",
+      launched: "2025/2026",
+      focus: "Diaspora",
+      pricing: "$150/site audit",
+      strengths: ["Professional site audits with GPS photos", "Vetted skilled labour", "Independent inspectors (no conflict)", "Detailed workmanship reports", "Diaspora-first"],
+      weaknesses: ["Service-based (not software)", "High per-audit cost", "No estimation calculator", "Ghana-only currently"],
+      threat: "Low",
+    },
+    {
+      name: "AfroTools",
+      url: "afrotools.com",
+      tagline: "Pan-African BOQ & construction tools",
+      tier: "Pan-African",
+      founders: "N/A",
+      backed: "N/A",
+      launched: "2025/2026",
+      focus: "Consumer & Professional",
+      pricing: "Free tools",
+      strengths: ["15+ African countries", "60+ material items", "Local pricing per country", "CSV export / print", "Multiple free tools"],
+      weaknesses: ["No AI capabilities", "Basic feature set", "No diaspora features", "No payment integration"],
+      threat: "Low",
+    },
+  ]
+
+  const matrixFeatures = [
+    { feature: "Instant cost estimate", bc: true, ghp: true, cmb: true, ban: true, tosi: false, brc: true, ha: false },
+    { feature: "Ghana-specific pricing", bc: true, ghp: true, cmb: true, ban: true, tosi: true, brc: true, ha: true },
+    { feature: "16-region coverage", bc: true, ghp: true, cmb: false, ban: false, tosi: false, brc: false, ha: false },
+    { feature: "AI-powered estimation", bc: true, ghp: "Partial", cmb: false, ban: false, tosi: false, brc: false, ha: false },
+    { feature: "Multi-currency support", bc: true, ghp: false, cmb: false, ban: false, tosi: false, brc: true, ha: false },
+    { feature: "PDF report download", bc: true, ghp: true, cmb: false, ban: true, tosi: false, brc: true, ha: true },
+    { feature: "Diaspora-first features", bc: true, ghp: true, cmb: true, ban: false, tosi: false, brc: false, ha: false },
+    { feature: "Contractor marketplace", bc: false, ghp: false, cmb: true, ban: false, tosi: true, brc: false, ha: false },
+    { feature: "Material price tracking", bc: false, ghp: "CornerStore", cmb: true, ban: false, tosi: true, brc: false, ha: true },
+    { feature: "Project management", bc: false, ghp: true, cmb: false, ban: true, tosi: true, brc: false, ha: true },
+    { feature: "Payment integration", bc: "Paystack", ghp: false, cmb: "Escrow", ban: false, tosi: false, brc: "Stripe", ha: false },
+    { feature: "Agentic/AI workflows", bc: true, ghp: "AI Agent", cmb: false, ban: false, tosi: false, brc: false, ha: false },
+    { feature: "Mobile app", bc: false, ghp: false, cmb: false, ban: false, tosi: true, brc: false, ha: false },
+    { feature: "Free tier available", bc: false, ghp: true, cmb: true, ban: false, tosi: true, brc: true, ha: true },
+  ]
+
+  const sections = [
+    { id: "overview", label: "Market Overview" },
+    { id: "profiles", label: "Competitor Profiles" },
+    { id: "matrix", label: "Feature Matrix" },
+    { id: "swot", label: "SWOT Analysis" },
+    { id: "recommendations", label: "Recommendations" },
+  ]
+
+  const now = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
+  const shortName = (n: string) => n === "GhanaHousePlanner" ? "ghp" : n === "CostmyBuild" ? "cmb" : n === "BaniEstimations" ? "ban" : n === "Backrow Calculator" ? "brc" : n === "HomeAccess" ? "ha" : n === "ToSi" ? "tosi" : ""
+
+  return (
+    <div>
+      {/* Section nav */}
+      <div className="no-print flex items-center gap-2 mb-6 overflow-x-auto pb-2">
+        {sections.map((s) => (
+          <button key={s.id} onClick={() => setSection(s.id)} className={`shrink-0 px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${
+            section === s.id ? "bg-emerald-600 text-white shadow-sm" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+          }`}>
+            {s.label}
+          </button>
+        ))}
+        <div className="flex-1" />
+        <span className="text-xs text-slate-400">Last researched: {now}</span>
+      </div>
+
+      {section === "overview" && (
+        <div className="space-y-6">
+          {/* Hero stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { val: "11", label: "Competitors Identified", icon: Crosshair, color: "from-red-500 to-red-600" },
+              { val: "7", label: "Direct (Ghana)", icon: Target, color: "from-amber-500 to-amber-600" },
+              { val: "4", label: "Pan-African", icon: Globe, color: "from-blue-500 to-blue-600" },
+              { val: "3", label: "High Threat", icon: Zap, color: "from-red-600 to-red-700" },
+            ].map((s) => (
+              <div key={s.label} className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${s.color} p-5 text-white shadow-lg`}>
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm font-medium text-white/80">{s.label}</p>
+                    <s.icon className="h-5 w-5 text-white/60" />
+                  </div>
+                  <p className="text-3xl font-bold">{s.val}</p>
+                </div>
+                <div className="absolute -bottom-3 -right-3 w-24 h-24 rounded-full bg-white/5" />
+              </div>
+            ))}
+          </div>
+
+          {/* Market summary */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+            <h3 className="font-bold text-slate-900 mb-3">Market Landscape Summary</h3>
+            <p className="text-sm text-slate-600 mb-4">The Ghana construction estimation market is rapidly evolving with 11+ identified platforms. The market splits into three tiers:</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-red-50 rounded-xl border border-red-200 p-4">
+                <h4 className="font-bold text-red-800 text-sm mb-2">High Threat</h4>
+                <p className="text-xs text-red-700">GhanaHousePlanner, CostmyBuild, DiasporaBuild</p>
+                <p className="text-xs text-red-600 mt-1">Strong overlap with BuildCost GH's target market and feature set. These platforms have funding, research backing, or diaspora traction.</p>
+              </div>
+              <div className="bg-amber-50 rounded-xl border border-amber-200 p-4">
+                <h4 className="font-bold text-amber-800 text-sm mb-2">Medium Threat</h4>
+                <p className="text-xs text-amber-700">ToSi, HomeAccess, Genuine Stuffs, Fara</p>
+                <p className="text-xs text-amber-600 mt-1">Adjacent platforms that could expand into estimation. Monitor for feature overlap and market expansion.</p>
+              </div>
+              <div className="bg-emerald-50 rounded-xl border border-emerald-200 p-4">
+                <h4 className="font-bold text-emerald-800 text-sm mb-2">Low Threat</h4>
+                <p className="text-xs text-emerald-700">BaniEstimations, Backrow, TrueBuild, AfroTools</p>
+                <p className="text-xs text-emerald-600 mt-1">Niche or non-overlapping. Professional-only (BaniEstimations), basic tools (Backrow, AfroTools), or service-based (TrueBuild).</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Key insights */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+            <h3 className="font-bold text-slate-900 mb-4">Key Market Insights</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {[
+                "No single platform dominates — the market is fragmented with early-stage players, creating a window of opportunity",
+                "GhanaHousePlanner is the closest direct competitor with research-backed pricing and strong diaspora features",
+                "Only BuildCost GH and Backrow Calculator offer multi-currency options (USD/GHS/GBP/EUR)",
+                "AI-powered estimation is still nascent — only GhanaHousePlanner (AI Agent) and Genuine Stuffs (AI BoQ) have it",
+                "Most competitors lack a paid report model — BuildCost GH's per-report revenue is unique in the market",
+                "Diaspora-focused platforms (DiasporaBuild, TrueBuild, Fara) are service/broker models, not DIY estimation",
+                "No competitor offers agentic workflows (multi-agent systems) — this is a first-mover advantage",
+                "Material price locking (ToSi) and escrow payments (CostmyBuild) are emerging features to monitor",
+              ].map((insight, i) => (
+                <div key={i} className="flex items-start gap-2 text-sm text-slate-700 bg-slate-50 rounded-lg p-3">
+                  <Lightbulb className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
+                  {insight}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {section === "profiles" && (
+        <div className="space-y-4">
+          {competitors.map((c) => (
+            <div key={c.name} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+              <div className={`px-6 py-3 flex items-center justify-between ${c.threat === "High" ? "bg-red-50 border-b border-red-200" : c.threat === "Medium" ? "bg-amber-50 border-b border-amber-200" : "bg-slate-50 border-b border-slate-200"}`}>
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm ${
+                    c.threat === "High" ? "bg-red-500" : c.threat === "Medium" ? "bg-amber-500" : "bg-slate-500"
+                  }`}>
+                    {c.name.split(" ").map(w => w[0]).join("").slice(0, 2)}
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-slate-900">{c.name}</h3>
+                    <p className="text-xs text-slate-500">{c.tagline}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${
+                    c.tier === "Direct" ? "bg-red-100 text-red-700" : c.tier.startsWith("Pan") ? "bg-blue-100 text-blue-700" : "bg-slate-100 text-slate-700"
+                  }`}>{c.tier}</span>
+                  <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
+                    c.threat === "High" ? "bg-red-100 text-red-700" : c.threat === "Medium" ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"
+                  }`}>{c.threat} Threat</span>
+                </div>
+              </div>
+              <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <p className="text-xs text-slate-400 uppercase font-semibold mb-2">Details</p>
+                  <div className="space-y-2 text-sm">
+                    <div><span className="text-slate-500">URL:</span> <a href={`https://${c.url}`} target="_blank" rel="noopener noreferrer" className="text-emerald-600 hover:underline">{c.url}</a></div>
+                    {c.founders !== "N/A" && <div><span className="text-slate-500">Founders:</span> <span className="text-slate-900">{c.founders}</span></div>}
+                    {c.backed !== "N/A" && <div><span className="text-slate-500">Backing:</span> <span className="text-slate-900">{c.backed}</span></div>}
+                    <div><span className="text-slate-500">Focus:</span> <span className="text-slate-900">{c.focus}</span></div>
+                    <div><span className="text-slate-500">Pricing:</span> <span className="text-slate-900">{c.pricing}</span></div>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-400 uppercase font-semibold mb-2">Strengths</p>
+                  <ul className="space-y-1">
+                    {c.strengths.map((s, i) => (
+                      <li key={i} className="flex items-start gap-1.5 text-sm text-slate-700">
+                        <CheckCircle className="h-3.5 w-3.5 text-emerald-600 mt-0.5 shrink-0" />
+                        {s}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-400 uppercase font-semibold mb-2">Weaknesses</p>
+                  <ul className="space-y-1">
+                    {c.weaknesses.map((w, i) => (
+                      <li key={i} className="flex items-start gap-1.5 text-sm text-slate-600">
+                        <AlertCircle className="h-3.5 w-3.5 text-red-500 mt-0.5 shrink-0" />
+                        {w}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {section === "matrix" && (
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-200">
+            <h3 className="font-bold text-slate-900">Feature Comparison Matrix</h3>
+            <p className="text-xs text-slate-400 mt-1">BuildCost GH vs Ghana-focused competitors</p>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-200">
+                  <th className="text-left py-3 px-4 font-semibold text-slate-900 min-w-[160px]">Feature</th>
+                  <th className="text-center py-3 px-4 font-semibold text-emerald-600 bg-emerald-50/50 min-w-[100px]">BuildCost GH</th>
+                  <th className="text-center py-3 px-4 font-semibold text-slate-700 min-w-[100px]">GhanaHouse Planner</th>
+                  <th className="text-center py-3 px-4 font-semibold text-slate-700 min-w-[100px]">CostmyBuild</th>
+                  <th className="text-center py-3 px-4 font-semibold text-slate-700 min-w-[100px]">BaniEstimations</th>
+                  <th className="text-center py-3 px-4 font-semibold text-slate-700 min-w-[100px]">ToSi</th>
+                  <th className="text-center py-3 px-4 font-semibold text-slate-700 min-w-[100px]">Backrow Calc</th>
+                  <th className="text-center py-3 px-4 font-semibold text-slate-700 min-w-[100px]">HomeAccess</th>
+                </tr>
+              </thead>
+              <tbody>
+                {matrixFeatures.map((row, i) => (
+                  <tr key={i} className="border-b border-slate-100 hover:bg-slate-50/50">
+                    <td className="py-2.5 px-4 font-medium text-slate-900">{row.feature}</td>
+                    {["bc", "ghp", "cmb", "ban", "tosi", "brc", "ha"].map((key) => {
+                      const val = row[key as keyof typeof row]
+                      const isBc = key === "bc"
+                      return (
+                        <td key={key} className={`py-2.5 px-4 text-center text-xs ${isBc ? "bg-emerald-50/50 font-medium" : ""}`}>
+                          {val === true ? <CheckCircle className="h-4 w-4 text-emerald-600 mx-auto" /> : val === false ? <span className="text-slate-300">—</span> : <span className="text-amber-600 font-medium">{val}</span>}
+                        </td>
+                      )
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {section === "swot" && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-emerald-50 rounded-2xl border border-emerald-200 p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Award className="h-5 w-5 text-emerald-700" />
+                <h3 className="font-bold text-emerald-900">Strengths</h3>
+              </div>
+              <ul className="space-y-2">
+                {[
+                  "Only platform with per-report paid model ($16–$83) — proven revenue from day one",
+                  "Multi-currency support (USD/GHS) with real-time Frankfurter API exchange rates",
+                  "3 estimation methods (All-in, Room-by-Room, Materials) — most flexible input",
+                  "Paystack payment integration for Ghanaian & diaspora users",
+                  "AI/Agentic strategy in pipeline — no competitor has multi-agent workflows",
+                  "Comprehensive admin dashboard with CRM, blog, orders, and analytics",
+                  "Built on modern stack (Next.js 15, TypeScript, PostgreSQL) — scalable",
+                ].map((s, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-emerald-800">
+                    <CheckCircle className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
+                    {s}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="bg-red-50 rounded-2xl border border-red-200 p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <AlertCircle className="h-5 w-5 text-red-700" />
+                <h3 className="font-bold text-red-900">Weaknesses</h3>
+              </div>
+              <ul className="space-y-2">
+                {[
+                  "No mobile app — competitors like ToSi have iOS/Android",
+                  "No contractor marketplace yet — CostmyBuild and ToSi have this live",
+                  "Limited regional pricing data — GhanaHousePlanner covers all 16 regions",
+                  "No free tier — most competitors offer free basic estimates",
+                  "No project management tools for ongoing builds",
+                  "Subscription model not yet implemented (currently only one-time reports)",
+                  "Smaller brand presence vs established competitors",
+                ].map((w, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-red-800">
+                    <AlertCircle className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
+                    {w}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="bg-blue-50 rounded-2xl border border-blue-200 p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Target className="h-5 w-5 text-blue-700" />
+                <h3 className="font-bold text-blue-900">Opportunities</h3>
+              </div>
+              <ul className="space-y-2">
+                {[
+                  "First-mover in AI/agentic workflows for Ghana construction estimation",
+                  "Diaspora market is underserved — $3.5B+ remittances, few platforms cater specifically to diaspora needs",
+                  "No competitor offers both estimation AND contractor marketplace — BuildCost GH can bridge this",
+                  "Corporate/B2B API licensing — no competitor offers embeddable estimates for real estate platforms/banks",
+                  "Subscription revenue model is unproven in this market — opportunity to set the standard",
+                  "Expand to Nigeria, Kenya, and other African markets where AfroTools shows demand but no dominant player exists",
+                  "Mobile app + agentic AI could be a powerful combination no competitor has yet",
+                ].map((o, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-blue-800">
+                    <Target className="h-4 w-4 text-blue-600 mt-0.5 shrink-0" />
+                    {o}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="bg-amber-50 rounded-2xl border border-amber-200 p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Zap className="h-5 w-5 text-amber-700" />
+                <h3 className="font-bold text-amber-900">Threats</h3>
+              </div>
+              <ul className="space-y-2">
+                {[
+                  "GhanaHousePlanner has research validation (UCC/KNUST) — BuildCost GH lacks academic backing",
+                  "CostmyBuild already has 100+ verified contractors — hard to catch up in marketplace",
+                  "DiasporaBuild has 500+ diaspora families and multi-country presence",
+                  "ToSi's material price locking is an innovative feature BuildCost GH doesn't offer",
+                  "New competitors emerging rapidly — first-mover advantage window is closing",
+                  "Well-funded pan-African platforms (Fara, DiasporaBuild) could expand into estimation",
+                  "Global tools (BuildZoom, Planner 5D) may add Ghana-specific data over time",
+                ].map((t, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-amber-800">
+                    <Zap className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" />
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {section === "recommendations" && (
+        <div className="space-y-6">
+          <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+            <h3 className="font-bold text-slate-900 mb-4">Strategic Recommendations</h3>
+            <div className="space-y-4">
+              {[
+                {
+                  priority: "Critical",
+                  title: "Launch AI-powered multi-agent system as differentiator",
+                  desc: "No competitor offers agentic workflows. PriceBot, EstimateBot, and ContractorMatch would be genuine market-first features. Prioritize this in the roadmap.",
+                  impact: "High",
+                  effort: "High",
+                },
+                {
+                  priority: "Critical",
+                  title: "Build a free tier to capture top-of-funnel users",
+                  desc: "Every major competitor offers free estimates. A basic free tier (summary only) would improve conversion and SEO rankings.",
+                  impact: "High",
+                  effort: "Low",
+                },
+                {
+                  priority: "High",
+                  title: "Expand regional pricing to all 16 Ghana regions",
+                  desc: "GhanaHousePlanner has this. Users expect location-specific pricing. Without it, BuildCost GH loses credibility for regional accuracy.",
+                  impact: "High",
+                  effort: "Medium",
+                },
+                {
+                  priority: "High",
+                  title: "Develop mobile app (React Native) for on-site estimation",
+                  desc: "ToSi has mobile. Most construction happens on-site. A mobile app with offline mode and photo capture would be a strong differentiator.",
+                  impact: "Medium",
+                  effort: "High",
+                },
+                {
+                  priority: "High",
+                  title: "Add contractor marketplace with verified profiles",
+                  desc: "CostmyBuild and ToSi have marketplaces. This is a major revenue stream (commission-based) that BuildCost GH is missing.",
+                  impact: "High",
+                  effort: "High",
+                },
+                {
+                  priority: "Medium",
+                  title: "Pursue academic research validation",
+                  desc: "GhanaHousePlanner's UCC/KNUST study gives them credibility. Partner with a Ghanaian university for a comparative cost study.",
+                  impact: "Medium",
+                  effort: "Medium",
+                },
+                {
+                  priority: "Medium",
+                  title: "Implement subscription model alongside one-time reports",
+                  desc: "Recurring revenue is essential for valuation. Target $19/mo basic tier with monthly estimate credits.",
+                  impact: "High",
+                  effort: "Medium",
+                },
+                {
+                  priority: "Low",
+                  title: "Explore B2B API licensing for real estate platforms",
+                  desc: "No competitor offers embeddable estimates. Banks, real estate sites, and fintech apps could integrate BuildCost GH estimates via API.",
+                  impact: "Medium",
+                  effort: "Medium",
+                },
+              ].map((r, i) => (
+                <div key={i} className={`rounded-xl border p-5 ${
+                  r.priority === "Critical" ? "border-red-200 bg-red-50" : r.priority === "High" ? "border-amber-200 bg-amber-50" : "border-slate-200 bg-white"
+                }`}>
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                        r.priority === "Critical" ? "bg-red-500 text-white" : r.priority === "High" ? "bg-amber-500 text-white" : "bg-emerald-500 text-white"
+                      }`}>{r.priority}</span>
+                      <h4 className="font-bold text-slate-900">{r.title}</h4>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-slate-500">
+                      <span>Impact: <strong className={r.impact === "High" ? "text-emerald-600" : "text-amber-600"}>{r.impact}</strong></span>
+                      <span>Effort: <strong className={r.effort === "High" ? "text-red-600" : r.effort === "Medium" ? "text-amber-600" : "text-emerald-600"}>{r.effort}</strong></span>
+                    </div>
+                  </div>
+                  <p className="text-sm text-slate-700">{r.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Competitive moat summary */}
+          <div className="bg-gradient-to-br from-emerald-600 to-emerald-800 rounded-2xl p-6 text-white">
+            <h3 className="font-bold text-lg mb-3">BuildCost GH Competitive Moat</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {[
+                { title: "Data Network Effect", desc: "Each paid estimate improves cost accuracy. No competitor has a paid feedback loop to refine pricing models." },
+                { title: "AI Agent First-Mover", desc: "Multi-agent system (PriceBot, EstimateBot, ContractorMatch) is unique. Competitors have single AI features, not orchestrated workflows." },
+                { title: "Full-Stack Platform", desc: "Estimation + payment + CRM + blog + admin + diaspora tools in one platform. Competitors offer point solutions." },
+              ].map((m) => (
+                <div key={m.title} className="bg-white/10 rounded-xl p-4 backdrop-blur-sm border border-white/10">
+                  <h4 className="font-bold text-emerald-200 text-sm mb-1">{m.title}</h4>
+                  <p className="text-xs text-emerald-100/80">{m.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
