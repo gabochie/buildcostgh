@@ -60,35 +60,78 @@ const roadmap: RoadmapPhase[] = [
       { label: "Pricing page with Free Trial + paid tiers", status: "done", link: "/pricing" },
       { label: "Trust signals across all pages", status: "done" },
       { label: "Mobile money badges & payment UX", status: "done" },
+      { label: "Sidebar navigation & modern admin UI", status: "done", link: "/admin" },
+      { label: "Admin login with credentials (no Google OAuth)", status: "done" },
+      { label: "Rate limiting on admin login (5 attempts / 15 min lockout)", status: "done" },
+      { label: "Maintenance mode toggle", status: "done", link: "/admin" },
+      { label: "Settings tab in admin", status: "done", link: "/admin?tab=settings" },
+      { label: "PostgreSQL on Neon (production database)", status: "done" },
+      { label: "Cloudflare CDN with custom domain (buildcostgh.com)", status: "done" },
     ],
   },
   {
-    phase: "Phase 2 — Missing Bits (Urgent)",
-    color: "amber",
-    icon: Zap,
+    phase: "Phase 2 — Production Hardening (Critical)",
+    color: "rose",
+    icon: Shield,
     items: [
-      { label: "Order fulfillment — auto-generate PDF report after payment", status: "todo", note: "Critical. Paying users need their PDF/Excel delivered" },
-      { label: "Email notifications (order confirmation, report delivery)", status: "todo", note: "Connect to email service (SendGrid/Mailgun)" },
-      { label: "Download report from user dashboard", status: "todo", link: "/dashboard" },
-      { label: "About page — team bios, company story, credentials", status: "todo", note: "Currently thin, needs founder story & team photos", link: "/about" },
-      { label: "Services pages content", status: "todo", note: "Pages exist but need real content", link: "/services" },
-      { label: "Google Analytics / conversion tracking", status: "todo" },
-      { label: "SEO meta tags for all pages & blog posts", status: "todo" },
-      { label: "UploadThing env vars — replace file upload", status: "todo", note: "UPLOADTHING_SECRET and UPLOADTHING_APP_ID are empty", link: "/admin/blog/new" },
+      { label: "Add auth + file-type validation to upload route", status: "todo", note: "Anyone can upload .html/.exe files — RCE vector", link: "/api/upload" },
+      { label: "Add admin role checks to all admin API routes", status: "todo", note: "Any logged-in user can toggle maintenance mode, see all orders" },
+      { label: "Add Paystack webhook endpoint for async payment confirmation", status: "todo", note: "Without webhook, payments are lost if user closes browser" },
+      { label: "Fix Order metadata type mismatch (object stored as string)", status: "todo", note: "Prisma runtime crash on every order" },
+      { label: "Auto-generate PDF report after payment and set reportUrl", status: "todo", note: "Paying users receive nothing", link: "/order-success" },
+      { label: "Add error boundaries (error.tsx) at root + route-group level", status: "todo", note: "Any crash = blank white screen" },
+      { label: "Add loading.tsx with skeleton placeholders for all route groups", status: "todo", note: "Only bare spinners exist" },
+      { label: "Install & configure Sentry for production error tracking", status: "todo", note: "Invisible production errors" },
+      { label: "Add security headers (CSP, HSTS, X-Frame-Options, X-Content-Type-Options)", status: "todo", note: "No headers at all — clickjacking/XSS risk" },
+      { label: "Add try/catch to all GET handlers without error handling", status: "todo", note: "11 routes have unhandled promise rejections" },
+      { label: "Replace all fetch() try/catch with centralized error handling", status: "todo" },
+      { label: "Add Zod input validation to all API routes", status: "todo", note: "Zero validation exists anywhere" },
+      { label: "Add env var validation at startup (fail fast on missing keys)", status: "todo", note: "Silent failures if ADMIN_PASSWORD or DATABASE_URL missing" },
+      { label: "Fix .env.example — remove Google OAuth vars, document ADMIN_PASSWORD", status: "todo" },
+      { label: "Add health check endpoint (/api/health)", status: "todo", note: "No way to monitor app/db availability" },
     ],
   },
   {
-    phase: "Phase 3 — Growth",
+    phase: "Phase 3 — Growth & Experience",
     color: "blue",
     icon: BarChart3,
     items: [
-      { label: "Auto-generate PDF reports after purchase", status: "todo" },
+      { label: "Set production env vars (Paystack, Resend, UploadThing, GA)", status: "todo", note: "All keys are empty — payments, email, uploads broken", link: "/admin?tab=settings" },
+      { label: "Email notifications (order confirmation, report delivery)", status: "todo", note: "Resend API key needed" },
       { label: "Abandoned lead email nurture sequence", status: "todo", note: "Follow up with users who entered email but didn't complete" },
+      { label: "SEO meta descriptions + OG tags on all pages", status: "todo", note: "6+ client-component pages have no metadata" },
+      { label: "Add OG image to root layout (og-image.jpg exists but unused)", status: "todo" },
+      { label: "Google Analytics / conversion tracking (set GA ID)", status: "todo" },
+      { label: "Replace all <img> with Next.js <Image> (lazy loading, WebP, dimensions)", status: "todo", note: "Layout shift (CLS) on every blog image" },
+      { label: "Install sharp for production image optimization", status: "todo" },
+      { label: "Add PWA manifest + service worker (icon exists, never referenced)", status: "todo", link: "/public/assets/icon-192x192.png" },
+      { label: "Add bundle analysis (@next/bundle-analyzer)", status: "todo", note: "No insight into bundle size" },
+      { label: "Add structured data (FAQPage, BreadcrumbList, WebSite, Product)", status: "todo" },
+      { label: "About page — team bios, company story, credentials", status: "todo", note: "Currently thin", link: "/about" },
+      { label: "Services pages — real content for all service paths", status: "todo", note: "Pages exist but placeholder content", link: "/services" },
+      { label: "Site search (blog + calculator results)", status: "todo" },
+      { label: "Performance optimization (CDN caching, image CDN, bundle splitting)", status: "todo" },
+      { label: "Accessibility: skip-to-content, aria-current, alt text on images, focus management", status: "todo", note: "AA compliance gaps" },
+    ],
+  },
+  {
+    phase: "Phase 4 — Scale & Polish",
+    color: "violet",
+    icon: Globe,
+    items: [
+      { label: "Add rate limiting to all public API endpoints", status: "todo", note: "contact, newsletter, calculator, assistant — all open" },
+      { label: "Add CAPTCHA to contact / newsletter / lead capture forms", status: "todo", note: "Spam vector for all public forms" },
+      { label: "Add email confirmation for newsletter subscriptions", status: "todo", note: "Anyone can subscribe any email" },
+      { label: "Set up CI/CD pipeline (GitHub Actions: lint, typecheck, test, deploy)", status: "todo", note: "No automated quality gates" },
+      { label: "Document database backup strategy (Neon PITR)", status: "todo" },
+      { label: "Add structured logging (pino/winston)", status: "todo", note: "Only console.error() scattered across files" },
+      { label: "Calculator: add Zustand persistence (localStorage)", status: "todo", note: "State lost on page refresh" },
+      { label: "Calculator: move pricing data from code to database", status: "todo", note: "Hardcoded in route.ts — needs deploy to change prices" },
+      { label: "Assistant: move FAQ data to database or CMS", status: "todo", note: "Hardcoded in route.ts — needs deploy to update" },
+      { label: "Add proper role-based auth system (multi-user admin)", status: "todo", note: "Currently single hardcoded user" },
       { label: "Case studies / project portfolio", status: "todo" },
       { label: "Contractor directory", status: "todo" },
-      { label: "Site search (blog + calculator results)", status: "todo" },
       { label: "Social proof widgets (Google Reviews, Trustpilot)", status: "todo" },
-      { label: "Performance optimization (images, caching, CDN)", status: "todo" },
       { label: "Multi-language support (Twi, Ga, Ewe)", status: "todo" },
     ],
   },
@@ -107,8 +150,9 @@ export function Roadmap() {
 
   const phaseColors: Record<string, string> = {
     emerald: "from-emerald-500 to-emerald-600",
-    amber: "from-amber-500 to-amber-600",
+    rose: "from-rose-500 to-rose-600",
     blue: "from-blue-500 to-blue-600",
+    violet: "from-violet-500 to-violet-600",
   }
 
   return (
@@ -156,8 +200,8 @@ export function Roadmap() {
               </div>
               <div className="flex items-center gap-3">
                 <div className="hidden sm:block w-32 h-2 bg-gray-100 rounded-full overflow-hidden">
-                  <div className={`h-full rounded-full transition-all duration-500 ${
-                    pct === 100 ? "bg-emerald-500" : phase.color === "emerald" ? "bg-emerald-500" : phase.color === "amber" ? "bg-amber-500" : "bg-blue-500"
+                    <div className={`h-full rounded-full transition-all duration-500 ${
+                    { emerald: "bg-emerald-500", rose: "bg-rose-500", blue: "bg-blue-500", violet: "bg-violet-500" }[phase.color] || "bg-blue-500"
                   }`} style={{ width: `${pct}%` }} />
                 </div>
                 {isCollapsed ? <ChevronDown className="h-5 w-5 text-gray-400" /> : <ChevronUp className="h-5 w-5 text-gray-400" />}
