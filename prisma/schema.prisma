@@ -157,3 +157,13 @@ model SiteSetting {
   key   String @unique
   value String
 }
+
+model AdminLoginAttempt {
+  id        String   @id @default(cuid())
+  email     String
+  ip        String?
+  success   Boolean
+  createdAt DateTime @default(now())
+
+  @@index([ip, createdAt])
+}

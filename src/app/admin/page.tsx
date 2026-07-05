@@ -588,7 +588,7 @@ function AdminLogin() {
     const res = await signIn("credentials", { email, password, redirect: false })
     setLoggingIn(false)
     if (res?.error) {
-      setError("Invalid email or password")
+      setError(res.error === "CredentialsSignin" ? "Invalid email or password" : res.error)
     } else {
       window.location.reload()
     }
