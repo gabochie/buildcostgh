@@ -14,6 +14,7 @@ const quickLinks = [
   { href: "/", label: "Home" },
   { href: "/calculator", label: "Calculator" },
   { href: "/pricing", label: "Pricing" },
+  { href: "/flood-safe-land", label: "Flood Safe Land" },
   { href: "/blog", label: "Blog" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
