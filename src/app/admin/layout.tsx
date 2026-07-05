@@ -24,6 +24,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname()
   const router = useRouter()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [searchParams, setSearchParams] = useState("")
+
+  useEffect(() => { setSearchParams(window.location.search) }, [])
 
   useEffect(() => {
     if (status === "unauthenticated" && pathname !== "/admin") {
@@ -32,6 +35,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }, [status, pathname, router])
 
   const isLoginPage = pathname === "/admin" && !session
+  const currentTab = new URLSearchParams(searchParams).get("tab") || "overview"
+
+  const isActive = (item: typeof navItems[0]) => {
+    if (item.exact) return pathname === item.href && !searchParams.includes("tab")
+    const tab = new URLSearchParams(item.href.split("?")[1]).get("tab")
+    if (tab) return tab === currentTab
+    return pathname.startsWith(item.href.split("?")[0])
+  }
 
   if (status === "loading") {
     return (
@@ -43,18 +54,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (isLoginPage || status === "unauthenticated") {
     return <>{children}</>
-  }
-
-  const [searchParams, setSearchParams] = useState("")
-  useEffect(() => { setSearchParams(window.location.search) }, [])
-
-  const currentTab = new URLSearchParams(searchParams).get("tab") || "overview"
-
-  const isActive = (item: typeof navItems[0]) => {
-    if (item.exact) return pathname === item.href && !searchParams.includes("tab")
-    const tab = new URLSearchParams(item.href.split("?")[1]).get("tab")
-    if (tab) return tab === currentTab
-    return pathname.startsWith(item.href.split("?")[0])
   }
 
   return (
