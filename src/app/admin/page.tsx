@@ -171,6 +171,8 @@ export default function AdminPage() {
     <StrategyTab />
   ) : tab === "ecosystem" ? (
     <EcosystemTab />
+  ) : tab === "prelaunch" ? (
+    <PrelaunchChecklist />
   ) : null}
     </div>
   )
@@ -1934,6 +1936,238 @@ function PricingAuditView() {
             ))}
           </div>
         </div>
+      </div>
+    </div>
+  )
+}
+
+/* ── Prelaunch Checklist ── */
+function PrelaunchChecklist() {
+  const categories = [
+    {
+      name: "Infrastructure & Tech",
+      items: [
+        "Set ADMIN_PASSWORD env var in Vercel",
+        "Set PAYSTACK_SECRET_KEY in Vercel",
+        "Set NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY in Vercel",
+        "Set RESEND_API_KEY in Vercel",
+        "Set UPLOADTHING_SECRET & UPLOADTHING_APP_ID in Vercel",
+        "Verify Neon database connection is stable",
+        "Configure Vercel custom domain (buildcostgh.com)",
+        "Verify Cloudflare proxy is working",
+        "Set up Vercel Analytics / monitoring",
+        "Configure error tracking (Sentry)",
+        "Set up automated database backups",
+      ],
+    },
+    {
+      name: "Security & Compliance",
+      items: [
+        "Add security headers (CSP, HSTS, X-Frame-Options)",
+        "Add Zod input validation to all API routes",
+        "Add auth checks to all admin API routes",
+        "Add auth to file upload endpoint",
+        "Rate limiting on admin login — DONE",
+        "Privacy Policy page — DONE",
+        "Terms of Service page — DONE",
+        "Cookie consent banner",
+        "Refund Policy page — DONE",
+        "GDPR compliance review",
+      ],
+    },
+    {
+      name: "Content & SEO",
+      items: [
+        "Publish 10+ SEO blog posts before launch",
+        "Create sitemap.xml — DONE",
+        "Create robots.txt — DONE",
+        "Set up Open Graph images for all pages",
+        "Write meta descriptions for all pages",
+        "Create 'About' page with team story",
+        "Create 'How it Works' explainer page",
+        "Create FAQ page addressing diaspora questions",
+        "Create 'Pricing' page explaining tiers — DONE",
+        "Set up blog RSS feed — DONE",
+      ],
+    },
+    {
+      name: "Payment & Orders",
+      items: [
+        "Test Paystack payment flow end-to-end (sandbox)",
+        "Test Paystack webhook handling",
+        "Test email delivery via Resend",
+        "Test PDF report generation & download",
+        "Test order confirmation flow",
+        "Set up invoice/receipt generation",
+        "Test refund flow end-to-end",
+        "Verify multi-currency pricing (USD + GHS)",
+        "Test payment failure recovery flow",
+      ],
+    },
+    {
+      name: "Marketing & Launch",
+      items: [
+        "Create LAUNCH100 discount code (50% off)",
+        "Set up referral program ($5 credit)",
+        "Create Twitter/X account for BuildCost.GH",
+        "Create LinkedIn company page",
+        "Create YouTube channel with demo videos",
+        "Write launch announcement blog post",
+        "Prepare email launch sequence (3-email drip)",
+        "Create list of diaspora Facebook groups to post in",
+        "Prepare pitch for Ghana tech media (TechCabal, etc.)",
+        "Create product demo video (2-3 min walkthrough)",
+      ],
+    },
+    {
+      name: "Product Experience",
+      items: [
+        "Test calculator with 10+ different build scenarios",
+        "Verify pricing accuracy across all Ghana regions",
+        "Mobile responsiveness audit (all screen sizes)",
+        "Page load speed optimization (<3s on 3G)",
+        "Custom 404 page with helpful navigation",
+        "Add loading states for all data fetches",
+        "Add error boundaries for all major pages",
+        "Test user dashboard order history",
+        "Verify all links across the site work",
+        "Test on Safari, Chrome, Firefox, Edge",
+      ],
+    },
+    {
+      name: "Legal & Admin",
+      items: [
+        "Register business entity in Ghana",
+        "Open business bank account (GHS + USD)",
+        "Register for tax (GRA) — digital services tax",
+        "Set up accounting / bookkeeping system",
+        "Create standard contractor agreement templates",
+        "Create client service agreement template",
+        "Register trademark for BuildCost.GH",
+        "Set up WhatsApp Business account for support",
+        "Set up business email (hello@buildcostgh.com)",
+      ],
+    },
+  ]
+
+  const [checked, setChecked] = useState<Record<string, boolean>>(() => {
+    if (typeof window === "undefined") return {}
+    try {
+      const saved = localStorage.getItem("buildcost-prelaunch-checklist")
+      return saved ? JSON.parse(saved) : {}
+    } catch { return {} }
+  })
+
+  useEffect(() => {
+    localStorage.setItem("buildcost-prelaunch-checklist", JSON.stringify(checked))
+  }, [checked])
+
+  const allItems = categories.flatMap((c) => c.items)
+  const doneCount = allItems.filter((i) => checked[i]).length
+  const totalCount = allItems.length
+  const pct = Math.round((doneCount / totalCount) * 100)
+
+  const toggle = (item: string) => setChecked((prev) => ({ ...prev, [item]: !prev[item] }))
+
+  return (
+    <div className="space-y-6">
+      {/* Header with progress */}
+      <div className="rounded-2xl border bg-gradient-to-br from-emerald-50 to-teal-50 p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-bold text-slate-900 mb-1">Prelaunch Checklist</h2>
+            <p className="text-sm text-slate-500">
+              Track everything that needs to be done before going live. Progress is saved locally in your browser.
+            </p>
+          </div>
+          <div className="flex items-center gap-3 bg-white rounded-xl px-5 py-3 shadow-sm border flex-shrink-0">
+            <div className="text-center">
+              <div className={`text-2xl font-bold ${pct === 100 ? "text-emerald-600" : "text-slate-800"}`}>{pct}%</div>
+              <div className="text-[10px] text-slate-400 uppercase tracking-wide">Complete</div>
+            </div>
+            <div className="w-16 h-16 relative">
+              <svg className="w-16 h-16 -rotate-90" viewBox="0 0 36 36">
+                <circle cx="18" cy="18" r="15.5" fill="none" stroke="#e2e8f0" strokeWidth="3" />
+                <circle cx="18" cy="18" r="15.5" fill="none" stroke="#10b981" strokeWidth="3"
+                  strokeDasharray={`${pct * 0.967} 96.7`} strokeLinecap="round" />
+              </svg>
+              <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-slate-600">
+                {doneCount}/{totalCount}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick summary cards */}
+      <div className="grid gap-3 sm:grid-cols-4">
+        <div className="rounded-xl border bg-white p-3 shadow-sm text-center">
+          <div className="text-xs font-semibold text-slate-400 uppercase">Total Items</div>
+          <div className="text-lg font-bold text-slate-800">{totalCount}</div>
+        </div>
+        <div className="rounded-xl border bg-white p-3 shadow-sm text-center">
+          <div className="text-xs font-semibold text-slate-400 uppercase">Done</div>
+          <div className="text-lg font-bold text-emerald-600">{doneCount}</div>
+        </div>
+        <div className="rounded-xl border bg-white p-3 shadow-sm text-center">
+          <div className="text-xs font-semibold text-slate-400 uppercase">Remaining</div>
+          <div className={`text-lg font-bold ${totalCount - doneCount === 0 ? "text-emerald-600" : "text-amber-600"}`}>{totalCount - doneCount}</div>
+        </div>
+        <div className="rounded-xl border bg-white p-3 shadow-sm text-center">
+          <div className="text-xs font-semibold text-slate-400 uppercase">Status</div>
+          <div className={`text-lg font-bold ${pct === 100 ? "text-emerald-600" : pct >= 50 ? "text-amber-600" : "text-slate-500"}`}>
+            {pct === 100 ? "🎉 Launch Ready" : pct >= 50 ? "In Progress" : "Getting Started"}
+          </div>
+        </div>
+      </div>
+
+      {/* Category progress bar + items */}
+      <div className="space-y-5">
+        {categories.map((cat) => {
+          const catDone = cat.items.filter((i) => checked[i]).length
+          const catPct = Math.round((catDone / cat.items.length) * 100)
+          return (
+            <div key={cat.name} className="rounded-xl border bg-white shadow-sm overflow-hidden">
+              <div className="px-5 py-4 border-b bg-slate-50 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <h3 className="font-bold text-slate-900">{cat.name}</h3>
+                  <span className="text-xs text-slate-400">{catDone}/{cat.items.length}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-24 h-2 bg-slate-200 rounded-full overflow-hidden">
+                    <div className={`h-full rounded-full transition-all ${
+                      catPct === 100 ? "bg-emerald-500" : catPct >= 50 ? "bg-amber-500" : "bg-slate-300"
+                    }`} style={{ width: `${catPct}%` }} />
+                  </div>
+                  <span className={`text-xs font-medium ${
+                    catPct === 100 ? "text-emerald-600" : "text-slate-400"
+                  }`}>{catPct}%</span>
+                </div>
+              </div>
+              <div className="divide-y">
+                {cat.items.map((item) => (
+                  <label key={item} className="flex items-center gap-3 px-5 py-3 hover:bg-slate-50 cursor-pointer transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={!!checked[item]}
+                      onChange={() => toggle(item)}
+                      className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+                    />
+                    <span className={`text-sm flex-1 ${checked[item] ? "text-slate-400 line-through" : "text-slate-700"}`}>
+                      {item.endsWith("— DONE") ? (
+                        <>{item.replace("— DONE", "")} <span className="text-emerald-500 text-xs font-medium">— DONE</span></>
+                      ) : item.endsWith("DONE") ? (
+                        <>{item} <span className="text-emerald-500 text-xs font-medium">✓</span></>
+                      ) : (
+                        item
+                      )}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )
+        })}
       </div>
     </div>
   )
