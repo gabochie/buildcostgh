@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
   LogOut, Loader2, ShoppingBag, MessageSquare, Users, Mail, TrendingUp,
-  BarChart3, FileText, Eye, ExternalLink, ListChecks
+  BarChart3, FileText, Eye, ExternalLink, ListChecks, Shield
 } from "lucide-react"
 import { formatCurrency } from "@/lib/utils"
 
@@ -76,6 +76,8 @@ type NewsletterSubscriber = {
 export default function AdminPage() {
   const { data: session, status } = useSession()
   const [tab, setTab] = useState<"overview" | "orders" | "messages" | "blog" | "leads" | "newsletter" | "roadmap">("overview")
+  const [maintenanceMode, setMaintenanceMode] = useState(false)
+  const [toggling, setToggling] = useState(false)
   const [stats, setStats] = useState<Stats | null>(null)
   const [orders, setOrders] = useState<Order[]>([])
   const [messages, setMessages] = useState<ContactMessage[]>([])
@@ -94,14 +96,16 @@ export default function AdminPage() {
       fetch("/api/blog").then(r => r.json()),
       fetch("/api/calculator/save-lead").then(r => r.json()).catch(() => []),
       fetch("/api/newsletter").then(r => r.json()).catch(() => []),
+      fetch("/api/admin/maintenance").then(r => r.json()).catch(() => ({ enabled: false })),
     ])
-      .then(([s, o, m, b, l, n]) => {
+      .then(([s, o, m, b, l, n, mt]) => {
         setStats(s)
         setOrders(o)
         setMessages(m)
         setBlogPosts(b)
         setLeads(l)
         setSubscribers(n)
+        setMaintenanceMode(mt.enabled)
       })
       .finally(() => setLoading(false))
   }, [session])
@@ -135,6 +139,23 @@ export default function AdminPage() {
     { id: "blog" as const, label: "Blog", icon: FileText, count: blogPosts.length },
     { id: "roadmap" as const, label: "Roadmap", icon: ListChecks, count: null },
   ]
+
+  const toggleMaintenance = async () => {
+    setToggling(true)
+    try {
+      const res = await fetch("/api/admin/maintenance", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ enabled: !maintenanceMode }),
+      })
+      const data = await res.json()
+      setMaintenanceMode(data.enabled)
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setToggling(false)
+    }
+  }
 
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-gray-50">
@@ -179,6 +200,37 @@ export default function AdminPage() {
               <StatCard title="Messages" value={String(stats?.totalMessages || 0)} sub={`${stats?.unreadMessages || 0} unread`} icon={MessageSquare} />
               <StatCard title="Leads" value={String(stats?.totalLeads || 0)} sub={`${stats?.totalSubscribers || 0} subscribers`} icon={Users} />
             </div>
+
+            <Card className="border-amber-200 bg-amber-50/30">
+              <CardContent className="p-5 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center text-amber-600">
+                    <Shield className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Maintenance Mode</h3>
+                    <p className="text-sm text-gray-500">
+                      {maintenanceMode
+                        ? "Site is currently in maintenance — visitors see the maintenance page"
+                        : "Site is live and accessible to everyone"}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={toggleMaintenance}
+                  disabled={toggling}
+                  className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none ${
+                    maintenanceMode ? "bg-amber-500" : "bg-gray-300"
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
+                      maintenanceMode ? "translate-x-6" : "translate-x-1"
+                    }`}
+                  />
+                </button>
+              </CardContent>
+            </Card>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card>
