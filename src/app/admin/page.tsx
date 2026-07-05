@@ -950,11 +950,11 @@ function StrategyTab() {
 
 /* ── Product Ecosystem ── */
 function EcosystemTab() {
+  const [subTab, setSubTab] = useState("valuechain")
+
   const stages = [
     {
-      phase: "1. Dream & Discovery",
-      emoji: "💭",
-      color: "from-sky-400 to-sky-600",
+      phase: "1. Dream & Discovery", emoji: "💭", color: "from-sky-400 to-sky-600",
       pain: "I want to build in Ghana but have no idea where to start, what it costs, or if it's even feasible.",
       products: [
         "Free cost estimator (entry point — current MVP)",
@@ -966,9 +966,7 @@ function EcosystemTab() {
       link: "→ connects to Cost Estimation",
     },
     {
-      phase: "2. Land Acquisition",
-      emoji: "🌍",
-      color: "from-emerald-400 to-emerald-600",
+      phase: "2. Land Acquisition", emoji: "🌍", color: "from-emerald-400 to-emerald-600",
       pain: "Finding genuine land with clean title is nearly impossible from abroad. Scams are rampant.",
       products: [
         "Verified land listing marketplace (vetted titles, GPS-tagged)",
@@ -980,9 +978,7 @@ function EcosystemTab() {
       link: "→ feeds into Design & Permits",
     },
     {
-      phase: "3. Design & Permits",
-      emoji: "📐",
-      color: "from-violet-400 to-violet-600",
+      phase: "3. Design & Permits", emoji: "📐", color: "from-violet-400 to-violet-600",
       pain: "I need architectural plans that meet Ghanaian building codes and I can't manage the permit process remotely.",
       products: [
         "Pre-designed house plan catalog (buy & download, then customize)",
@@ -994,9 +990,7 @@ function EcosystemTab() {
       link: "→ feeds into Budgeting & Financing",
     },
     {
-      phase: "4. Budgeting & Financing",
-      emoji: "💰",
-      color: "from-amber-400 to-amber-600",
+      phase: "4. Budgeting & Financing", emoji: "💰", color: "from-amber-400 to-amber-600",
       pain: "I don't know the true cost and I can't get a mortgage as a diaspora buyer.",
       products: [
         "Detailed cost estimate (CORE PRODUCT — shipped)",
@@ -1009,9 +1003,7 @@ function EcosystemTab() {
       link: "→ feeds into Contractor Hiring",
     },
     {
-      phase: "5. Contractor Marketplace",
-      emoji: "👷",
-      color: "from-orange-400 to-orange-600",
+      phase: "5. Contractor Marketplace", emoji: "👷", color: "from-orange-400 to-orange-600",
       pain: "Who do I trust? Every diaspora story includes a contractor who disappeared or overcharged.",
       products: [
         "Vetted contractor directory with profiles & past projects",
@@ -1024,9 +1016,7 @@ function EcosystemTab() {
       link: "→ feeds into Construction Management",
     },
     {
-      phase: "6. Construction Management",
-      emoji: "📊",
-      color: "from-blue-400 to-blue-600",
+      phase: "6. Construction Management", emoji: "📊", color: "from-blue-400 to-blue-600",
       pain: "I'm 5,000 miles away. How do I know they're actually building? Is the money being used properly?",
       products: [
         "Project dashboard with milestone tracking (foundation → roofing → finishing)",
@@ -1040,9 +1030,7 @@ function EcosystemTab() {
       link: "→ feeds into Materials Procurement",
     },
     {
-      phase: "7. Materials Procurement",
-      emoji: "🏗️",
-      color: "from-stone-400 to-stone-600",
+      phase: "7. Materials Procurement", emoji: "🏗️", color: "from-stone-400 to-stone-600",
       pain: "Where do I buy quality materials without getting overcharged? Contractors inflate material prices.",
       products: [
         "Real-time material price index (cement, steel, roofing, tiles, paint)",
@@ -1055,9 +1043,7 @@ function EcosystemTab() {
       link: "→ feeds into Quality Assurance",
     },
     {
-      phase: "8. Quality Assurance",
-      emoji: "✅",
-      color: "from-green-400 to-green-600",
+      phase: "8. Quality Assurance", emoji: "✅", color: "from-green-400 to-green-600",
       pain: "Is the foundation correct? Are the electricals up to code? I can't inspect it myself.",
       products: [
         "Independent site inspection service (engineer visits site)",
@@ -1070,9 +1056,7 @@ function EcosystemTab() {
       link: "→ feeds into Interior & Finishing",
     },
     {
-      phase: "9. Interior & Finishing",
-      emoji: "✨",
-      color: "from-pink-400 to-pink-600",
+      phase: "9. Interior & Finishing", emoji: "✨", color: "from-pink-400 to-pink-600",
       pain: "I want a beautiful home. Where do I find quality fixtures, furniture, and skilled finishers in Ghana?",
       products: [
         "Interior design consultation (virtual — partner designers)",
@@ -1085,9 +1069,7 @@ function EcosystemTab() {
       link: "→ feeds into Move-in & Property Management",
     },
     {
-      phase: "10. Move-in & Property Management",
-      emoji: "🏠",
-      color: "from-teal-400 to-teal-600",
+      phase: "10. Move-in & Property Management", emoji: "🏠", color: "from-teal-400 to-teal-600",
       pain: "I need to move in, maintain the property, or rent it out. I can't do this from abroad.",
       products: [
         "Moving services (partner network)",
@@ -1102,14 +1084,34 @@ function EcosystemTab() {
     },
   ]
 
-  const totalRevenue = stages.reduce((sum, s) => {
+  return (
+    <div className="space-y-6">
+      {/* Sub-tab navigation */}
+      <div className="flex flex-wrap gap-1.5">
+        <button onClick={() => setSubTab("valuechain")}
+          className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${subTab === "valuechain" ? "bg-emerald-100 text-emerald-800 shadow-sm" : "text-slate-500 hover:text-slate-700 hover:bg-slate-100"}`}>
+          Value Chain
+        </button>
+        <button onClick={() => setSubTab("businessmodel")}
+          className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${subTab === "businessmodel" ? "bg-emerald-100 text-emerald-800 shadow-sm" : "text-slate-500 hover:text-slate-700 hover:bg-slate-100"}`}>
+          Business Model
+        </button>
+      </div>
+
+      {subTab === "valuechain" ? <ValueChainView stages={stages} /> : <BusinessModelView />}
+    </div>
+  )
+}
+
+/* ── Value Chain (sub-view) ── */
+function ValueChainView({ stages }: { stages: typeof import("react").useState extends (...a: any[]) => any ? any[] : any[] }) {
+  const totalRevenue = stages.reduce((sum, s: any) => {
     const nums = s.revenue.match(/\d+/g)
-    return sum + (nums ? nums.reduce((a, b) => a + parseInt(b), 0) : 0)
+    return sum + (nums ? nums.reduce((a: number, b: string) => a + parseInt(b), 0) : 0)
   }, 0)
 
   return (
     <div className="space-y-8">
-      {/* Header */}
       <div className="rounded-2xl border bg-gradient-to-br from-emerald-50 to-teal-50 p-6">
         <h2 className="text-xl font-bold text-slate-900 mb-2">Product Ecosystem</h2>
         <p className="text-slate-600 text-sm leading-relaxed max-w-3xl">
@@ -1119,16 +1121,13 @@ function EcosystemTab() {
         </p>
       </div>
 
-      {/* Ecosystem flywheel summary */}
       <div className="grid gap-4 sm:grid-cols-4">
         <div className="rounded-xl border bg-white p-4 shadow-sm text-center">
           <div className="text-2xl font-bold text-emerald-600">10</div>
           <div className="text-xs text-slate-500 mt-1">Value Chain Stages</div>
         </div>
         <div className="rounded-xl border bg-white p-4 shadow-sm text-center">
-          <div className="text-2xl font-bold text-emerald-600">
-            ~${totalRevenue / 10}K–${totalRevenue / 5}K
-          </div>
+          <div className="text-2xl font-bold text-emerald-600">~${totalRevenue / 10}K–${totalRevenue / 5}K</div>
           <div className="text-xs text-slate-500 mt-1">Est. Revenue per User (lifetime)</div>
         </div>
         <div className="rounded-xl border bg-white p-4 shadow-sm text-center">
@@ -1141,50 +1140,34 @@ function EcosystemTab() {
         </div>
       </div>
 
-      {/* Value chain stages */}
       <div className="relative">
-        {/* Vertical connector line */}
         <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-emerald-200 hidden md:block" />
-
         <div className="space-y-6">
-          {stages.map((stage, i) => (
+          {stages.map((stage: any, i: number) => (
             <div key={stage.phase} className="relative md:pl-16">
-              {/* Timeline dot */}
               <div className={`absolute left-4 top-6 w-4 h-4 rounded-full border-2 border-white shadow-md bg-gradient-to-br ${stage.color} hidden md:block`} />
-
-              {/* Connector arrow */}
               {i < stages.length - 1 && (
-                <div className="hidden md:flex items-center justify-center text-emerald-400 text-xs font-medium mt-1 mb-1 ml-1">
-                  ↓
-                </div>
+                <div className="hidden md:flex items-center justify-center text-emerald-400 text-xs font-medium mt-1 mb-1 ml-1">↓</div>
               )}
-
               <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
-                {/* Stage header */}
                 <div className={`bg-gradient-to-r ${stage.color} p-4 text-white`}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="text-xl">{stage.emoji}</span>
                       <h3 className="font-bold">{stage.phase}</h3>
                     </div>
-                    <span className="text-xs bg-white/20 px-2.5 py-1 rounded-full font-medium">
-                      {stage.revenue}
-                    </span>
+                    <span className="text-xs bg-white/20 px-2.5 py-1 rounded-full font-medium">{stage.revenue}</span>
                   </div>
                 </div>
-
                 <div className="p-4">
-                  {/* Pain point */}
                   <div className="mb-3">
                     <div className="text-xs font-semibold text-rose-500 uppercase tracking-wide mb-1">Pain Point</div>
                     <p className="text-sm text-slate-600 italic">"{stage.pain}"</p>
                   </div>
-
-                  {/* Products */}
                   <div>
                     <div className="text-xs font-semibold text-emerald-600 uppercase tracking-wide mb-2">Our Products</div>
                     <div className="grid gap-2 sm:grid-cols-2">
-                      {stage.products.map((p) => (
+                      {stage.products.map((p: string) => (
                         <div key={p} className="flex items-start gap-2 text-sm text-slate-700">
                           <span className="text-emerald-500 mt-0.5 flex-shrink-0">✦</span>
                           <span>{p}</span>
@@ -1192,11 +1175,7 @@ function EcosystemTab() {
                       ))}
                     </div>
                   </div>
-
-                  {/* Flow link */}
-                  <div className="mt-3 pt-3 border-t border-dashed text-xs text-slate-400">
-                    {stage.link}
-                  </div>
+                  <div className="mt-3 pt-3 border-t border-dashed text-xs text-slate-400">{stage.link}</div>
                 </div>
               </div>
             </div>
@@ -1204,33 +1183,298 @@ function EcosystemTab() {
         </div>
       </div>
 
-      {/* Ecosystem dynamics */}
       <div className="rounded-2xl border bg-white p-6 shadow-sm">
         <h3 className="font-bold text-slate-900 mb-4">Ecosystem Flywheel Dynamics</h3>
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="p-4 rounded-xl bg-slate-50">
             <div className="text-lg font-bold text-emerald-600 mb-1">Data Moat</div>
-            <p className="text-sm text-slate-600">
-              Each stage generates proprietary data: real material prices, contractor performance scores,
-              actual project costs. This data makes our estimates more accurate and our marketplace more
-              valuable — competitors can't replicate it.
-            </p>
+            <p className="text-sm text-slate-600">Each stage generates proprietary data: real material prices, contractor performance scores, actual project costs. This data makes our estimates more accurate and our marketplace more valuable — competitors can't replicate it.</p>
           </div>
           <div className="p-4 rounded-xl bg-slate-50">
             <div className="text-lg font-bold text-emerald-600 mb-1">Network Effects</div>
-            <p className="text-sm text-slate-600">
-              More homeowners → more contractors → better matching → more homeowners.
-              More suppliers → better prices → more material orders → more suppliers.
-              Each marketplace feeds the next.
-            </p>
+            <p className="text-sm text-slate-600">More homeowners → more contractors → better matching → more homeowners. More suppliers → better prices → more material orders → more suppliers. Each marketplace feeds the next.</p>
           </div>
           <div className="p-4 rounded-xl bg-slate-50">
             <div className="text-lg font-bold text-emerald-600 mb-1">LTV Expansion</div>
-            <p className="text-sm text-slate-600">
-              A single report buyer ($29) becomes a contractor finder (5% commission), then a project
-              management subscriber ($49/mo × 12 months). LTV grows from $29 to $2,000+ per user.
-            </p>
+            <p className="text-sm text-slate-600">A single report buyer ($29) becomes a contractor finder (5% commission), then a project management subscriber ($49/mo × 12 months). LTV grows from $29 to $2,000+ per user.</p>
           </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ── Business Model (sub-view) ── */
+function BusinessModelView() {
+  const streams = [
+    { name: "Cost Reports (One-Time)", est: "$29–$199", margin: "85%", freq: "Per purchase", notes: "Core product. Digital good — near-zero marginal cost after calculator is built." },
+    { name: "PDF / Excel Add-ons", est: "$10–$15", margin: "90%", freq: "Per download", notes: "Upsell from free/Starter tier. Pure digital delivery." },
+    { name: "QS Consultation", est: "$49", margin: "60%", freq: "Per session", notes: "Partner with licensed quantity surveyors. Revenue share model." },
+    { name: "House Plan Catalog", est: "$99–$499", margin: "70%", freq: "Per download", notes: "Pre-designed plans. Partner architects get 40% rev share." },
+    { name: "Permit Processing", est: "$50–$150", margin: "50%", freq: "Per project", notes: "Service fee for handling permit applications. Labour-intensive, scales with local hires." },
+    { name: "Land Sale Commission", est: "3–5%", margin: "80%", freq: "Per transaction", notes: "Broker-style commission on verified land listings. High-value, low volume." },
+    { name: "Contractor Subscriptions", est: "$29/mo", margin: "90%", freq: "Monthly", notes: "Contractors pay to be listed. Recurring. Target 500+ contractors in year 1." },
+    { name: "Project Matching Fee", est: "5%", margin: "85%", freq: "Per project", notes: "Commission on contractor projects sourced through platform. Avg project $10K–$50K." },
+    { name: "Project Management SaaS", est: "$19–$49/mo", margin: "80%", freq: "Monthly", notes: "Recurring subscription for project tracking. Annual plans at 2-month discount." },
+    { name: "Material Order Commission", est: "2–5%", margin: "75%", freq: "Per order", notes: "Commission on supplier transactions. Avg order $500–$5,000." },
+    { name: "Supplier Listings", est: "$19/mo", margin: "90%", freq: "Monthly", notes: "Suppliers pay for verified listing + analytics. Recurring." },
+    { name: "Site Inspection", est: "$49–$149", margin: "55%", freq: "Per visit", notes: "Engineer visit fee. Partner network, rev share 60/40." },
+    { name: "Furniture/Fixture Commission", est: "10–15%", margin: "70%", freq: "Per sale", notes: "Marketplace commission on interior goods. Partner with local suppliers." },
+    { name: "Property Management", est: "8–12% of rent", margin: "60%", freq: "Monthly", notes: "Ongoing management fee. Recurring, tied to rental income. Target 100+ properties." },
+    { name: "Insurance Commission", est: "10–15%", margin: "80%", freq: "Per policy", notes: "Referral fee from insurance partners. Building + contractor insurance." },
+    { name: "Bank/Affiliate Referrals", est: "Fixed per lead", margin: "90%", freq: "Per lead", notes: "Refer diaspora clients to banks for mortgages. CPA model." },
+  ]
+
+  return (
+    <div className="space-y-8">
+      {/* Revenue model framework */}
+      <div className="rounded-2xl border bg-gradient-to-br from-amber-50 to-orange-50 p-6">
+        <h2 className="text-xl font-bold text-slate-900 mb-2">Business Model</h2>
+        <p className="text-slate-600 text-sm leading-relaxed max-w-3xl">
+          BuildCost.GH operates as a multi-sided platform with <strong>transactional, subscription, and commission-based</strong> revenue.
+          Each product in the ecosystem is designed to maximize lifetime value by moving users from one-time purchases into
+          recurring revenue streams.
+        </p>
+      </div>
+
+      {/* Unit economics snapshot */}
+      <div className="grid gap-4 sm:grid-cols-3">
+        <div className="rounded-xl border bg-white p-5 shadow-sm">
+          <div className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1">Revenue Model</div>
+          <div className="text-lg font-bold text-slate-900">Hybrid</div>
+          <div className="text-sm text-slate-500 mt-1">Transactional + Subscription + Commission</div>
+        </div>
+        <div className="rounded-xl border bg-white p-5 shadow-sm">
+          <div className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1">Est. Blended Gross Margin</div>
+          <div className="text-lg font-bold text-emerald-600">78%</div>
+          <div className="text-sm text-slate-500 mt-1">Weighted average across all streams</div>
+        </div>
+        <div className="rounded-xl border bg-white p-5 shadow-sm">
+          <div className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1">Target LTV:CAC Ratio</div>
+          <div className="text-lg font-bold text-emerald-600">5:1</div>
+          <div className="text-sm text-slate-500 mt-1">LTV ~$800+ / CAC ~$150 (paid channels)</div>
+        </div>
+      </div>
+
+      {/* Revenue streams table */}
+      <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
+        <div className="px-5 py-4 border-b bg-slate-50">
+          <h3 className="font-bold text-slate-900">Revenue Streams (16 Identified)</h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b bg-slate-50/50">
+                <th className="text-left px-5 py-3 font-semibold text-slate-600">Revenue Stream</th>
+                <th className="text-left px-5 py-3 font-semibold text-slate-600">Price</th>
+                <th className="text-left px-5 py-3 font-semibold text-slate-600">Gross Margin</th>
+                <th className="text-left px-5 py-3 font-semibold text-slate-600">Frequency</th>
+                <th className="text-left px-5 py-3 font-semibold text-slate-600">Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {streams.map((s, i) => (
+                <tr key={s.name} className={`border-b last:border-0 ${i % 2 === 0 ? "bg-white" : "bg-slate-50/30"}`}>
+                  <td className="px-5 py-3 font-medium text-slate-800">{s.name}</td>
+                  <td className="px-5 py-3 text-emerald-600 font-medium">{s.est}</td>
+                  <td className="px-5 py-3">
+                    <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
+                      parseInt(s.margin) >= 80 ? "bg-emerald-100 text-emerald-700" :
+                      parseInt(s.margin) >= 60 ? "bg-amber-100 text-amber-700" :
+                      "bg-rose-100 text-rose-700"
+                    }`}>{s.margin}</span>
+                  </td>
+                  <td className="px-5 py-3 text-slate-600">{s.freq}</td>
+                  <td className="px-5 py-3 text-slate-500 max-w-xs">{s.notes}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Cost structure */}
+      <div className="grid gap-6 sm:grid-cols-2">
+        <div className="rounded-xl border bg-white p-5 shadow-sm">
+          <h3 className="font-bold text-slate-900 mb-3">Cost Structure</h3>
+          <div className="space-y-3">
+            {[
+              { item: "Hosting & Infrastructure (Vercel + Neon + UploadThing)", pct: "15%", fixed: 200, desc: "Scales with traffic. Vercel Pro $20/mo, Neon $0–$25, UploadThing $10" },
+              { item: "Payment Processing (Paystack fees ~1.5% + $0.20)", pct: "5%", fixed: "Variable", desc: "Per-transaction cost. 1.5% + $0.20 on local cards, 3.5% on intl cards" },
+              { item: "Content & SEO (writers, video, design)", pct: "25%", fixed: 1500, desc: "Freelance writers for blog ($200/article), video production ($500/video)" },
+              { item: "Sales & Marketing (paid ads, partnerships)", pct: "30%", fixed: 2000, desc: "Facebook/Google ads targeting diaspora. Initial focus on organic to validate" },
+              { item: "Operations & Support (virtual assistant, QS partners)", pct: "15%", fixed: 1000, desc: "Customer support (chat/email), partner payout management, admin" },
+              { item: "Product Development (dev tools, design, AI credits)", pct: "10%", fixed: 800, desc: "LLM API costs for AI features, design tools, monitoring (Sentry)" },
+            ].map((c) => (
+              <div key={c.item} className="flex items-start justify-between gap-4 border-b border-dashed pb-3 last:border-0">
+                <div className="flex-1">
+                  <div className="text-sm font-medium text-slate-800">{c.item}</div>
+                  <div className="text-xs text-slate-500 mt-0.5">{c.desc}</div>
+                </div>
+                <div className="text-right flex-shrink-0">
+                  <div className="text-sm font-semibold text-slate-900">{c.pct}</div>
+                  <div className="text-xs text-slate-400">~${c.fixed}/mo</div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 pt-3 border-t flex justify-between text-sm font-bold text-slate-900">
+            <span>Est. Monthly Burn (Lean)</span>
+            <span>~$6,000</span>
+          </div>
+        </div>
+
+        <div className="rounded-xl border bg-white p-5 shadow-sm">
+          <h3 className="font-bold text-slate-900 mb-3">Revenue Projections (Year 1)</h3>
+          <div className="space-y-4">
+            {[
+              { period: "Months 1–3 (MVP Launch)", users: "100", reports: "$4,500", services: "$0", mrr: "$0", total: "$4,500", note: "Soft launch + beta. Free reports to build case studies." },
+              { period: "Months 4–6 (Growth)", users: "500", reports: "$18,000", services: "$3,500", mrr: "$2,900", total: "$24,400", note: "Contractor subscriptions + PM SaaS kick in. Blog SEO begins ranking." },
+              { period: "Months 7–9 (Scale)", users: "2,000", reports: "$55,000", services: "$15,000", mrr: "$12,500", total: "$82,500", note: "Land commissions + supplier fees start. Content flywheel active." },
+              { period: "Months 10–12 (Optimize)", users: "5,000", reports: "$120,000", services: "$40,000", mrr: "$38,000", total: "$198,000", note: "Property management + insurance recurring. Full ecosystem live." },
+            ].map((q) => (
+              <div key={q.period} className="border rounded-lg p-3">
+                <div className="flex justify-between items-center mb-2">
+                  <div className="text-sm font-semibold text-slate-800">{q.period}</div>
+                  <div className="text-sm font-bold text-emerald-600">{q.total}</div>
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-xs text-slate-500 mb-1">
+                  <span>{q.users} users</span>
+                  <span>Reports: {q.reports}</span>
+                  <span>Services: {q.services}</span>
+                </div>
+                <div className="text-xs text-slate-500">MRR: {q.mrr} — {q.note}</div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 pt-3 border-t flex justify-between text-sm font-bold text-slate-900">
+            <span>Year 1 Revenue Target</span>
+            <span className="text-emerald-600">~$310,000</span>
+          </div>
+          <div className="text-xs text-slate-400 mt-1">Blended MRR by month 12: ~$35K+</div>
+        </div>
+      </div>
+
+      {/* Business model canvas summary */}
+      <div className="rounded-2xl border bg-white p-6 shadow-sm">
+        <h3 className="font-bold text-slate-900 mb-4">Business Model Canvas</h3>
+        <div className="grid gap-3 sm:grid-cols-3">
+          <div className="p-3 rounded-lg bg-sky-50">
+            <div className="text-xs font-bold text-sky-700 uppercase mb-1">Key Partners</div>
+            <ul className="text-xs text-sky-800 space-y-1">
+              <li>• Architects & QS firms</li>
+              <li>• Land surveyors & lawyers</li>
+              <li>• Banks (diaspora mortgages)</li>
+              <li>• Material suppliers</li>
+              <li>• Insurance companies</li>
+              <li>• Ghana Land Commission</li>
+            </ul>
+          </div>
+          <div className="p-3 rounded-lg bg-emerald-50">
+            <div className="text-xs font-bold text-emerald-700 uppercase mb-1">Key Activities</div>
+            <ul className="text-xs text-emerald-800 space-y-1">
+              <li>• Cost data aggregation & accuracy</li>
+              <li>• Platform development</li>
+              <li>• Partner network management</li>
+              <li>• SEO content production</li>
+              <li>• Diaspora community building</li>
+            </ul>
+          </div>
+          <div className="p-3 rounded-lg bg-purple-50">
+            <div className="text-xs font-bold text-purple-700 uppercase mb-1">Value Propositions</div>
+            <ul className="text-xs text-purple-800 space-y-1">
+              <li>• Transparency — know real costs</li>
+              <li>• Trust — vetted partners</li>
+              <li>• Convenience — manage from abroad</li>
+              <li>• Data — Ghana-specific pricing</li>
+              <li>• End-to-end — one platform</li>
+            </ul>
+          </div>
+          <div className="p-3 rounded-lg bg-amber-50">
+            <div className="text-xs font-bold text-amber-700 uppercase mb-1">Customer Relationships</div>
+            <ul className="text-xs text-amber-800 space-y-1">
+              <li>• WhatsApp support</li>
+              <li>• Email onboarding</li>
+              <li>• Facebook community group</li>
+              <li>• Account manager (enterprise)</li>
+            </ul>
+          </div>
+          <div className="p-3 rounded-lg bg-rose-50">
+            <div className="text-xs font-bold text-rose-700 uppercase mb-1">Customer Segments</div>
+            <ul className="text-xs text-rose-800 space-y-1">
+              <li>• Ghanaian diaspora (primary)</li>
+              <li>• Local property developers</li>
+              <li>• Real estate agents</li>
+              <li>• Architects & contractors</li>
+              <li>• Banks & insurance companies</li>
+            </ul>
+          </div>
+          <div className="p-3 rounded-lg bg-teal-50">
+            <div className="text-xs font-bold text-teal-700 uppercase mb-1">Key Resources</div>
+            <ul className="text-xs text-teal-800 space-y-1">
+              <li>• Pricing data (proprietary)</li>
+              <li>• Platform & calculator tech</li>
+              <li>• Partner network</li>
+              <li>• SEO content library</li>
+              <li>• Diaspora community trust</li>
+            </ul>
+          </div>
+          <div className="p-3 rounded-lg bg-indigo-50">
+            <div className="text-xs font-bold text-indigo-700 uppercase mb-1">Channels</div>
+            <ul className="text-xs text-indigo-800 space-y-1">
+              <li>• SEO / organic search</li>
+              <li>• Facebook diaspora groups</li>
+              <li>• YouTube (demo videos)</li>
+              <li>• LinkedIn (professionals)</li>
+              <li>• WhatsApp viral sharing</li>
+              <li>• Partner referrals</li>
+            </ul>
+          </div>
+          <div className="p-3 rounded-lg bg-orange-50">
+            <div className="text-xs font-bold text-orange-700 uppercase mb-1">Cost Structure</div>
+            <ul className="text-xs text-orange-800 space-y-1">
+              <li>• ~$6K/mo lean burn</li>
+              <li>• Biggest: Marketing (30%)</li>
+              <li>• Content production (25%)</li>
+              <li>• Ops & support (15%)</li>
+              <li>• Infrastructure (15%)</li>
+            </ul>
+          </div>
+          <div className="p-3 rounded-lg bg-lime-50">
+            <div className="text-xs font-bold text-lime-700 uppercase mb-1">Revenue Streams</div>
+            <ul className="text-xs text-lime-800 space-y-1">
+              <li>• 16 identified streams</li>
+              <li>• Blended margin ~78%</li>
+              <li>• Target Y1: ~$310K</li>
+              <li>• MRR by M12: ~$35K</li>
+              <li>• LTV:CAC target: 5:1</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* Key metrics */}
+      <div className="rounded-xl border bg-white p-5 shadow-sm">
+        <h3 className="font-bold text-slate-900 mb-4">Key Metrics to Track</h3>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            { label: "Revenue Metrics", items: ["MRR / ARR", "Avg Revenue Per User (ARPU)", "LTV (12-month)", "Blended Gross Margin", "Net Revenue Retention"] },
+            { label: "Acquisition Metrics", items: ["CAC by channel", "CAC payback period", "Conversion rate (visit → paid)", "Organic vs paid split", "Referral rate"] },
+            { label: "Engagement Metrics", items: ["Reports completed/week", "Ecosystem adoption (# of stages used)", "Monthly active users", "Avg session duration", "Report → marketplace conversion"] },
+            { label: "Platform Metrics", items: ["# contractors listed", "# suppliers listed", "# properties managed", "Marketplace GMV", "Platform take rate"] },
+          ].map((group) => (
+            <div key={group.label}>
+              <div className="text-sm font-semibold text-slate-700 mb-2">{group.label}</div>
+              <ul className="space-y-1">
+                {group.items.map((item) => (
+                  <li key={item} className="text-xs text-slate-500 flex items-center gap-1.5">
+                    <span className="w-1 h-1 rounded-full bg-emerald-400" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
       </div>
     </div>
