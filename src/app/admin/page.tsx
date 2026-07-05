@@ -2502,9 +2502,9 @@ function PitchDeckView() {
           </div>
           <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm mb-6">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white font-bold text-xl">EG</div>
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white font-bold text-xl">GA</div>
               <div>
-                <h3 className="font-bold text-slate-900 text-lg">Emmanuel G. Aboagye</h3>
+                <h3 className="font-bold text-slate-900 text-lg">Gideon B. Abochie</h3>
                 <p className="text-sm text-slate-500">Founder &amp; Developer</p>
               </div>
             </div>
