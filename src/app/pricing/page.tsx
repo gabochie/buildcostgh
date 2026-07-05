@@ -5,7 +5,7 @@ import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { CheckCircle, Loader2, Shield, Star, ChevronRight, Smartphone, CreditCard, Zap, FileText, BarChart3, MapPin, Table2, Calendar, Users, PhoneCall, RefreshCw, Mail, MessageSquare, Hammer } from "lucide-react"
+import { CheckCircle, Loader2, Shield, Star, ChevronRight, Smartphone, CreditCard, Zap, FileText, BarChart3, MapPin, Table2, Calendar, Users, PhoneCall, RefreshCw, Mail, MessageSquare, Hammer, Cpu, Repeat } from "lucide-react"
 import { toast } from "sonner"
 import { GradientButton } from "@/components/shared"
 import Link from "next/link"
@@ -54,7 +54,7 @@ const packages = [
   {
     id: "basic",
     name: "Basic",
-    price: 99,
+    price: 29,
     description: "Perfect for quick estimates",
     color: "emerald",
     features: [
@@ -68,7 +68,7 @@ const packages = [
   {
     id: "detailed",
     name: "Detailed",
-    price: 249,
+    price: 79,
     description: "Complete project planning",
     popular: true,
     color: "gold",
@@ -85,7 +85,7 @@ const packages = [
   {
     id: "premium",
     name: "Premium",
-    price: 499,
+    price: 199,
     description: "Full project support",
     color: "emerald",
     features: [
@@ -148,7 +148,19 @@ const faqs = [
   },
   {
     q: "How is the cost data updated?",
-    a: "We update our cost database monthly using data from suppliers, contractors, and market research across all 10 regions of Ghana.",
+    a: "We update our cost database monthly using data from suppliers, contractors, and market research across all 16 regions of Ghana.",
+  },
+  {
+    q: "What's the difference between one-time reports and subscriptions?",
+    a: "One-time reports are single purchases — you pay once for a detailed report. Subscriptions give you unlimited access: monthly or annual plans with unlimited basic estimates, PDF reports, and tools.",
+  },
+  {
+    q: "Can I switch from monthly to annual?",
+    a: "Yes! You can upgrade from Monthly to Annual anytime. The remaining monthly balance is prorated toward your annual plan.",
+  },
+  {
+    q: "Can I cancel my subscription?",
+    a: "Absolutely. Cancel anytime from your account dashboard. Your access continues until the end of the billing period. No cancellation fees.",
   },
 ]
 
@@ -157,8 +169,47 @@ const cardVariants = {
   animate: { opacity: 1, y: 0 },
 }
 
+const subscriptionPlans = [
+  {
+    id: "monthly",
+    name: "Monthly Unlimited",
+    priceMonthly: 1900,
+    priceMonthlyUsd: 19,
+    priceAnnual: 9900,
+    priceAnnualUsd: 99,
+    description: "Unlimited basic estimates every month for individual builders",
+    popular: false,
+    features: [
+      "Unlimited basic cost estimates",
+      "Cost breakdown charts",
+      "Region comparison tool",
+      "Email delivery of summaries",
+      "Monthly market updates",
+    ],
+  },
+  {
+    id: "annual",
+    name: "Annual Unlimited",
+    priceMonthly: 0,
+    priceMonthlyUsd: 0,
+    priceAnnual: 9900,
+    priceAnnualUsd: 99,
+    description: "Best value — unlimited reports all year, save 56% vs monthly",
+    popular: true,
+    features: [
+      "Everything in Monthly Unlimited",
+      "Itemised cost breakdown PDFs",
+      "Editable Excel spreadsheets",
+      "Complete material quantities",
+      "12-month construction timeline",
+      "Regional contractor insights",
+    ],
+  },
+]
+
 export default function PricingPage() {
   const [currency, setCurrency] = useState<"GHS" | "USD">("GHS")
+  const [pricingMode, setPricingMode] = useState<"reports" | "subscriptions">("reports")
   const [rates, setRates] = useState<{ GHS: number }>({ GHS: 15.5 })
   const [rateDate, setRateDate] = useState("")
 
@@ -175,15 +226,15 @@ export default function PricingPage() {
   }, [])
 
   const rate = rates.GHS || 15.5
-  const fmtPrice = (ghs: number) => {
-    if (currency === "GHS") return `GHS ${ghs.toLocaleString()}`
-    const usd = Math.round((ghs / rate) * 100) / 100
-    return `$${usd.toLocaleString("en-US", { minimumFractionDigits: usd < 10 ? 2 : 0, maximumFractionDigits: 0 })}`
+  const fmtPrice = (usd: number) => {
+    if (currency === "USD") return `$${usd.toLocaleString()}`
+    const ghs = Math.round(usd * rate)
+    return `GHS ${ghs.toLocaleString()}`
   }
-  const fmtBtnLabel = (ghs: number) => {
-    if (currency === "GHS") return `GHS ${ghs.toLocaleString()}`
-    const usd = Math.round(ghs / rate)
-    return `$${usd}`
+  const fmtBtnLabel = (usd: number) => {
+    if (currency === "USD") return `$${usd}`
+    const ghs = Math.round(usd * rate)
+    return `GHS ${ghs.toLocaleString()}`
   }
 
   const [selected, setSelected] = useState<string | null>(null)
@@ -216,7 +267,7 @@ export default function PricingPage() {
           email: form.email,
           phone: form.phone,
           packageName: selectedPackage!.name,
-          amount: selectedPackage!.price,
+          amount: Math.round(selectedPackage!.price * rate),
           metadata: { notes: form.notes },
         }),
       })
@@ -280,8 +331,151 @@ export default function PricingPage() {
         </div>
       </section>
 
+      <div className="container mx-auto px-4 mt-6">
+        <div className="max-w-6xl mx-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-gold/10 via-gold/5 to-gold/10 border border-gold/20 text-center">
+          <Zap className="h-4 w-4 text-gold-dark flex-shrink-0" />
+          <p className="text-xs sm:text-sm font-medium text-charcoal/80">
+            Limited-time pricing — current rates locked for your session.{" "}
+            <span className="text-gold-dark font-semibold">Prices may increase with market changes.</span>
+          </p>
+        </div>
+      </div>
+
       <div className="container mx-auto px-4 -mt-12 relative z-20">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto mb-20">
+        {/* Mode toggle */}
+        <div className="flex items-center justify-center mb-8">
+          <div className="inline-flex items-center bg-white rounded-xl border border-gray-200 shadow-sm p-1">
+            <button
+              onClick={() => setPricingMode("reports")}
+              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-1.5 ${
+                pricingMode === "reports"
+                  ? "bg-emerald-600 text-white shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              <FileText className="h-4 w-4" />
+              One-Time Reports
+            </button>
+            <button
+              onClick={() => setPricingMode("subscriptions")}
+              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-1.5 ${
+                pricingMode === "subscriptions"
+                  ? "bg-emerald-600 text-white shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              <Repeat className="h-4 w-4" />
+              Subscription Plans
+            </button>
+          </div>
+        </div>
+
+        {pricingMode === "subscriptions" ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto mb-20">
+            {subscriptionPlans.map((plan, i) => {
+              const isAnnual = plan.id === "annual"
+              return (
+                <motion.div
+                  key={plan.id}
+                  variants={cardVariants}
+                  initial="initial"
+                  animate="animate"
+                  transition={{ duration: 0.4, delay: i * 0.1 }}
+                  className={`relative rounded-2xl transition-all duration-300 flex flex-col ${
+                    plan.popular
+                      ? "border-2 border-gold bg-white shadow-glass-lg md:scale-105 z-10"
+                      : "border border-gray-200 bg-white shadow-glass hover:shadow-glass-lg hover:-translate-y-1"
+                  }`}
+                >
+                  {plan.popular && (
+                    <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 z-10">
+                      <div className="relative">
+                        <div className="px-5 py-1.5 bg-gradient-gold text-charcoal text-xs font-bold rounded-b-xl shadow-lg whitespace-nowrap">
+                          ★ BEST VALUE
+                        </div>
+                        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-gold-dark rotate-45" />
+                      </div>
+                    </div>
+                  )}
+                  <div className="p-6 flex flex-col flex-1">
+                    <div className="text-center mb-5">
+                      <h3 className="font-bold text-lg mb-1 text-charcoal">{plan.name}</h3>
+                      <p className="text-xs text-gray-400 mb-4">{plan.description}</p>
+                      {isAnnual ? (
+                        <div>
+                          <div>
+                            <span className="text-sm text-gray-400 align-top mr-0.5">{currency === "GHS" ? "GHS" : "$"}</span>
+                            <span className="text-5xl font-bold text-gradient-gold">
+                              {currency === "GHS" ? plan.priceAnnual : plan.priceAnnualUsd}
+                            </span>
+                          </div>
+                          <div className="text-xs text-gray-400 mt-1">per year</div>
+                          <div className="mt-2 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-semibold">
+                            <Zap className="h-3 w-3" /> Save 56% vs monthly
+                          </div>
+                        </div>
+                      ) : (
+                        <div>
+                          <div>
+                            <span className="text-sm text-gray-400 align-top mr-0.5">{currency === "GHS" ? "GHS" : "$"}</span>
+                            <span className="text-5xl font-bold text-emerald-600">
+                              {currency === "GHS" ? plan.priceMonthly : plan.priceMonthlyUsd}
+                            </span>
+                          </div>
+                          <div className="text-xs text-gray-400 mt-1">per month</div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="border-t border-gray-100 pt-4 mb-auto">
+                      <ul className="space-y-2.5">
+                        {plan.features.map((f) => (
+                          <li key={f} className="flex items-start gap-2.5">
+                            <div className={`rounded-full p-0.5 flex-shrink-0 mt-0.5 ${
+                              plan.popular ? "bg-gold/20" : "bg-emerald-50"
+                            }`}>
+                              <CheckCircle className={`h-3.5 w-3.5 ${
+                                plan.popular ? "text-gold-dark" : "text-emerald-600"
+                              }`} />
+                            </div>
+                            <span className="text-sm text-gray-600">{f}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="mt-6">
+                      <button
+                        onClick={() => {
+                          toast.info("Subscription payments coming soon — Paystack integration in progress")
+                        }}
+                        className={`group relative w-full overflow-hidden rounded-xl px-5 py-3 text-sm font-bold text-white transition-all ${
+                          plan.popular
+                            ? "bg-gradient-gold hover:shadow-lg hover:shadow-gold/25"
+                            : "bg-emerald-600 hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-200"
+                        }`}
+                      >
+                        <span className="relative z-10 flex items-center justify-center gap-1.5">
+                          Subscribe{isAnnual ? " Annual" : " Monthly"}
+                          <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                        </span>
+                      </button>
+                    </div>
+
+                    <div className="mt-3 flex items-center justify-center gap-3 text-[10px] text-gray-400">
+                      <span className="flex items-center gap-1"><CreditCard className="h-3 w-3" /> Card</span>
+                      <span className="text-gray-300">|</span>
+                      <span className="flex items-center gap-1"><Smartphone className="h-3 w-3" /> Mobile Money</span>
+                      <span className="text-gray-300">|</span>
+                      <span className="flex items-center gap-1"><Cpu className="h-3 w-3" /> Cancel anytime</span>
+                    </div>
+                  </div>
+                </motion.div>
+              )
+            })}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto mb-20">
           {packages.map((pkg, i) => {
             const isSelected = (formVisible || selected) === pkg.id
             const isPopular = pkg.popular
@@ -467,6 +661,7 @@ export default function PricingPage() {
             )
           })}
         </div>
+      )}
 
         <div className="max-w-4xl mx-auto mb-20">
           <motion.div

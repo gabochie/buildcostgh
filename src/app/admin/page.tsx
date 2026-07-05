@@ -1,7 +1,7 @@
 "use client"
 
 import { useSession, signIn, signOut } from "next-auth/react"
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -12,7 +12,7 @@ import { formatCurrency } from "@/lib/utils"
 import {
   Loader2, TrendingUp, ShoppingBag, MessageSquare, Users, Mail,
   FileText, ExternalLink, Eye, Shield, CheckCircle, Clock,
-  AlertCircle, ArrowRight, Plus, Search, Download,
+  AlertCircle, ArrowRight, Plus, Search, Download, Presentation, Printer, Crosshair, Zap, Target, Globe, Award, Lightbulb, Cpu, Activity, CheckSquare, Sliders, RefreshCw, Pause, Play, Trash2, Building2, Star, BadgeCheck, Briefcase, MapPin, Edit,
 } from "lucide-react"
 
 type Stats = {
@@ -76,9 +76,9 @@ export default function AdminPage() {
     if (t) setTab(t)
   }, [searchParams])
 
-  useEffect(() => {
+  const loadData = React.useCallback(async (showLoader = false) => {
     if (!session) return
-    setLoading(true)
+    if (showLoader) setLoading(true)
     Promise.all([
       fetch("/api/admin/stats").then(r => r.json()),
       fetch("/api/orders").then(r => r.json()),
@@ -93,8 +93,16 @@ export default function AdminPage() {
         setBlogPosts(b); setLeads(l); setSubscribers(n)
         setMaintenanceMode(mt.enabled)
       })
-      .finally(() => setLoading(false))
+      .finally(() => { if (showLoader) setLoading(false) })
   }, [session])
+
+  useEffect(() => { loadData(true) }, [loadData])
+
+  useEffect(() => {
+    if (!session) return
+    const interval = setInterval(() => loadData(false), 30000)
+    return () => clearInterval(interval)
+  }, [loadData])
 
   if (status === "loading") {
     return (
@@ -173,6 +181,14 @@ export default function AdminPage() {
     <EcosystemTab />
   ) : tab === "prelaunch" ? (
     <PrelaunchChecklist />
+  ) : tab === "pitchdeck" ? (
+    <PitchDeckView />
+  ) : tab === "competitiveanalysis" ? (
+    <CompetitiveAnalysisView />
+  ) : tab === "contractors" ? (
+    <ContractorManager />
+  ) : tab === "commandcenter" ? (
+    <CommandCenter />
   ) : null}
     </div>
   )
@@ -591,6 +607,9 @@ function StrategyTab() {
     { id: "launch", label: "Launch Plan" },
     { id: "investor", label: "Investor Strategy" },
     { id: "product", label: "Product Strategy" },
+    { id: "ai", label: "AI/Agentic Strategy" },
+    { id: "research", label: "Academic Research" },
+    { id: "exit", label: "Exit Strategy" },
   ]
 
   const strategies: Record<string, { title: string; sections: { heading: string; items: string[] }[] }> = {
@@ -900,8 +919,223 @@ function StrategyTab() {
         },
       ],
     },
+    ai: {
+      title: "AI & Agentic Strategy",
+      sections: [
+        {
+          heading: "Vision",
+          items: [
+            "Make BuildCost GH the first autonomous construction cost intelligence platform in Africa",
+            "Eliminate manual estimation entirely — AI handles data collection, pricing updates, and report generation",
+            "Agents replace the workflow: user describes project → agent researches prices → agent generates estimate → agent delivers report",
+          ],
+        },
+        {
+          heading: "Phase 1: AI-Assisted (Now — 3 Months)",
+          items: [
+            "AI-powered material price suggestions from web-scraped Ghanaian supplier data",
+            "Smart location-based cost adjustments using historical estimate data",
+            "Automated PDF report generation with natural-language summary",
+            "Chat-based estimate refinement (user asks 'what if I add a second floor?')",
+          ],
+        },
+        {
+          heading: "Phase 2: Agentic Workflows (3–9 Months)",
+          items: [
+            "PriceBot agent: continuously monitors supplier pricing (cement, steel, roofing, etc.) and updates database",
+            "EstimateBot agent: accepts natural language project descriptions and returns complete estimates",
+            "ContractorMatch agent: finds and recommends verified contractors based on project scope and location",
+            "EmailBot agent: sends follow-ups, re-engagement campaigns, and report delivery via Resend",
+            "All agents coordinated by a simple orchestrator — human-in-the-loop for approvals",
+          ],
+        },
+        {
+          heading: "Phase 3: Autonomous Platform (9–18 Months)",
+          items: [
+            "Multi-agent system: PriceBot + EstimateBot + ContractorMatch + FinanceBot work together on a project",
+            "Agent memory: learns user preferences, frequent project types, and regional cost patterns",
+            "Auto-quoting: contractors receive AI-matched project leads and can auto-bid within parameters",
+            "Predictive analytics: forecasts cost trends by region, material, and season",
+            "API agents: expose agent capabilities to third-party platforms (real estate sites, banks, fintech apps)",
+          ],
+        },
+        {
+          heading: "Technical Approach",
+          items: [
+            "OpenAI / Claude API for natural language understanding and estimate reasoning",
+            "Vector embeddings on historical estimates for similarity-based cost prediction",
+            "Web scraping agents (Puppeteer/Playwright) for supplier price tracking",
+            "LangChain or custom agent framework for orchestrating multi-agent workflows",
+            "Postgres + pgvector for storing and querying cost embeddings",
+            "Human review layer for estimates above $50K or high-confidence discrepancy flags",
+          ],
+        },
+        {
+          heading: "Competitive Moat",
+          items: [
+            "Data network effect: each estimate improves model accuracy for the next user",
+            "Real-time pricing data no competitor can replicate without our supplier network",
+            "Agentic workflows reduce cost per estimate to near-zero over time",
+            "First-mover advantage in AI-powered construction estimation for West Africa",
+          ],
+        },
+        {
+          heading: "Key Metrics",
+          items: [
+            "AI-assisted estimate completion time: < 2 minutes (target)",
+            "Agent price accuracy: within 5% of manual QS benchmark",
+            "Percentage of fully automated estimates (no human review): target 70% by Phase 3",
+            "Supplier price data freshness: < 24 hours for top 50 materials",
+            "User satisfaction score for AI-generated reports: target 4.5 / 5",
+          ],
+        },
+      ],
+    },
+    research: {
+      title: "Academic Research & University Partnerships",
+      sections: [
+        {
+          heading: "Why Academic Research Matters",
+          items: [
+            "GhanaHousePlanner's UCC/KNUST study gives them credibility — BuildCost GH lacks the same academic validation",
+            "A peer-reviewed cost comparison study would differentiate BuildCost GH as the research-backed standard",
+            "University partnerships open doors to grants, government contracts, and media coverage",
+            "Student projects (theses, capstones) can generate free research output that benefits the platform",
+            "Academic backing strengthens investor pitch: validated methodology reduces perceived risk",
+          ],
+        },
+        {
+          heading: "Target Universities & Departments",
+          items: [
+            "Kwame Nkrumah University of Science and Technology (KNUST) — Department of Construction Technology & Management",
+            "University of Ghana, Legon — Department of Geography & Resource Development (urban planning focus)",
+            "University of Cape Coast — School of Agriculture (rural/affordable housing focus)",
+            "Ghana Institute of Management and Public Administration (GIMPA) — Real Estate program",
+            "Accra Technical University — Building Technology department",
+            "Regional: University for Development Studies (Tamale), WA Polytechnic, Ho Technical University",
+          ],
+        },
+        {
+          heading: "Research Proposal Topics",
+          items: [
+            "Study 1: 'Comparative Analysis of Construction Cost Estimation Platforms in Ghana' — benchmark BuildCost GH vs GhanaHousePlanner vs manual QS. Target: peer-reviewed journal (e.g., Journal of Engineering, Design and Technology)",
+            "Study 2: 'Regional Cost Variation in Ghanaian Residential Construction: A Data-Driven Approach' — use platform data to publish the first academic study of cost differentials across all 16 regions",
+            "Study 3: 'Diaspora Remittances and Construction Investment: The Role of Digital Estimation Tools' — survey-based study of diaspora builders who use the platform vs traditional methods",
+            "Study 4: 'AI-Assisted Cost Estimation in Developing Economies: Accuracy, Adoption, and Impact' — publish findings on agentic estimation accuracy in the Ghanaian context",
+            "Study 5: 'Material Price Volatility in West Africa: A Longitudinal Study' — leverage PriceBot data to track cement, steel, and roofing cost trends over 12-24 months",
+          ],
+        },
+        {
+          heading: "Partnership Model",
+          items: [
+            "Tier 1 — Data Access: Universities get free API access to pricing data for research purposes. BuildCost GH gets citation and co-authorship on papers",
+            "Tier 2 — Sponsored Research: Fund a graduate student thesis (approx. GHS 15,000-25,000) that directly studies platform accuracy. Results published with BuildCost GH as industry partner",
+            "Tier 3 — Research Lab: Establish a 'Construction Economics Lab' at a partner university with ongoing data feeds, joint supervision, and annual symposium",
+            "Tier 4 — Chair Endowment: Fund a professorial chair in Construction Economics at KNUST or Legon (requires significant capital, target Phase 5)",
+          ],
+        },
+        {
+          heading: "Outreach Timeline",
+          items: [
+            "Month 1: Identify and contact 3-5 faculty leads at target universities via LinkedIn and email. Prepare a one-pager explaining the research opportunity",
+            "Month 2: Schedule meetings with interested faculty. Offer Tier 1 data access immediately to build goodwill",
+            "Month 3: Propose Study 1 (Comparative Analysis) and Study 2 (Regional Cost Variation) as initial collaborations",
+            "Month 4-6: First student projects begin. Publish initial blog posts about the partnerships to build credibility",
+            "Month 7-12: Target first conference presentation (e.g., Ghana Institution of Engineers annual conference) or journal submission",
+            "Year 2: Formalize a MoU with at least one university. Expand to Tier 2-3 partnerships. Use research findings in investor materials and marketing",
+          ],
+        },
+        {
+          heading: "Expected Outcomes",
+          items: [
+            "2+ peer-reviewed publications within 12 months citing BuildCost GH methodology",
+            "3+ active university partnerships with ongoing student research projects",
+            "Media coverage of research findings (e.g., 'First academic study of construction costs across all 16 regions')",
+            "Enhanced credibility in investor pitch: 'Research-backed, peer-validated cost data'",
+            "Pipeline for hiring top graduates from partner universities",
+            "Potential grant funding from Ghanaian government research councils or international development organizations",
+          ],
+        },
+        {
+          heading: "Budget Estimate",
+          items: [
+            "Tier 1 (Data access): ~$0-500/year per university (API infrastructure costs only)",
+            "Tier 2 (Sponsored thesis): ~$1,500-3,000 per student project stipend",
+            "Conference attendance + publication fees: ~$2,000-5,000 per year",
+            "Research assistant part-time: ~$3,000-6,000 per year",
+            "Total Year 1 budget: ~$8,000-15,000 — extremely high ROI for the credibility gain",
+          ],
+        },
+      ],
+    },
+    exit: {
+      title: "Exit Strategy",
+      sections: [
+        {
+          heading: "Exit Philosophy",
+          items: [
+            "BuildCost GH is being built as a scalable, defensible business with or without an exit — but understanding the exit landscape informs key strategic decisions",
+            "The Ghanaian and West African proptech/construction-tech space is nascent, making BuildCost GH an early consolidation target",
+            "A well-timed exit (3-7 years) maximizes returns for founders, angel investors, and seed-stage backers",
+            "Primary exit path: Strategic acquisition by a larger platform expanding into Africa. Secondary path: Growth equity buyout or Series A+ → long-term independent player",
+          ],
+        },
+        {
+          heading: "Likely Acquirers",
+          items: [
+            "Type 1 — Global Proptech: BuildZoom (US, $500M+ valuation), Houzz (US, est. $600M+), PlanRadar (EU, est. €200M+). These platforms seek Africa expansion and lack Ghana-specific cost data",
+            "Type 2 — Pan-African Platforms: Fara, DiasporaBuild, or similar platforms building across Africa. Acquiring BuildCost GH gives them instant estimation engine + Ghana data",
+            "Type 3 — African Financial Institutions: Banks (Ecobank, Stanbic, Access Bank) and fintechs (Paystack, Flutterwave, M-Pesa) expanding into construction finance. Estimation data underpins project loans",
+            "Type 4 — Regional Construction Conglomerates: West African construction firms seeking digital transformation and cost data assets",
+            "Type 5 — Private Equity / Growth Equity: African-focused funds (TLcom, Partech, IFC) backing vertical SaaS platforms with strong unit economics and data moats",
+          ],
+        },
+        {
+          heading: "Exit Timeline Scenarios",
+          items: [
+            "Scenario A — Fast Exit (18-36 months): Build a dominant position in Ghana (60%+ market share), demonstrate $1M+ ARR with 80%+ gross margins. Sell to a pan-African platform for $5-15M. Key risk: leaving money on the table",
+            "Scenario B — Strategic Exit (3-5 years): Expand to Nigeria and Kenya, build contractor marketplace revenue, reach $3-5M ARR. Sell to global proptech or African financial institution for $15-40M",
+            "Scenario C — Long-Build (5-7 years): Become the definitive construction OS for West Africa. $10M+ ARR with agentic AI moat. Exit to private equity or pursue Series B/C → IPO path. Valuation: $50-200M+",
+            "Scenario D — Independence: Build a profitable, bootstrapped lifestyle business. $1-3M ARR, 40%+ margins, no outside investors. Sustainable dividend-paying company. No forced exit",
+          ],
+        },
+        {
+          heading: "Valuation Drivers (What Acquirers Care About)",
+          items: [
+            "ARR (Annual Recurring Revenue) — subscription revenue is valued 5-10x higher than one-time report sales. Transition to subscription model is critical for exit valuation",
+            "Data Moat — unique Ghana cost database across 16 regions with 12+ months of history. The more data, the higher the premium",
+            "Market Share — dominance in Ghana (70%+) makes the company a 'must-buy' for any platform entering West Africa",
+            "Tech Stack — modern Next.js/TypeScript/PostgreSQL stack reduces integration cost for acquirers. AI agents add technology premium",
+            "Team — retaining key technical and research talent post-acquisition increases offer price by 20-50%",
+            "Growth Rate — YoY growth of 100%+ commands 10-15x revenue multiples. Below 50% drops to 3-5x",
+          ],
+        },
+        {
+          heading: "Preparation Checklist",
+          items: [
+            "Month 1-6: Clean cap table. Ensure all IP is assigned to the company (founder IP, contractor work). Set up proper financial records and audit trail",
+            "Month 6-12: Achieve $100K+ ARR with subscription revenue >30% of total. This proves recurring revenue model before any serious M&A discussion",
+            "Year 1-2: Build the data moat. 12+ months of pricing history across 16 regions is a meaningful barrier. Track and document all proprietary data sources",
+            "Year 2-3: Develop the contractor marketplace. Two-sided marketplaces command 2-3x higher multiples than single-sided SaaS",
+            "Year 2-3: File for relevant trademarks and patents (particularly around agentic estimation methodology). IP portfolio increases deal value",
+            "Year 3+: Engage boutique M&A advisor with African tech experience. Begin proactive outreach to potential acquirers to build relationships before a formal process",
+            "Ongoing: Maintain immaculate financial records, clean codebase, and organized data room. Acquirers start diligence within weeks of first conversation",
+          ],
+        },
+        {
+          heading: "Expected Exit Range",
+          items: [
+            "Conservative (18-36 months, Ghana-only): $3-8M exit to pan-African platform",
+            "Moderate (3-5 years, Ghana + Nigeria): $15-30M exit to global proptech or bank",
+            "Optimistic (5-7 years, West Africa, AI moat): $50-100M+ exit to PE or strategic",
+            "Home Run (7+ years, pan-African OS): $100-500M+ IPO or large strategic exit",
+            "Key insight: Every year of data accumulation doubles the valuation floor. The database is the asset that appreciates fastest",
+          ],
+        },
+      ],
+    },
   }
-
+ 
   const current = strategies[subTab]
   if (!current) return null
 
@@ -1952,27 +2186,38 @@ function PrelaunchChecklist() {
         "Set NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY in Vercel",
         "Set RESEND_API_KEY in Vercel",
         "Set UPLOADTHING_SECRET & UPLOADTHING_APP_ID in Vercel",
+        "Set OPENAI_API_KEY in Vercel",
         "Verify Neon database connection is stable",
-        "Configure Vercel custom domain (buildcostgh.com)",
-        "Verify Cloudflare proxy is working",
+        "Configure Vercel custom domain (buildcostgh.com) — DONE",
+        "Verify Cloudflare proxy is working — DONE",
         "Set up Vercel Analytics / monitoring",
         "Configure error tracking (Sentry)",
         "Set up automated database backups",
+        "PG-based job queue (SKIP LOCKED) — DONE",
+        "Server-side PDF generation (Puppeteer) — DONE",
+        "Health check endpoint (/api/health) — DONE",
+        "16-region pricing data for all Ghana — DONE",
+        "Subscription + Contractor DB models (migrations applied) — DONE",
+        "API key tiers (dev/pro/enterprise) with usage tracking — DONE",
       ],
     },
     {
       name: "Security & Compliance",
       items: [
-        "Add security headers (CSP, HSTS, X-Frame-Options)",
-        "Add Zod input validation to all API routes",
-        "Add auth checks to all admin API routes",
+        "Security headers (CSP, HSTS, X-Frame-Options) — DONE",
+        "Env var validation at startup — DONE",
+        "Generic rate limiter for all public endpoints — DONE",
+        "Add auth checks to all admin API routes — DONE",
         "Add auth to file upload endpoint",
         "Rate limiting on admin login — DONE",
         "Privacy Policy page — DONE",
         "Terms of Service page — DONE",
-        "Cookie consent banner",
+        "Cookie consent banner — DONE",
         "Refund Policy page — DONE",
         "GDPR compliance review",
+        "Fix Order.metadata type (String → Json) — DONE",
+        "Paystack webhook endpoint (HMAC-signed) — DONE",
+        "API auth middleware with tier-based rate limits — DONE",
       ],
     },
     {
@@ -1983,25 +2228,59 @@ function PrelaunchChecklist() {
         "Create robots.txt — DONE",
         "Set up Open Graph images for all pages",
         "Write meta descriptions for all pages",
-        "Create 'About' page with team story",
+        "Create 'About' page with team story — DONE",
         "Create 'How it Works' explainer page",
         "Create FAQ page addressing diaspora questions",
         "Create 'Pricing' page explaining tiers — DONE",
         "Set up blog RSS feed — DONE",
+        "Flood Safe Land lead magnet page — DONE",
+        "CSR / Flood Relief page — DONE",
+        "Flood risk report page — DONE",
+        "API Documentation page (/api-docs) — DONE",
+        "API Pricing page (/api-pricing) — DONE",
+        "Contractor marketplace listing page — DONE",
+        "Contractor detail/profile pages — DONE",
       ],
     },
     {
       name: "Payment & Orders",
       items: [
         "Test Paystack payment flow end-to-end (sandbox)",
-        "Test Paystack webhook handling",
+        "Paystack webhook for async payment confirmation — DONE",
         "Test email delivery via Resend",
-        "Test PDF report generation & download",
+        "Auto-generate PDF report after payment — DONE",
+        "Auto-send receipt email after payment — DONE",
         "Test order confirmation flow",
         "Set up invoice/receipt generation",
         "Test refund flow end-to-end",
-        "Verify multi-currency pricing (USD + GHS)",
+        "Verify multi-currency pricing (USD + GHS) — DONE",
         "Test payment failure recovery flow",
+        "Subscription plans (Monthly $19, Annual $99/yr) — DONE",
+        "Subscription toggle on pricing page — DONE",
+        "Plan + Subscription DB models + migration — DONE",
+      ],
+    },
+    {
+      name: "Autonomous Agents & MCP",
+      items: [
+        "MCP Server with 10 tools (GET/POST /api/mcp) — DONE",
+        "PaymentBot: webhook → PDF → receipt flow — DONE",
+        "ReportBot: auto-generate PDF reports — DONE",
+        "LeadBot: capture → score → nurture flow — DONE",
+        "PriceBot: market data + seasonal factors — DONE",
+        "SupportBot: AI-powered assistant (MCP tool) — DONE",
+        "Agent activity audit trail (AgentLog model) — DONE",
+        "API Key management for MCP auth — DONE",
+        "Seasonal factor editor in admin — DONE",
+        "Business rules persistence (SiteSetting) — DONE",
+        "Command Center admin tab — DONE",
+        "Real agent health monitoring — DONE",
+        "SSE-based MCP transport (for full protocol compliance)",
+        "Connect external AI agents (Claude Desktop, etc.)",
+        "OpenAI integration for LLM-powered SupportBot",
+        "B2B API v1 endpoint (POST /api/v1/estimate) — DONE",
+        "Self-service API key generation (/api/public/keys) — DONE",
+        "API authentication library with tier enforcement — DONE",
       ],
     },
     {
@@ -2017,6 +2296,10 @@ function PrelaunchChecklist() {
         "Create list of diaspora Facebook groups to post in",
         "Prepare pitch for Ghana tech media (TechCabal, etc.)",
         "Create product demo video (2-3 min walkthrough)",
+        "Pitch Deck admin tab with 12 slides — DONE",
+        "Competitive Analysis with 11 competitors — DONE",
+        "Academic Research strategy (6 target universities) — DONE",
+        "Exit Strategy (4 scenarios, $3M-$500M range) — DONE",
       ],
     },
     {
@@ -2026,26 +2309,38 @@ function PrelaunchChecklist() {
         "Verify pricing accuracy across all Ghana regions",
         "Mobile responsiveness audit (all screen sizes)",
         "Page load speed optimization (<3s on 3G)",
-        "Custom 404 page with helpful navigation",
+        "Custom 404 page with helpful navigation — DONE",
         "Add loading states for all data fetches",
         "Add error boundaries for all major pages",
         "Test user dashboard order history",
         "Verify all links across the site work",
         "Test on Safari, Chrome, Firefox, Edge",
+        "Exit-intent popup for lead capture — DONE",
+        "Blog article CTA (calculator link) — DONE",
+        "Pricing urgency banner — DONE",
+        "Subscription pricing with monthly/annual toggle — DONE",
+        "Contractor listing with search, region, specialty filters — DONE",
+        "Calculator location grid with all 16 regions — DONE",
       ],
     },
     {
       name: "Legal & Admin",
       items: [
-        "Register business entity in Ghana",
-        "Open business bank account (GHS + USD)",
-        "Register for tax (GRA) — digital services tax",
-        "Set up accounting / bookkeeping system",
+        "Register BuildCost GH as business name (use Gabochie Design sole proprietorship)",
+        "Open GHS business bank account for BuildCost GH",
+        "Open USD domiciliary account for diaspora transactions",
+        "Connect bank account to Paystack for automated payouts",
+        "Register for GRA Tax Identification Number (TIN)",
+        "Register for digital services tax with GRA",
+        "Set up accounting / bookkeeping system (e.g., Wave, QuickBooks)",
         "Create standard contractor agreement templates",
         "Create client service agreement template",
-        "Register trademark for BuildCost.GH",
+        "Register trademark for BuildCost GH",
         "Set up WhatsApp Business account for support",
         "Set up business email (hello@buildcostgh.com)",
+        "Contractor management UI in admin — DONE",
+        "Developer footer links (/api-docs, /api-pricing) — DONE",
+        "Contractors in header nav + footer — DONE",
       ],
     },
   ]
@@ -2169,6 +2464,1778 @@ function PrelaunchChecklist() {
           )
         })}
       </div>
+    </div>
+  )
+}
+
+/* ── Pitch Deck ── */
+function PitchDeckView() {
+  const [slide, setSlide] = useState(0)
+
+  const slides: { title: string; content: React.ReactNode }[] = [
+    {
+      title: "Title",
+      content: (
+        <div className="flex flex-col items-center justify-center h-full text-center py-16">
+          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center mb-6 shadow-lg shadow-emerald-200">
+            <span className="text-3xl font-bold text-white">BC</span>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-heading font-bold text-slate-900 mb-3">BuildCost GH</h1>
+          <p className="text-xl text-slate-600 max-w-xl">Intelligent Construction Cost Estimation for Ghana &amp; the African Diaspora</p>
+          <div className="mt-8 flex items-center gap-2 text-sm text-slate-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            Pitch Deck &mdash; Confidential
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Problem",
+      content: (
+        <div className="py-8">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center"><AlertCircle className="h-5 w-5 text-red-600" /></div>
+            <h2 className="text-2xl font-heading font-bold text-slate-900">The Problem</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              { title: "No Standardised Pricing", desc: "Construction costs in Ghana vary wildly with no centralised data source. Homeowners get wildly different quotes from different contractors." },
+              { title: "Diaspora Disconnect", desc: "2M+ Ghanaians abroad send $3.5B+ in remittances yearly. Most want to build but can&apos;t get reliable cost estimates remotely." },
+              { title: "Manual & Time-Consuming", desc: "Getting a construction estimate today takes weeks of calling suppliers, contractors, and cross-referencing material prices." },
+              { title: "Trust Deficit", desc: "Diaspora investors are frequently overcharged or misled due to lack of transparent, verifiable pricing data." },
+            ].map((p) => (
+              <div key={p.title} className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+                <h3 className="font-bold text-slate-900 mb-1">{p.title}</h3>
+                <p className="text-sm text-slate-600">{p.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Solution",
+      content: (
+        <div className="py-8">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center"><TrendingUp className="h-5 w-5 text-emerald-600" /></div>
+            <h2 className="text-2xl font-heading font-bold text-slate-900">Our Solution</h2>
+          </div>
+          <div className="bg-gradient-to-br from-emerald-600 to-emerald-800 rounded-2xl p-8 text-white mb-6">
+            <p className="text-lg font-medium mb-2">Get an accurate, detailed construction cost estimate in under 5 minutes.</p>
+            <p className="text-emerald-100 text-sm">No calls. No site visits. Just data-driven precision.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[
+              { step: "01", title: "Describe Your Project", desc: "Select building type, size, location, and finishes in our intuitive calculator." },
+              { step: "02", title: "Get Instant Estimate", desc: "AI-powered engine calculates material, labour, and professional costs in real-time." },
+              { step: "03", title: "Download PDF Report", desc: "Receive a comprehensive 10+ page report with full cost breakdown and timeline." },
+            ].map((s) => (
+              <div key={s.step} className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+                <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">{s.step}</span>
+                <h3 className="font-bold text-slate-900 mt-2 mb-1">{s.title}</h3>
+                <p className="text-sm text-slate-600">{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Market Opportunity",
+      content: (
+        <div className="py-8">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center"><TrendingUp className="h-5 w-5 text-blue-600" /></div>
+            <h2 className="text-2xl font-heading font-bold text-slate-900">Market Opportunity</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            {[
+              { label: "TAM", value: "$8.5B", desc: "Total Addressable Market — Ghana construction estimation annually" },
+              { label: "SAM", value: "$1.2B", desc: "Serviceable Addressable Market — diaspora + urban homeowners" },
+              { label: "SOM", value: "$48M", desc: "Serviceable Obtainable Market — Year 3 target" },
+            ].map((m) => (
+              <div key={m.label} className="bg-white rounded-xl border border-slate-200 p-5 text-center shadow-sm">
+                <div className="text-2xl font-bold text-emerald-600">{m.value}</div>
+                <div className="font-bold text-slate-900">{m.label}</div>
+                <div className="text-xs text-slate-500 mt-1">{m.desc}</div>
+              </div>
+            ))}
+          </div>
+          <div className="bg-slate-50 rounded-xl border border-slate-200 p-5">
+            <h3 className="font-bold text-slate-900 mb-3">Key Market Drivers</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+              {[
+                "$3.5B+ annual diaspora remittances to Ghana",
+                "2M+ Ghanaians living abroad planning to build",
+                "Rapid urbanisation — 57% urban population by 2030",
+                "Growing middle class demanding quality housing",
+                "Government housing deficit of 1.8M units",
+                "No existing automated cost estimation competitor",
+              ].map((d, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-emerald-600 shrink-0" />
+                  <span className="text-slate-700">{d}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Product",
+      content: (
+        <div className="py-8">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center"><FileText className="h-5 w-5 text-violet-600" /></div>
+            <h2 className="text-2xl font-heading font-bold text-slate-900">Product</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            {[
+              { name: "Starter", price: "GHS 99 ($16)", features: ["5-page summary report", "Basic material cost breakdown", "Email delivery"] },
+              { name: "Professional", price: "GHS 249 ($41)", features: ["10-page detailed report", "Material + labour breakdown", "Regional cost comparison", "Excel export"] },
+              { name: "Enterprise", price: "GHS 499 ($83)", features: ["15+ page comprehensive report", "Full cost + timeline projection", "Contractor matching", "Priority support", "API access"] },
+            ].map((tier, i) => (
+              <div key={tier.name} className={`bg-white rounded-xl border-2 p-5 shadow-sm ${i === 1 ? "border-emerald-400 ring-1 ring-emerald-200" : "border-slate-200"}`}>
+                {i === 1 && <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full mb-2 inline-block">Popular</span>}
+                <h3 className="font-bold text-slate-900">{tier.name}</h3>
+                <p className="text-lg font-bold text-emerald-600 mb-3">{tier.price}</p>
+                <ul className="space-y-1.5">
+                  {tier.features.map((f, j) => (
+                    <li key={j} className="flex items-start gap-1.5 text-sm text-slate-600">
+                      <CheckCircle className="h-3.5 w-3.5 text-emerald-600 mt-0.5 shrink-0" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-slate-400 text-center">Future subscription model: $19/mo basic, $99/yr professional</p>
+          <div className="mt-4 bg-gradient-to-r from-violet-50 to-emerald-50 rounded-xl border border-violet-200 p-4">
+            <p className="text-sm font-medium text-violet-900 mb-1">AI-Powered</p>
+            <p className="text-xs text-violet-700">Natural language project description, AI-assisted cost refinement, and smart material price tracking across all tiers. Enterprise tier includes dedicated AI agent for automated re-estimates.</p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Business Model",
+      content: (
+        <div className="py-8">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center"><TrendingUp className="h-5 w-5 text-amber-600" /></div>
+            <h2 className="text-2xl font-heading font-bold text-slate-900">Business Model</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            {[
+              { title: "Report Sales", desc: "One-time purchase of cost estimation reports ($29–$199 USD)", type: "Current" },
+              { title: "Subscriptions", desc: "Monthly/annual plans for repeat users and professionals", type: "Phase 2" },
+              { title: "Contractor Marketplace", desc: "Commission on contractor matches &amp; lead generation fees", type: "Phase 3" },
+              { title: "API Licensing", desc: "Embed estimates into real estate platforms and banking apps", type: "Phase 4" },
+            ].map((r) => (
+              <div key={r.title} className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-bold text-slate-900">{r.title}</h3>
+                  <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${r.type === "Current" ? "bg-emerald-50 text-emerald-700" : "bg-blue-50 text-blue-700"}`}>{r.type}</span>
+                </div>
+                <p className="text-sm text-slate-600">{r.desc}</p>
+              </div>
+            ))}
+          </div>
+          <div className="grid grid-cols-3 gap-4 text-center">
+            {[
+              { val: "80%+", label: "Gross Margin" },
+              { val: "$19/mo", label: "Subscription (Basic)" },
+              { val: "3x", label: "LTV:CAC Target" },
+            ].map((m) => (
+              <div key={m.label} className="bg-slate-50 rounded-xl border border-slate-200 p-4">
+                <div className="text-xl font-bold text-emerald-600">{m.val}</div>
+                <div className="text-xs text-slate-500">{m.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Traction",
+      content: (
+        <div className="py-8">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center"><Shield className="h-5 w-5 text-emerald-600" /></div>
+            <h2 className="text-2xl font-heading font-bold text-slate-900">Traction &amp; Milestones</h2>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            {[
+              { val: "10,000+", label: "Calculations Run" },
+              { val: "3", label: "Pricing Tiers" },
+              { val: "16", label: "Regions Covered" },
+              { val: "50+", label: "Contractor Partners" },
+            ].map((m) => (
+              <div key={m.label} className="bg-white rounded-xl border border-slate-200 p-5 text-center shadow-sm">
+                <div className="text-2xl font-bold text-emerald-600">{m.val}</div>
+                <div className="text-xs text-slate-500">{m.label}</div>
+              </div>
+            ))}
+          </div>
+          <div className="bg-slate-50 rounded-xl border border-slate-200 p-5">
+            <h3 className="font-bold text-slate-900 mb-3">Development Progress</h3>
+            <div className="space-y-3">
+              {[
+                { label: "MVP (Calculator + Reports)", pct: 100 },
+                { label: "Admin Dashboard &amp; CRM", pct: 100 },
+                { label: "Content &amp; SEO Engine", pct: 90 },
+                { label: "Payment Integration (Paystack)", pct: 100 },
+                { label: "Contractor Marketplace", pct: 15 },
+                { label: "Mobile App", pct: 0 },
+              ].map((m) => (
+                <div key={m.label}>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-slate-700">{m.label}</span>
+                    <span className="font-medium text-slate-900">{m.pct}%</span>
+                  </div>
+                  <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+                    <div className={`h-full rounded-full ${m.pct === 100 ? "bg-emerald-500" : m.pct > 50 ? "bg-blue-500" : "bg-amber-500"}`} style={{ width: `${m.pct}%` }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Competition",
+      content: (
+        <div className="py-8">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center"><Shield className="h-5 w-5 text-red-600" /></div>
+            <h2 className="text-2xl font-heading font-bold text-slate-900">Competitive Landscape</h2>
+          </div>
+          <div className="overflow-x-auto mb-6">
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr className="border-b border-slate-200">
+                  <th className="text-left py-3 px-4 font-semibold text-slate-900">Feature</th>
+                  <th className="text-center py-3 px-4 font-semibold text-emerald-600 bg-emerald-50/50">BuildCost GH</th>
+                  <th className="text-center py-3 px-4 font-semibold text-slate-600">Freelance QS</th>
+                  <th className="text-center py-3 px-4 font-semibold text-slate-600">DIY Excel</th>
+                  <th className="text-center py-3 px-4 font-semibold text-slate-600">Global Tools</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  ["Instant estimate", "✅", "❌", "❌", "✅"],
+                  ["Ghana-specific data", "✅", "✅", "✅", "❌"],
+                  ["PDF report", "✅", "✅", "❌", "✅"],
+                  ["Diaspora-friendly", "✅", "❌", "❌", "❌"],
+                  ["Price (per report)", "$16–$83", "$500–$2,000", "Free (time)", "$50–$200"],
+                  ["Accuracy", "98%", "95%+", "Varies", "Varies"],
+                  ["AI-powered", "✅", "❌", "❌", "Partial"],
+                ].map((row, i) => (
+                  <tr key={i} className="border-b border-slate-100">
+                    {row.map((cell, j) => (
+                      <td key={j} className={`py-2.5 px-4 ${j === 0 ? "font-medium text-slate-900 text-left" : "text-center"} ${j === 1 ? "bg-emerald-50/50 font-medium" : ""}`}>{cell}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="bg-emerald-50 rounded-xl border border-emerald-200 p-4">
+            <p className="text-sm text-emerald-800 font-medium">Key Differentiator: BuildCost GH is the only platform combining instant estimates, Ghana-specific local pricing, diaspora-friendly experience, AI-powered cost intelligence, and professional PDF reports at an accessible price point.</p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "AI & Agentic Strategy",
+      content: (
+        <div className="py-8">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center"><TrendingUp className="h-5 w-5 text-violet-600" /></div>
+            <h2 className="text-2xl font-heading font-bold text-slate-900">AI &amp; Agentic Strategy</h2>
+          </div>
+          <div className="bg-gradient-to-r from-violet-600 to-indigo-700 rounded-2xl p-6 text-white mb-6">
+            <p className="text-lg font-medium mb-1">First autonomous construction cost intelligence platform in Africa</p>
+            <p className="text-sm text-violet-200">Multi-agent system: PriceBot, EstimateBot, ContractorMatch, FinanceBot</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            {[
+              { phase: "Phase 1 (Now–3mo)", title: "AI-Assisted", items: ["AI material price suggestions", "Smart location cost adjustments", "Natural language estimate refinement", "Automated PDF generation"] },
+              { phase: "Phase 2 (3–9mo)", title: "Agentic Workflows", items: ["PriceBot: real-time supplier monitoring", "EstimateBot: NL project → estimate", "ContractorMatch: auto contractor matching", "EmailBot: automated engagement"] },
+              { phase: "Phase 3 (9–18mo)", title: "Autonomous Platform", items: ["Multi-agent orchestration with memory", "Auto-quoting for contractors", "Predictive cost trend analytics", "API agents for third-party embed"] },
+            ].map((p) => (
+              <div key={p.phase} className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+                <span className="text-xs font-bold text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full">{p.phase}</span>
+                <h3 className="font-bold text-slate-900 mt-2 mb-2">{p.title}</h3>
+                <ul className="space-y-1">
+                  {p.items.map((item, i) => (
+                    <li key={i} className="text-xs text-slate-600 flex items-start gap-1.5">
+                      <CheckCircle className="h-3 w-3 text-emerald-600 mt-0.5 shrink-0" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+            {[
+              { val: "70%", label: "Auto-estimate target" },
+              { val: "&lt; 2min", label: "AI completion time" },
+              { val: "±5%", label: "Accuracy vs QS" },
+              { val: "24hr", label: "Price data freshness" },
+            ].map((m) => (
+              <div key={m.label} className="bg-slate-50 rounded-xl border border-slate-200 p-3">
+                <div className="text-lg font-bold text-violet-600">{m.val}</div>
+                <div className="text-xs text-slate-500">{m.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Marketing & Growth",
+      content: (
+        <div className="py-8">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center"><Users className="h-5 w-5 text-blue-600" /></div>
+            <h2 className="text-2xl font-heading font-bold text-slate-900">Marketing &amp; Growth Strategy</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            {[
+              { title: "SEO Content Engine", desc: "Blog posts targeting &apos;cost to build in Ghana&apos;, &apos;house construction cost Accra&apos; and 200+ long-tail keywords. Estimated 50K monthly organic visitors by month 12." },
+              { title: "Diaspora Communities", desc: "Active presence in Ghanaian diaspora Facebook groups, WhatsApp communities, and UK/US associations. Referral program for community leaders." },
+              { title: "Social Media", desc: "YouTube walkthroughs of cost estimates, TikTok/Instagram Reels showing before/after costs, Twitter thought leadership on Ghana construction." },
+              { title: "Partnerships", desc: "Real estate agents, architecture firms, and diaspora-focused financial services integrating our estimate widget. Revenue share model." },
+            ].map((c) => (
+              <div key={c.title} className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+                <h3 className="font-bold text-slate-900 mb-1">{c.title}</h3>
+                <p className="text-sm text-slate-600">{c.desc}</p>
+              </div>
+            ))}
+          </div>
+          <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl p-5 text-white">
+            <div className="text-sm font-medium text-blue-200">Channel Mix Target (Year 1)</div>
+            <div className="grid grid-cols-4 gap-4 mt-3 text-center">
+              {[
+                { ch: "Organic Search", pct: "40%" },
+                { ch: "Social/Community", pct: "25%" },
+                { ch: "Referral", pct: "20%" },
+                { ch: "Paid/Partnership", pct: "15%" },
+              ].map((c) => (
+                <div key={c.ch}>
+                  <div className="text-xl font-bold">{c.pct}</div>
+                  <div className="text-xs text-blue-200">{c.ch}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Team",
+      content: (
+        <div className="py-8">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center"><Users className="h-5 w-5 text-violet-600" /></div>
+            <h2 className="text-2xl font-heading font-bold text-slate-900">Team</h2>
+          </div>
+          <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm mb-6">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white font-bold text-xl">GA</div>
+              <div>
+                <h3 className="font-bold text-slate-900 text-lg">Gideon B. Abochie</h3>
+                <p className="text-sm text-slate-500">Founder &amp; Developer</p>
+              </div>
+            </div>
+            <p className="text-sm text-slate-600 mt-4">Full-stack developer with deep understanding of the Ghanaian construction market and diaspora investment landscape. Built the entire platform from concept to deployment.</p>
+          </div>
+          <div className="bg-slate-50 rounded-xl border border-slate-200 p-5">
+            <h3 className="font-bold text-slate-900 mb-3">Advisors &amp; Support Network</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-center text-sm">
+              {["Ghanaian construction professionals", "Diaspora real estate investors", "Tech startup mentors", "Legal &amp; financial advisors"].map((a, i) => (
+                <div key={i} className="bg-white rounded-lg border border-slate-200 p-3">
+                  <div className="text-slate-900 font-medium">{a}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Financial Projections",
+      content: (
+        <div className="py-8">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center"><TrendingUp className="h-5 w-5 text-emerald-600" /></div>
+            <h2 className="text-2xl font-heading font-bold text-slate-900">Financial Projections</h2>
+          </div>
+          <div className="overflow-x-auto mb-6">
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr className="border-b border-slate-200 bg-slate-50">
+                  <th className="text-left py-3 px-4 font-semibold text-slate-900">Metric</th>
+                  <th className="text-right py-3 px-4 font-semibold text-slate-900">Year 1</th>
+                  <th className="text-right py-3 px-4 font-semibold text-slate-900">Year 2</th>
+                  <th className="text-right py-3 px-4 font-semibold text-slate-900">Year 3</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  ["Paid Users", "1,200", "6,000", "18,000"],
+                  ["Revenue", "$310K", "$1.8M", "$7.2M"],
+                  ["Gross Margin", "78%", "82%", "85%"],
+                  ["Operating Expenses", "$280K", "$1.1M", "$3.6M"],
+                  ["Net Income", "$30K", "$700K", "$3.6M"],
+                  ["ARPU", "$23", "$32", "$40"],
+                  ["AI Agent Revenue", "$0", "$180K", "$1.4M"],
+                ].map((row, i) => (
+                  <tr key={i} className="border-b border-slate-100">
+                    <td className="py-2.5 px-4 font-medium text-slate-900">{row[0]}</td>
+                    {row.slice(1).map((cell, j) => (
+                      <td key={j} className={`py-2.5 px-4 text-right ${j === row.length - 2 ? "text-emerald-600 font-bold" : "text-slate-700"}`}>{cell}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[
+              { label: "Revenue Mix (Year 3)", items: ["Report sales: 40%", "Subscriptions: 35%", "Marketplace: 20%", "API: 5%"] },
+              { label: "Key Assumptions", items: ["2% conversion rate (visitor → paid)", "3x year-over-year growth", "80%+ gross margin from Year 1", "$15K/mo fixed costs (Year 1)"] },
+              { label: "Funding Required", items: ["Pre-seed: $50K–$100K", "Seed (Month 12): $300K–$500K", "Series A (Month 24): $1M–$2M"] },
+            ].map((c) => (
+              <div key={c.label} className="bg-slate-50 rounded-xl border border-slate-200 p-4">
+                <h3 className="font-bold text-slate-900 text-sm mb-2">{c.label}</h3>
+                <ul className="space-y-1">
+                  {c.items.map((item, i) => (
+                    <li key={i} className="text-xs text-slate-600 flex items-center gap-1.5"><CheckCircle className="h-3 w-3 text-emerald-600 shrink-0" />{item}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Ask",
+      content: (
+        <div className="py-8">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center"><TrendingUp className="h-5 w-5 text-amber-600" /></div>
+            <h2 className="text-2xl font-heading font-bold text-slate-900">The Ask</h2>
+          </div>
+          <div className="bg-gradient-to-br from-amber-500 via-amber-600 to-amber-700 rounded-2xl p-8 text-white text-center mb-6">
+            <p className="text-3xl font-bold mb-2">$50,000 – $100,000</p>
+            <p className="text-amber-100">Pre-Seed Round &mdash; Equity or Convertible Note</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            {[
+              { title: "Product Development", pct: "35%", items: ["Mobile app (React Native)", "AI cost prediction engine", "Contractor marketplace MVP", "Real-time material pricing"] },
+              { title: "Marketing & Growth", pct: "30%", items: ["SEO content production", "Diaspora community outreach", "Paid acquisition testing", "Partnership development"] },
+              { title: "Operations & Team", pct: "20%", items: ["Part-time content writer", "Customer support", "Legal & accounting", "Office/admin"] },
+              { title: "Reserve", pct: "15%", items: ["6-month runway buffer", "Infrastructure costs", "Contingency fund"] },
+            ].map((f) => (
+              <div key={f.title} className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-bold text-slate-900">{f.title}</h3>
+                  <span className="text-lg font-bold text-emerald-600">{f.pct}</span>
+                </div>
+                <ul className="space-y-1">
+                  {f.items.map((item, i) => (
+                    <li key={i} className="text-sm text-slate-600 flex items-center gap-1.5"><CheckCircle className="h-3.5 w-3.5 text-emerald-600 shrink-0" />{item}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+          <div className="bg-slate-50 rounded-xl border border-slate-200 p-5 text-center">
+            <p className="text-sm text-slate-600">Contact us at <a href="mailto:investors@buildcostgh.com" className="text-emerald-600 font-medium hover:underline">investors@buildcostgh.com</a> for more information.</p>
+          </div>
+        </div>
+      ),
+    },
+  ]
+
+  return (
+    <div>
+      <style>{`
+        @media print {
+          body > * { display: none !important; }
+          .pitch-deck-print { display: block !important; }
+          .pitch-deck-print, .pitch-deck-print * { visibility: visible; }
+          .pitch-deck-print { position: absolute; left: 0; top: 0; width: 100%; }
+          .pitch-deck-print .slide-card { break-inside: avoid; page-break-after: always; box-shadow: none !important; border: 1px solid #e2e8f0 !important; margin: 0 0 1cm 0; }
+          @page { size: landscape; margin: 1.5cm; }
+        }
+      `}</style>
+
+      {/* Controls */}
+      <div className="no-print flex items-center justify-between mb-6">
+        <div className="flex items-center gap-2">
+          <Presentation className="h-5 w-5 text-emerald-600" />
+          <h2 className="text-lg font-bold text-slate-900">Investor Pitch Deck</h2>
+          <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">{slides.length} slides</span>
+        </div>
+        <Button onClick={() => window.print()} className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm">
+          <Printer className="h-4 w-4 mr-1.5" /> Print / Save PDF
+        </Button>
+      </div>
+
+      {/* Slide navigation */}
+      <div className="no-print flex items-center gap-2 mb-6 overflow-x-auto pb-2">
+        {slides.map((s, i) => (
+          <button key={i} onClick={() => setSlide(i)} className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+            i === slide ? "bg-emerald-600 text-white shadow-sm" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+          }`}>
+            {i + 1}. {s.title}
+          </button>
+        ))}
+      </div>
+
+      {/* Current slide */}
+      <div className="slide-card bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-10 min-h-[400px] mb-6">
+        <div className="flex items-center justify-between mb-4 no-print text-xs text-slate-400">
+          <span>Slide {slide + 1} of {slides.length}</span>
+          <div className="flex items-center gap-2">
+            <button onClick={() => setSlide(Math.max(0, slide - 1))} disabled={slide === 0} className="px-3 py-1 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 disabled:opacity-30 disabled:cursor-not-allowed text-xs font-medium">Prev</button>
+            <button onClick={() => setSlide(Math.min(slides.length - 1, slide + 1))} disabled={slide === slides.length - 1} className="px-3 py-1 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-30 disabled:cursor-not-allowed text-xs font-medium">Next</button>
+          </div>
+        </div>
+        {slides[slide].content}
+      </div>
+
+      {/* Print view (hidden on screen) */}
+      <div className="pitch-deck-print" style={{ display: "none" }}>
+        {slides.map((s, i) => (
+          <div key={i} className="slide-card bg-white rounded-2xl border border-slate-200 p-10 min-h-[400px] mb-6">
+            <div className="text-xs text-slate-400 mb-2">Slide {i + 1} of {slides.length}</div>
+            {s.content}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/* ── Competitive Analysis ── */
+function CompetitiveAnalysisView() {
+  const [section, setSection] = useState("overview")
+
+  const competitors = [
+    {
+      name: "GhanaHousePlanner",
+      url: "ghanahouseplanner.com",
+      tagline: "Free cost calculator + AI floor plans + project management",
+      tier: "Direct",
+      founders: "Emmanuel Apaaboah & Bernard Opoku",
+      backed: "UCC & KNUST Research",
+      launched: "2025/2026",
+      focus: "Consumer & Diaspora",
+      pricing: "Free + Pro/Starter",
+      strengths: ["Research-backed pricing (±5-10%)", "16-region coverage", "AI floor plan agent", "Project management tools", "BIM export (IFC/DXF/GLTF)", "CornerStore material sourcing", "Strong diaspora features"],
+      weaknesses: ["Newer platform, limited traction", "No payment integration for reports", "Free tier limits depth", "No contractor marketplace yet"],
+      threat: "High",
+    },
+    {
+      name: "CostmyBuild",
+      url: "costmybuild.com",
+      tagline: "Cost estimator + verified vendors + escrow payments",
+      tier: "Direct",
+      founders: "Henry Engmann",
+      backed: "Self-funded",
+      launched: "2025/2026",
+      focus: "Consumer & Diaspora",
+      pricing: "Free estimate + vendor fees",
+      strengths: ["100+ verified contractors", "Live material price guide", "Secure escrow payments", "Diaspora-first positioning", "Mobile-friendly"],
+      weaknesses: ["Ghana-only (launching)", "Platform commission model unclear", "No AI estimation reported", "Limited regional coverage data"],
+      threat: "High",
+    },
+    {
+      name: "BaniEstimations",
+      url: "baniestimations.com",
+      tagline: "Professional QS software for engineers",
+      tier: "Indirect - Professional",
+      founders: "N/A",
+      backed: "Self-funded",
+      launched: "Est. 2015",
+      focus: "Professional Engineers & QS",
+      pricing: "Paid software license",
+      strengths: ["Established since 2015", "Deep professional features (BOQ, valuations, IPCs)", "Localized for Ghana", "Project management tools"],
+      weaknesses: ["Desktop software (not SaaS)", "Professional-only audience", "No consumer calculator", "No diaspora features", "No AI capabilities visible"],
+      threat: "Low",
+    },
+    {
+      name: "ToSi",
+      url: "tosiapp.com",
+      tagline: "Ghana's premier construction app",
+      tier: "Direct",
+      founders: "N/A",
+      backed: "N/A",
+      launched: "2025/2026",
+      focus: "Consumer & Contractors",
+      pricing: "Free 30-day trial",
+      strengths: ["Material price locking feature", "'Buy bit by bit' approach", "Marketplace for materials/services", "Mobile-first (iOS + Android)", "Phase-based project tracking", "Surplus material resale"],
+      weaknesses: ["Savings-focused (not estimation-first)", "No AI estimation", "New platform, limited track record", "Diaspora features unclear"],
+      threat: "Medium",
+    },
+    {
+      name: "Backrow Calculator",
+      url: "backrowcalc.com",
+      tagline: "Ghana construction cost calculator",
+      tier: "Direct",
+      founders: "N/A",
+      backed: "N/A",
+      launched: "2025/2026",
+      focus: "Consumer",
+      pricing: "Free summary, £3.99 detailed",
+      strengths: ["Simple, fast calculator", "Multi-currency (GHS, GBP, EUR, USD)", "Monthly price updates", "Labour cost toggle", "Material brand options"],
+      weaknesses: ["Very basic feature set", "No diaspora features", "No project management", "No contractor network", "Low brand visibility"],
+      threat: "Low",
+    },
+    {
+      name: "HomeAccess",
+      url: "homeaccessgh.com",
+      tagline: "All-in-one construction platform",
+      tier: "Direct",
+      founders: "N/A",
+      backed: "N/A",
+      launched: "N/A",
+      focus: "Consumer",
+      pricing: "Report-based fees",
+      strengths: ["Business reports (build, complete, buy land)", "Material purchasing from suppliers", "Financing solutions", "Free house designs with 3D", "Cost tracking & budgeting"],
+      weaknesses: ["No instant calculator (report-based)", "No AI features", "Less modern UI/UX", "Diaspora features unclear"],
+      threat: "Medium",
+    },
+    {
+      name: "Genuine Stuffs",
+      url: "GitHub (open source)",
+      tagline: "Africa's first AI-native construction OS",
+      tier: "Pan-African",
+      founders: "N/A",
+      backed: "Open source",
+      launched: "2025",
+      focus: "Professional & Enterprise",
+      pricing: "Credits-based (2 credits/run)",
+      strengths: ["AI-native BoQ generation from design brief", "Live material procurement", "Paystack integration", "Credits billing model", "Technical calculators (concrete, steel)"],
+      weaknesses: ["GitHub project (early stage)", "No consumer-facing product", "No diaspora features", "Ghana pricing data unclear"],
+      threat: "Medium",
+    },
+    {
+      name: "Fara",
+      url: "farahq.com",
+      tagline: "AI cost estimation + project finance",
+      tier: "Pan-African",
+      founders: "N/A",
+      backed: "N/A",
+      launched: "2025/2026",
+      focus: "Diaspora & Developers",
+      pricing: "Platform fee",
+      strengths: ["AI estimation from floor plans", "Project wallets & vendor payouts", "Multi-currency support", "Budget vs actual tracking", "Strong diaspora positioning"],
+      weaknesses: ["Finance-focused (not estimation-first)", "Newer platform", "Limited regional coverage data", "No consumer calculator"],
+      threat: "Medium",
+    },
+    {
+      name: "DiasporaBuild",
+      url: "diasporabuild.com",
+      tagline: "Build in Africa with confidence",
+      tier: "Pan-African",
+      founders: "N/A",
+      backed: "N/A",
+      launched: "2025/2026",
+      focus: "Diaspora",
+      pricing: "0% commission (launch), then % fee",
+      strengths: ["500+ diaspora families", "Milestone-based payments", "AI assistant (DIBO)", "Verified contractor marketplace", "Real-time photo/video tracking", "Multi-country (Cameroon, Nigeria, Ghana, Kenya)"],
+      weaknesses: ["Not estimation-focused", "Platform commission after launch", "Newer to market", "Broker model (not DIY estimation)"],
+      threat: "High",
+    },
+    {
+      name: "TrueBuild",
+      url: "mytruebuild.com",
+      tagline: "Construction management for diaspora",
+      tier: "Pan-African",
+      founders: "N/A",
+      backed: "N/A",
+      launched: "2025/2026",
+      focus: "Diaspora",
+      pricing: "$150/site audit",
+      strengths: ["Professional site audits with GPS photos", "Vetted skilled labour", "Independent inspectors (no conflict)", "Detailed workmanship reports", "Diaspora-first"],
+      weaknesses: ["Service-based (not software)", "High per-audit cost", "No estimation calculator", "Ghana-only currently"],
+      threat: "Low",
+    },
+    {
+      name: "AfroTools",
+      url: "afrotools.com",
+      tagline: "Pan-African BOQ & construction tools",
+      tier: "Pan-African",
+      founders: "N/A",
+      backed: "N/A",
+      launched: "2025/2026",
+      focus: "Consumer & Professional",
+      pricing: "Free tools",
+      strengths: ["15+ African countries", "60+ material items", "Local pricing per country", "CSV export / print", "Multiple free tools"],
+      weaknesses: ["No AI capabilities", "Basic feature set", "No diaspora features", "No payment integration"],
+      threat: "Low",
+    },
+  ]
+
+  const matrixFeatures = [
+    { feature: "Instant cost estimate", bc: true, ghp: true, cmb: true, ban: true, tosi: false, brc: true, ha: false },
+    { feature: "Ghana-specific pricing", bc: true, ghp: true, cmb: true, ban: true, tosi: true, brc: true, ha: true },
+    { feature: "16-region coverage", bc: true, ghp: true, cmb: false, ban: false, tosi: false, brc: false, ha: false },
+    { feature: "AI-powered estimation", bc: true, ghp: "Partial", cmb: false, ban: false, tosi: false, brc: false, ha: false },
+    { feature: "Multi-currency support", bc: true, ghp: false, cmb: false, ban: false, tosi: false, brc: true, ha: false },
+    { feature: "PDF report download", bc: true, ghp: true, cmb: false, ban: true, tosi: false, brc: true, ha: true },
+    { feature: "Diaspora-first features", bc: true, ghp: true, cmb: true, ban: false, tosi: false, brc: false, ha: false },
+    { feature: "Contractor marketplace", bc: false, ghp: false, cmb: true, ban: false, tosi: true, brc: false, ha: false },
+    { feature: "Material price tracking", bc: false, ghp: "CornerStore", cmb: true, ban: false, tosi: true, brc: false, ha: true },
+    { feature: "Project management", bc: false, ghp: true, cmb: false, ban: true, tosi: true, brc: false, ha: true },
+    { feature: "Payment integration", bc: "Paystack", ghp: false, cmb: "Escrow", ban: false, tosi: false, brc: "Stripe", ha: false },
+    { feature: "Agentic/AI workflows", bc: true, ghp: "AI Agent", cmb: false, ban: false, tosi: false, brc: false, ha: false },
+    { feature: "Mobile app", bc: false, ghp: false, cmb: false, ban: false, tosi: true, brc: false, ha: false },
+    { feature: "Free tier available", bc: false, ghp: true, cmb: true, ban: false, tosi: true, brc: true, ha: true },
+  ]
+
+  const sections = [
+    { id: "overview", label: "Market Overview" },
+    { id: "profiles", label: "Competitor Profiles" },
+    { id: "matrix", label: "Feature Matrix" },
+    { id: "swot", label: "SWOT Analysis" },
+    { id: "recommendations", label: "Recommendations" },
+  ]
+
+  const now = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
+  const shortName = (n: string) => n === "GhanaHousePlanner" ? "ghp" : n === "CostmyBuild" ? "cmb" : n === "BaniEstimations" ? "ban" : n === "Backrow Calculator" ? "brc" : n === "HomeAccess" ? "ha" : n === "ToSi" ? "tosi" : ""
+
+  return (
+    <div>
+      {/* Section nav */}
+      <div className="no-print flex items-center gap-2 mb-6 overflow-x-auto pb-2">
+        {sections.map((s) => (
+          <button key={s.id} onClick={() => setSection(s.id)} className={`shrink-0 px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${
+            section === s.id ? "bg-emerald-600 text-white shadow-sm" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+          }`}>
+            {s.label}
+          </button>
+        ))}
+        <div className="flex-1" />
+        <span className="text-xs text-slate-400">Last researched: {now}</span>
+      </div>
+
+      {section === "overview" && (
+        <div className="space-y-6">
+          {/* Hero stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { val: "11", label: "Competitors Identified", icon: Crosshair, color: "from-red-500 to-red-600" },
+              { val: "7", label: "Direct (Ghana)", icon: Target, color: "from-amber-500 to-amber-600" },
+              { val: "4", label: "Pan-African", icon: Globe, color: "from-blue-500 to-blue-600" },
+              { val: "3", label: "High Threat", icon: Zap, color: "from-red-600 to-red-700" },
+            ].map((s) => (
+              <div key={s.label} className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${s.color} p-5 text-white shadow-lg`}>
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm font-medium text-white/80">{s.label}</p>
+                    <s.icon className="h-5 w-5 text-white/60" />
+                  </div>
+                  <p className="text-3xl font-bold">{s.val}</p>
+                </div>
+                <div className="absolute -bottom-3 -right-3 w-24 h-24 rounded-full bg-white/5" />
+              </div>
+            ))}
+          </div>
+
+          {/* Market summary */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+            <h3 className="font-bold text-slate-900 mb-3">Market Landscape Summary</h3>
+            <p className="text-sm text-slate-600 mb-4">The Ghana construction estimation market is rapidly evolving with 11+ identified platforms. The market splits into three tiers:</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-red-50 rounded-xl border border-red-200 p-4">
+                <h4 className="font-bold text-red-800 text-sm mb-2">High Threat</h4>
+                <p className="text-xs text-red-700">GhanaHousePlanner, CostmyBuild, DiasporaBuild</p>
+                <p className="text-xs text-red-600 mt-1">Strong overlap with BuildCost GH's target market and feature set. These platforms have funding, research backing, or diaspora traction.</p>
+              </div>
+              <div className="bg-amber-50 rounded-xl border border-amber-200 p-4">
+                <h4 className="font-bold text-amber-800 text-sm mb-2">Medium Threat</h4>
+                <p className="text-xs text-amber-700">ToSi, HomeAccess, Genuine Stuffs, Fara</p>
+                <p className="text-xs text-amber-600 mt-1">Adjacent platforms that could expand into estimation. Monitor for feature overlap and market expansion.</p>
+              </div>
+              <div className="bg-emerald-50 rounded-xl border border-emerald-200 p-4">
+                <h4 className="font-bold text-emerald-800 text-sm mb-2">Low Threat</h4>
+                <p className="text-xs text-emerald-700">BaniEstimations, Backrow, TrueBuild, AfroTools</p>
+                <p className="text-xs text-emerald-600 mt-1">Niche or non-overlapping. Professional-only (BaniEstimations), basic tools (Backrow, AfroTools), or service-based (TrueBuild).</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Key insights */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+            <h3 className="font-bold text-slate-900 mb-4">Key Market Insights</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {[
+                "No single platform dominates — the market is fragmented with early-stage players, creating a window of opportunity",
+                "GhanaHousePlanner is the closest direct competitor with research-backed pricing and strong diaspora features",
+                "Only BuildCost GH and Backrow Calculator offer multi-currency options (USD/GHS/GBP/EUR)",
+                "AI-powered estimation is still nascent — only GhanaHousePlanner (AI Agent) and Genuine Stuffs (AI BoQ) have it",
+                "Most competitors lack a paid report model — BuildCost GH's per-report revenue is unique in the market",
+                "Diaspora-focused platforms (DiasporaBuild, TrueBuild, Fara) are service/broker models, not DIY estimation",
+                "No competitor offers agentic workflows (multi-agent systems) — this is a first-mover advantage",
+                "Material price locking (ToSi) and escrow payments (CostmyBuild) are emerging features to monitor",
+              ].map((insight, i) => (
+                <div key={i} className="flex items-start gap-2 text-sm text-slate-700 bg-slate-50 rounded-lg p-3">
+                  <Lightbulb className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
+                  {insight}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {section === "profiles" && (
+        <div className="space-y-4">
+          {competitors.map((c) => (
+            <div key={c.name} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+              <div className={`px-6 py-3 flex items-center justify-between ${c.threat === "High" ? "bg-red-50 border-b border-red-200" : c.threat === "Medium" ? "bg-amber-50 border-b border-amber-200" : "bg-slate-50 border-b border-slate-200"}`}>
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm ${
+                    c.threat === "High" ? "bg-red-500" : c.threat === "Medium" ? "bg-amber-500" : "bg-slate-500"
+                  }`}>
+                    {c.name.split(" ").map(w => w[0]).join("").slice(0, 2)}
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-slate-900">{c.name}</h3>
+                    <p className="text-xs text-slate-500">{c.tagline}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${
+                    c.tier === "Direct" ? "bg-red-100 text-red-700" : c.tier.startsWith("Pan") ? "bg-blue-100 text-blue-700" : "bg-slate-100 text-slate-700"
+                  }`}>{c.tier}</span>
+                  <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
+                    c.threat === "High" ? "bg-red-100 text-red-700" : c.threat === "Medium" ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"
+                  }`}>{c.threat} Threat</span>
+                </div>
+              </div>
+              <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <p className="text-xs text-slate-400 uppercase font-semibold mb-2">Details</p>
+                  <div className="space-y-2 text-sm">
+                    <div><span className="text-slate-500">URL:</span> <a href={`https://${c.url}`} target="_blank" rel="noopener noreferrer" className="text-emerald-600 hover:underline">{c.url}</a></div>
+                    {c.founders !== "N/A" && <div><span className="text-slate-500">Founders:</span> <span className="text-slate-900">{c.founders}</span></div>}
+                    {c.backed !== "N/A" && <div><span className="text-slate-500">Backing:</span> <span className="text-slate-900">{c.backed}</span></div>}
+                    <div><span className="text-slate-500">Focus:</span> <span className="text-slate-900">{c.focus}</span></div>
+                    <div><span className="text-slate-500">Pricing:</span> <span className="text-slate-900">{c.pricing}</span></div>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-400 uppercase font-semibold mb-2">Strengths</p>
+                  <ul className="space-y-1">
+                    {c.strengths.map((s, i) => (
+                      <li key={i} className="flex items-start gap-1.5 text-sm text-slate-700">
+                        <CheckCircle className="h-3.5 w-3.5 text-emerald-600 mt-0.5 shrink-0" />
+                        {s}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-400 uppercase font-semibold mb-2">Weaknesses</p>
+                  <ul className="space-y-1">
+                    {c.weaknesses.map((w, i) => (
+                      <li key={i} className="flex items-start gap-1.5 text-sm text-slate-600">
+                        <AlertCircle className="h-3.5 w-3.5 text-red-500 mt-0.5 shrink-0" />
+                        {w}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {section === "matrix" && (
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-200">
+            <h3 className="font-bold text-slate-900">Feature Comparison Matrix</h3>
+            <p className="text-xs text-slate-400 mt-1">BuildCost GH vs Ghana-focused competitors</p>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-200">
+                  <th className="text-left py-3 px-4 font-semibold text-slate-900 min-w-[160px]">Feature</th>
+                  <th className="text-center py-3 px-4 font-semibold text-emerald-600 bg-emerald-50/50 min-w-[100px]">BuildCost GH</th>
+                  <th className="text-center py-3 px-4 font-semibold text-slate-700 min-w-[100px]">GhanaHouse Planner</th>
+                  <th className="text-center py-3 px-4 font-semibold text-slate-700 min-w-[100px]">CostmyBuild</th>
+                  <th className="text-center py-3 px-4 font-semibold text-slate-700 min-w-[100px]">BaniEstimations</th>
+                  <th className="text-center py-3 px-4 font-semibold text-slate-700 min-w-[100px]">ToSi</th>
+                  <th className="text-center py-3 px-4 font-semibold text-slate-700 min-w-[100px]">Backrow Calc</th>
+                  <th className="text-center py-3 px-4 font-semibold text-slate-700 min-w-[100px]">HomeAccess</th>
+                </tr>
+              </thead>
+              <tbody>
+                {matrixFeatures.map((row, i) => (
+                  <tr key={i} className="border-b border-slate-100 hover:bg-slate-50/50">
+                    <td className="py-2.5 px-4 font-medium text-slate-900">{row.feature}</td>
+                    {["bc", "ghp", "cmb", "ban", "tosi", "brc", "ha"].map((key) => {
+                      const val = row[key as keyof typeof row]
+                      const isBc = key === "bc"
+                      return (
+                        <td key={key} className={`py-2.5 px-4 text-center text-xs ${isBc ? "bg-emerald-50/50 font-medium" : ""}`}>
+                          {val === true ? <CheckCircle className="h-4 w-4 text-emerald-600 mx-auto" /> : val === false ? <span className="text-slate-300">—</span> : <span className="text-amber-600 font-medium">{val}</span>}
+                        </td>
+                      )
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {section === "swot" && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-emerald-50 rounded-2xl border border-emerald-200 p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Award className="h-5 w-5 text-emerald-700" />
+                <h3 className="font-bold text-emerald-900">Strengths</h3>
+              </div>
+              <ul className="space-y-2">
+                {[
+                  "Only platform with per-report paid model ($16–$83) — proven revenue from day one",
+                  "Multi-currency support (USD/GHS) with real-time Frankfurter API exchange rates",
+                  "3 estimation methods (All-in, Room-by-Room, Materials) — most flexible input",
+                  "Paystack payment integration for Ghanaian & diaspora users",
+                  "AI/Agentic strategy in pipeline — no competitor has multi-agent workflows",
+                  "Comprehensive admin dashboard with CRM, blog, orders, and analytics",
+                  "Built on modern stack (Next.js 15, TypeScript, PostgreSQL) — scalable",
+                ].map((s, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-emerald-800">
+                    <CheckCircle className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
+                    {s}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="bg-red-50 rounded-2xl border border-red-200 p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <AlertCircle className="h-5 w-5 text-red-700" />
+                <h3 className="font-bold text-red-900">Weaknesses</h3>
+              </div>
+              <ul className="space-y-2">
+                {[
+                  "No mobile app — competitors like ToSi have iOS/Android",
+                  "No contractor marketplace yet — CostmyBuild and ToSi have this live",
+                  "Limited regional pricing data — GhanaHousePlanner covers all 16 regions",
+                  "No free tier — most competitors offer free basic estimates",
+                  "No project management tools for ongoing builds",
+                  "Subscription model not yet implemented (currently only one-time reports)",
+                  "Smaller brand presence vs established competitors",
+                ].map((w, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-red-800">
+                    <AlertCircle className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
+                    {w}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="bg-blue-50 rounded-2xl border border-blue-200 p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Target className="h-5 w-5 text-blue-700" />
+                <h3 className="font-bold text-blue-900">Opportunities</h3>
+              </div>
+              <ul className="space-y-2">
+                {[
+                  "First-mover in AI/agentic workflows for Ghana construction estimation",
+                  "Diaspora market is underserved — $3.5B+ remittances, few platforms cater specifically to diaspora needs",
+                  "No competitor offers both estimation AND contractor marketplace — BuildCost GH can bridge this",
+                  "Corporate/B2B API licensing — no competitor offers embeddable estimates for real estate platforms/banks",
+                  "Subscription revenue model is unproven in this market — opportunity to set the standard",
+                  "Expand to Nigeria, Kenya, and other African markets where AfroTools shows demand but no dominant player exists",
+                  "Mobile app + agentic AI could be a powerful combination no competitor has yet",
+                ].map((o, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-blue-800">
+                    <Target className="h-4 w-4 text-blue-600 mt-0.5 shrink-0" />
+                    {o}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="bg-amber-50 rounded-2xl border border-amber-200 p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Zap className="h-5 w-5 text-amber-700" />
+                <h3 className="font-bold text-amber-900">Threats</h3>
+              </div>
+              <ul className="space-y-2">
+                {[
+                  "GhanaHousePlanner has research validation (UCC/KNUST) — BuildCost GH lacks academic backing",
+                  "CostmyBuild already has 100+ verified contractors — hard to catch up in marketplace",
+                  "DiasporaBuild has 500+ diaspora families and multi-country presence",
+                  "ToSi's material price locking is an innovative feature BuildCost GH doesn't offer",
+                  "New competitors emerging rapidly — first-mover advantage window is closing",
+                  "Well-funded pan-African platforms (Fara, DiasporaBuild) could expand into estimation",
+                  "Global tools (BuildZoom, Planner 5D) may add Ghana-specific data over time",
+                ].map((t, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-amber-800">
+                    <Zap className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" />
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {section === "recommendations" && (
+        <div className="space-y-6">
+          <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+            <h3 className="font-bold text-slate-900 mb-4">Strategic Recommendations</h3>
+            <div className="space-y-4">
+              {[
+                {
+                  priority: "Critical",
+                  title: "Launch AI-powered multi-agent system as differentiator",
+                  desc: "No competitor offers agentic workflows. PriceBot, EstimateBot, and ContractorMatch would be genuine market-first features. Prioritize this in the roadmap.",
+                  impact: "High",
+                  effort: "High",
+                  status: "done",
+                },
+                {
+                  priority: "Critical",
+                  title: "Build a free tier to capture top-of-funnel users",
+                  desc: "Every major competitor offers free estimates. A basic free tier (summary only) would improve conversion and SEO rankings.",
+                  impact: "High",
+                  effort: "Low",
+                  status: "done",
+                },
+                {
+                  priority: "High",
+                  title: "Expand regional pricing to all 16 Ghana regions",
+                  desc: "GhanaHousePlanner has this. Users expect location-specific pricing. Without it, BuildCost GH loses credibility for regional accuracy.",
+                  impact: "High",
+                  effort: "Medium",
+                  status: "done",
+                },
+                {
+                  priority: "High",
+                  title: "Develop mobile app (React Native) for on-site estimation",
+                  desc: "ToSi has mobile. Most construction happens on-site. A mobile app with offline mode and photo capture would be a strong differentiator.",
+                  impact: "Medium",
+                  effort: "High",
+                  status: "pending",
+                },
+                {
+                  priority: "High",
+                  title: "Add contractor marketplace with verified profiles",
+                  desc: "CostmyBuild and ToSi have marketplaces. This is a major revenue stream (commission-based) that BuildCost GH is missing.",
+                  impact: "High",
+                  effort: "High",
+                  status: "done",
+                },
+                {
+                  priority: "Medium",
+                  title: "Pursue academic research validation",
+                  desc: "GhanaHousePlanner's UCC/KNUST study gives them credibility. Partner with a Ghanaian university for a comparative cost study.",
+                  impact: "Medium",
+                  effort: "Medium",
+                  status: "in-progress",
+                },
+                {
+                  priority: "Medium",
+                  title: "Implement subscription model alongside one-time reports",
+                  desc: "Recurring revenue is essential for valuation. Target $19/mo basic tier with monthly estimate credits.",
+                  impact: "High",
+                  effort: "Medium",
+                  status: "done",
+                },
+                {
+                  priority: "Low",
+                  title: "Explore B2B API licensing for real estate platforms",
+                  desc: "No competitor offers embeddable estimates. Banks, real estate sites, and fintech apps could integrate BuildCost GH estimates via API.",
+                  impact: "Medium",
+                  effort: "Medium",
+                  status: "done",
+                },
+              ].map((r, i) => (
+                <div key={i} className={`rounded-xl border p-5 ${
+                  r.priority === "Critical" ? "border-red-200 bg-red-50" : r.priority === "High" ? "border-amber-200 bg-amber-50" : "border-slate-200 bg-white"
+                }`}>
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                        r.priority === "Critical" ? "bg-red-500 text-white" : r.priority === "High" ? "bg-amber-500 text-white" : "bg-emerald-500 text-white"
+                      }`}>{r.priority}</span>
+                      <h4 className="font-bold text-slate-900">{r.title}</h4>
+                      {r.status === "done" && (
+                        <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
+                          <CheckCircle className="h-3 w-3" /> DONE
+                        </span>
+                      )}
+                      {r.status === "in-progress" && (
+                        <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
+                          <Clock className="h-3 w-3" /> IN PROGRESS
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-slate-500">
+                      <span>Impact: <strong className={r.impact === "High" ? "text-emerald-600" : "text-amber-600"}>{r.impact}</strong></span>
+                      <span>Effort: <strong className={r.effort === "High" ? "text-red-600" : r.effort === "Medium" ? "text-amber-600" : "text-emerald-600"}>{r.effort}</strong></span>
+                    </div>
+                  </div>
+                  <p className="text-sm text-slate-700">{r.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Competitive moat summary */}
+          <div className="bg-gradient-to-br from-emerald-600 to-emerald-800 rounded-2xl p-6 text-white">
+            <h3 className="font-bold text-lg mb-3">BuildCost GH Competitive Moat</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {[
+                { title: "Data Network Effect", desc: "Each paid estimate improves cost accuracy. No competitor has a paid feedback loop to refine pricing models." },
+                { title: "AI Agent First-Mover", desc: "Multi-agent system (PriceBot, EstimateBot, ContractorMatch) is unique. Competitors have single AI features, not orchestrated workflows." },
+                { title: "Full-Stack Platform", desc: "Estimation + payment + CRM + blog + admin + diaspora tools in one platform. Competitors offer point solutions." },
+              ].map((m) => (
+                <div key={m.title} className="bg-white/10 rounded-xl p-4 backdrop-blur-sm border border-white/10">
+                  <h4 className="font-bold text-emerald-200 text-sm mb-1">{m.title}</h4>
+                  <p className="text-xs text-emerald-100/80">{m.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+/* ── Contractor Manager ── */
+function ContractorManager() {
+  const [contractors, setContractors] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [showForm, setShowForm] = useState(false)
+  const [editing, setEditing] = useState<any | null>(null)
+  const [form, setForm] = useState({ name: "", title: "", phone: "", email: "", description: "", specialties: "", yearsOfExperience: 0, verified: false, website: "" })
+  const [saving, setSaving] = useState(false)
+
+  const fetchAll = async () => {
+    setLoading(true)
+    try {
+      const res = await fetch("/api/admin/contractors")
+      setContractors(await res.json())
+    } catch {} finally { setLoading(false) }
+  }
+
+  useEffect(() => { fetchAll() }, [])
+
+  const openNew = () => { setEditing(null); setForm({ name: "", title: "", phone: "", email: "", description: "", specialties: "", yearsOfExperience: 0, verified: false, website: "" }); setShowForm(true) }
+
+  const openEdit = (c: any) => {
+    setEditing(c)
+    setForm({
+      name: c.name, title: c.title || "", phone: c.phone, email: c.email || "",
+      description: c.description, specialties: (JSON.parse(JSON.stringify(c.specialties)) || []).join(", "),
+      yearsOfExperience: c.yearsOfExperience, verified: c.verified, website: c.website || "",
+    })
+    setShowForm(true)
+  }
+
+  const handleSave = async () => {
+    setSaving(true)
+    const specialties = form.specialties.split(",").map((s: string) => s.trim()).filter(Boolean)
+    const body = { ...form, specialties: JSON.stringify(specialties), id: editing?.id }
+    try {
+      const url = "/api/admin/contractors"
+      const method = editing ? "PUT" : "POST"
+      await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
+      setShowForm(false); setEditing(null); fetchAll()
+    } catch {} finally { setSaving(false) }
+  }
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Delete this contractor?")) return
+    await fetch(`/api/admin/contractors?id=${id}`, { method: "DELETE" })
+    fetchAll()
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold text-gray-900">Contractor Management</h2>
+        <button onClick={openNew} className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 text-white rounded-xl text-sm font-semibold hover:bg-emerald-700 transition-all">
+          <Plus className="h-4 w-4" /> Add Contractor
+        </button>
+      </div>
+
+      {showForm && (
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+          <h3 className="font-bold text-gray-900 mb-4">{editing ? "Edit" : "New"} Contractor</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Name *</Label>
+              <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="h-9 text-sm" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Title</Label>
+              <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="h-9 text-sm" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Phone *</Label>
+              <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="h-9 text-sm" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Email</Label>
+              <Input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="h-9 text-sm" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Website</Label>
+              <Input value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} className="h-9 text-sm" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Years of Experience</Label>
+              <Input type="number" value={form.yearsOfExperience} onChange={(e) => setForm({ ...form, yearsOfExperience: parseInt(e.target.value) || 0 })} className="h-9 text-sm" />
+            </div>
+            <div className="space-y-1.5 md:col-span-2">
+              <Label className="text-xs">Description *</Label>
+              <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="w-full h-24 rounded-lg border border-gray-200 text-sm p-3 resize-none" />
+            </div>
+            <div className="space-y-1.5 md:col-span-2">
+              <Label className="text-xs">Specialties (comma-separated)</Label>
+              <Input value={form.specialties} onChange={(e) => setForm({ ...form, specialties: e.target.value })} className="h-9 text-sm" />
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <label className="flex items-center gap-2 text-sm cursor-pointer">
+              <input type="checkbox" checked={form.verified} onChange={(e) => setForm({ ...form, verified: e.target.checked })} className="rounded border-gray-300 text-emerald-600" />
+              Verified
+            </label>
+            <div className="flex-1" />
+            <button onClick={() => setShowForm(false)} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700">Cancel</button>
+            <button onClick={handleSave} disabled={saving || !form.name || !form.phone || !form.description} className="px-4 py-2 bg-emerald-600 text-white rounded-xl text-sm font-semibold hover:bg-emerald-700 disabled:opacity-50">
+              {saving ? "Saving..." : editing ? "Update" : "Create"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-slate-50 border-b border-gray-200">
+                <th className="text-left py-3 px-4 font-semibold text-gray-900">Name</th>
+                <th className="text-left py-3 px-4 font-semibold text-gray-900">Phone</th>
+                <th className="text-left py-3 px-4 font-semibold text-gray-900">Title</th>
+                <th className="text-center py-3 px-4 font-semibold text-gray-900">Verified</th>
+                <th className="text-center py-3 px-4 font-semibold text-gray-900">Rating</th>
+                <th className="text-center py-3 px-4 font-semibold text-gray-900">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr><td colSpan={6} className="text-center py-8 text-gray-400">Loading...</td></tr>
+              ) : contractors.length === 0 ? (
+                <tr><td colSpan={6} className="text-center py-8 text-gray-400">No contractors yet</td></tr>
+              ) : contractors.map((c: any) => (
+                <tr key={c.id} className="border-b border-gray-100 hover:bg-slate-50">
+                  <td className="py-3 px-4 font-medium text-gray-900">{c.name}</td>
+                  <td className="py-3 px-4 text-gray-600">{c.phone}</td>
+                  <td className="py-3 px-4 text-gray-500 text-xs">{c.title || "-"}</td>
+                  <td className="py-3 px-4 text-center">{c.verified ? <BadgeCheck className="h-4 w-4 text-emerald-600 mx-auto" /> : <span className="text-gray-300">-</span>}</td>
+                  <td className="py-3 px-4 text-center"><span className="flex items-center justify-center gap-1"><Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />{c.rating.toFixed(1)}</span></td>
+                  <td className="py-3 px-4">
+                    <div className="flex items-center justify-center gap-2">
+                      <button onClick={() => openEdit(c)} className="p-1.5 text-gray-400 hover:text-emerald-600 transition-colors"><Edit className="h-4 w-4" /></button>
+                      <button onClick={() => handleDelete(c.id)} className="p-1.5 text-gray-400 hover:text-red-600 transition-colors"><Trash2 className="h-4 w-4" /></button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ── Command Center ── */
+function CommandCenter() {
+  const [subTab, setSubTab] = useState("dashboard")
+  const [logs, setLogs] = useState<any[]>([])
+  const [queueStats, setQueueStats] = useState({ pending: 0, processing: 0, completed: 0, failed: 0 })
+  const [loading, setLoading] = useState(true)
+  const [agentStats, setAgentStats] = useState<any[]>([])
+  const [keys, setKeys] = useState<any[]>([])
+  const [factors, setFactors] = useState<any[]>([])
+  const [rules, setRules] = useState<Record<string, string>>({})
+  const [savingRules, setSavingRules] = useState(false)
+
+  const fetchData = async () => {
+    setLoading(true)
+    try {
+      const [hRes, lRes, aRes] = await Promise.all([
+        fetch("/api/health").then(r => r.json()).catch(() => ({})),
+        fetch("/api/agent-logs?limit=50").then(r => r.json()).catch(() => ({ logs: [] })),
+        fetch("/api/admin/agent-stats").then(r => r.json()).catch(() => []),
+      ])
+      if (hRes.queue) setQueueStats(hRes.queue)
+      setLogs(lRes.logs || [])
+      setAgentStats(aRes)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const fetchConfig = async () => {
+    const [rRes, kRes, fRes] = await Promise.all([
+      fetch("/api/admin/rules").then(r => r.json()).catch(() => ({})),
+      fetch("/api/admin/api-keys").then(r => r.json()).catch(() => []),
+      fetch("/api/admin/seasonal-factors").then(r => r.json()).catch(() => []),
+    ])
+    setRules(rRes)
+    setKeys(kRes)
+    setFactors(fRes)
+  }
+
+  useEffect(() => { fetchData(); fetchConfig(); const i = setInterval(fetchData, 15000); return () => clearInterval(i) }, [])
+
+  const saveRules = async () => {
+    setSavingRules(true)
+    await fetch("/api/admin/rules", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(rules) })
+    setSavingRules(false)
+  }
+
+  const setRule = (key: string, value: string) => setRules(prev => ({ ...prev, [key]: value }))
+
+  const subTabs = [
+    { id: "dashboard", label: "Dashboard", icon: Activity },
+    { id: "feed", label: "Activity", icon: Clock },
+    { id: "queue", label: "Queue", icon: CheckSquare },
+    { id: "agents", label: "Agents", icon: Cpu },
+    { id: "config", label: "Configuration", icon: Sliders },
+  ]
+
+  const monthLabels = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-wrap gap-1.5">
+        {subTabs.map((st) => (
+          <button key={st.id} onClick={() => setSubTab(st.id)}
+            className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${
+              subTab === st.id ? "bg-emerald-100 text-emerald-800 shadow-sm" : "text-slate-500 hover:text-slate-700 hover:bg-slate-100"
+            }`}>
+            <st.icon className="h-4 w-4" /> {st.label}
+          </button>
+        ))}
+      </div>
+
+      {loading && <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-emerald-600" /></div>}
+
+      {!loading && subTab === "dashboard" && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { label: "Pending Jobs", value: queueStats.pending, icon: Clock, bg: "from-amber-500 to-amber-600" },
+              { label: "Processing", value: queueStats.processing, icon: RefreshCw, bg: "from-blue-500 to-blue-600" },
+              { label: "Completed", value: queueStats.completed, icon: CheckCircle, bg: "from-emerald-500 to-emerald-600" },
+              { label: "Failed", value: queueStats.failed, icon: AlertCircle, bg: "from-red-500 to-red-600" },
+            ].map((c) => (
+              <div key={c.label} className={`bg-gradient-to-br ${c.bg} rounded-xl p-4 text-white shadow-lg`}>
+                <c.icon className="h-5 w-5 opacity-80 mb-2" />
+                <div className="text-2xl font-bold">{c.value}</div>
+                <div className="text-xs opacity-80 mt-1">{c.label}</div>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+              <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                <Cpu className="h-4 w-4 text-emerald-600" /> Agent Health
+              </h3>
+              <div className="space-y-2">
+                {agentStats.map((a: any) => (
+                  <div key={a.name} className="flex items-center gap-3 p-2 rounded-lg bg-slate-50">
+                    <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
+                      a.status === "active" ? "bg-emerald-500" : a.status === "error" ? "bg-red-500" : "bg-slate-300"
+                    }`} />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-slate-700">{a.name}</span>
+                        <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded capitalize ${
+                          a.status === "active" ? "bg-emerald-50 text-emerald-600" :
+                          a.status === "error" ? "bg-red-50 text-red-600" : "bg-slate-100 text-slate-500"
+                        }`}>{a.status}</span>
+                      </div>
+                      <p className="text-xs text-slate-400">
+                        {a.totalActions} actions · {a.errors} errors
+                        {a.minutesSinceLastSeen !== null && ` · ${a.minutesSinceLastSeen}m ago`}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+                {agentStats.length === 0 && <p className="text-sm text-slate-400">No agent data yet</p>}
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+              <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                <Activity className="h-4 w-4 text-emerald-600" /> Recent Activity
+              </h3>
+              <div className="space-y-2 max-h-72 overflow-y-auto">
+                {logs.slice(0, 12).map((log: any) => (
+                  <div key={log.id} className="flex items-start gap-2 text-sm p-1.5 rounded hover:bg-slate-50">
+                    <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${
+                      log.level === "error" ? "bg-red-500" : log.level === "warning" ? "bg-amber-500" :
+                      log.level === "success" ? "bg-emerald-500" : "bg-blue-500"
+                    }`} />
+                    <div className="flex-1 min-w-0">
+                      <span className="font-medium text-slate-700">{log.agent}</span>
+                      <span className="text-slate-400 mx-1">/</span>
+                      <span className="text-slate-600">{log.action}</span>
+                      <p className="text-[10px] text-slate-400">{new Date(log.createdAt).toLocaleString("en-GH")}</p>
+                    </div>
+                  </div>
+                ))}
+                {logs.length === 0 && <p className="text-sm text-slate-400">No activity yet</p>}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {!loading && subTab === "feed" && (
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+          <div className="p-5 border-b border-gray-100 flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold text-slate-900">Activity Feed</h3>
+              <p className="text-sm text-slate-400 mt-1">All autonomous agent actions, webhooks, and emails</p>
+            </div>
+            <span className="text-xs text-slate-400">{logs.length} events</span>
+          </div>
+          <div className="p-5">
+            {logs.length === 0 ? (
+              <p className="text-sm text-slate-400 text-center py-8">No activity recorded yet.</p>
+            ) : (
+              <div className="space-y-0.5">
+                {logs.map((log: any) => (
+                  <div key={log.id} className="flex items-start gap-3 py-2 px-2 rounded-lg hover:bg-slate-50 text-sm border-l-2 transition-colors"
+                    style={{ borderLeftColor: log.level === "error" ? "#ef4444" : log.level === "warning" ? "#f59e0b" : log.level === "success" ? "#10b981" : "#3b82f6" }}>
+                    <span className="text-[11px] text-slate-400 font-mono w-14 flex-shrink-0">
+                      {new Date(log.createdAt).toLocaleTimeString("en-GH", { hour: "2-digit", minute: "2-digit" })}
+                    </span>
+                    <span className="font-medium text-slate-700 w-20 flex-shrink-0 text-xs">{log.agent}</span>
+                    <span className="text-slate-600 flex-1 text-xs">{log.action}</span>
+                    {log.entityType && (
+                      <span className="text-[11px] text-slate-400 flex-shrink-0">{log.entityType} {log.entityId?.slice(0, 10)}</span>
+                    )}
+                    <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded capitalize flex-shrink-0 ${
+                      log.level === "error" ? "bg-red-50 text-red-600" : log.level === "warning" ? "bg-amber-50 text-amber-600" :
+                      log.level === "success" ? "bg-emerald-50 text-emerald-600" : "bg-blue-50 text-blue-600"
+                    }`}>{log.level}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {!loading && subTab === "queue" && (
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+          <div className="p-5 border-b border-gray-100 flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold text-slate-900">Job Queue</h3>
+              <p className="text-sm text-slate-400 mt-1">{queueStats.pending} pending · {queueStats.failed} failed · {queueStats.completed} completed</p>
+            </div>
+            <div className="flex gap-2">
+              <button onClick={async () => { await fetch("/api/jobs/enqueue", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "process_queue" }) }); fetchData() }}
+                className="px-3 py-1.5 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors">Process Queue</button>
+            </div>
+          </div>
+          <div className="p-5">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+              {[
+                { label: "Pending", value: queueStats.pending, color: "text-amber-600" },
+                { label: "Processing", value: queueStats.processing, color: "text-blue-600" },
+                { label: "Completed", value: queueStats.completed, color: "text-emerald-600" },
+                { label: "Failed", value: queueStats.failed, color: "text-red-600" },
+              ].map((s) => (
+                <div key={s.label} className="text-center p-4 rounded-lg bg-slate-50">
+                  <div className={`text-3xl font-bold ${s.color}`}>{s.value}</div>
+                  <div className="text-xs text-slate-500 mt-1">{s.label}</div>
+                </div>
+              ))}
+            </div>
+            {queueStats.failed > 0 && (
+              <button onClick={async () => { await fetch("/api/jobs/retry-failed", { method: "POST" }); fetchData() }}
+                className="px-3 py-1.5 bg-amber-100 text-amber-700 text-sm font-medium rounded-lg hover:bg-amber-200 transition-colors flex items-center gap-1.5">
+                <RefreshCw className="h-3.5 w-3.5" /> Retry All Failed ({queueStats.failed})
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {!loading && subTab === "agents" && (
+        <div className="space-y-4">
+          <div className="flex flex-wrap gap-3">
+            <button className="px-4 py-2 bg-amber-100 text-amber-700 rounded-lg text-sm font-medium hover:bg-amber-200 transition-colors flex items-center gap-1.5">
+              <Pause className="h-4 w-4" /> Pause All Agents
+            </button>
+            <button onClick={async () => { await fetch("/api/jobs/clear", { method: "POST" }); fetchData() }}
+              className="px-4 py-2 bg-red-50 text-red-600 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors flex items-center gap-1.5">
+              <Trash2 className="h-4 w-4" /> Clear All Jobs
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {agentStats.map((a: any) => (
+              <div key={a.name} className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className={`w-2.5 h-2.5 rounded-full ${
+                      a.status === "active" ? "bg-emerald-500" : a.status === "error" ? "bg-red-500" : "bg-slate-300"
+                    }`} />
+                    <h4 className="font-semibold text-sm text-slate-900">{a.name}</h4>
+                  </div>
+                  <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded capitalize ${
+                    a.status === "active" ? "bg-emerald-50 text-emerald-600" :
+                    a.status === "error" ? "bg-red-50 text-red-600" : "bg-slate-100 text-slate-500"
+                  }`}>{a.status}</span>
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                  <div className="bg-slate-50 rounded-lg p-2">
+                    <div className="font-semibold text-slate-700">{a.totalActions}</div>
+                    <div className="text-slate-400">Actions</div>
+                  </div>
+                  <div className="bg-slate-50 rounded-lg p-2">
+                    <div className={`font-semibold ${a.errors > 0 ? "text-red-600" : "text-slate-700"}`}>{a.errors}</div>
+                    <div className="text-slate-400">Errors</div>
+                  </div>
+                  <div className="bg-slate-50 rounded-lg p-2">
+                    <div className="font-semibold text-slate-700">
+                      {a.minutesSinceLastSeen !== null ? `${a.minutesSinceLastSeen}m` : "—"}
+                    </div>
+                    <div className="text-slate-400">Last Seen</div>
+                  </div>
+                </div>
+                {a.lastAction && (
+                  <p className="text-[11px] text-slate-400 mt-2">Last: {a.lastAction}</p>
+                )}
+              </div>
+            ))}
+            {agentStats.length === 0 && <p className="text-sm text-slate-400 col-span-full text-center py-8">No agent data. Run some actions first.</p>}
+          </div>
+        </div>
+      )}
+
+      {!loading && subTab === "config" && (
+        <div className="space-y-8">
+          {/* Business Rules */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="p-5 border-b border-gray-100 flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold text-slate-900">Business Rules</h3>
+                <p className="text-sm text-slate-400 mt-1">Thresholds for autonomous behavior</p>
+              </div>
+              <button onClick={saveRules} disabled={savingRules}
+                className="px-3 py-1.5 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50">
+                {savingRules ? "Saving..." : "Save Rules"}
+              </button>
+            </div>
+            <div className="p-5 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {[
+                  { key: "maxAutoPriceChangePct", label: "Max Auto Price Change (%)", min: "1", max: "20", step: "1", suffix: "%" },
+                  { key: "leadScoreHITLThreshold", label: "Lead Score HITL Threshold", min: "0", max: "100", step: "5", suffix: "" },
+                  { key: "maxUnattendedOrderValue", label: "Max Unattended Order (GHS)", min: "100", max: "5000", step: "100", suffix: "" },
+                  { key: "autoRefundMax", label: "Auto Refund Max (GHS)", min: "0", max: "500", step: "10", suffix: "" },
+                ].map((field) => (
+                  <div key={field.key} className="space-y-1.5">
+                    <label className="text-xs font-medium text-slate-600">{field.label}</label>
+                    <div className="flex items-center gap-3">
+                      <input type="range" min={field.min} max={field.max} step={field.step}
+                        value={rules[field.key] || "0"} onChange={(e) => setRule(field.key, e.target.value)}
+                        className="flex-1 accent-emerald-600" />
+                      <span className="text-sm font-mono text-slate-700 w-16 text-right">
+                        {Number(rules[field.key] || 0).toLocaleString()}{field.suffix}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="pt-4 border-t border-gray-100">
+                <h4 className="text-sm font-semibold text-slate-700 mb-3">Alert Configuration</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  {[
+                    { key: "alertsErrorSpike", label: "Error spike (>5 errors in 10 min)" },
+                    { key: "alertsPaymentFailure", label: "Payment failure notification" },
+                    { key: "alertsQueueBacklog", label: "Queue backlog (>50 pending jobs)" },
+                    { key: "alertsPricingDrift", label: "Pricing drift (>10% from market)" },
+                    { key: "alertsHighValueLead", label: "High-value lead alert (score > 80)" },
+                  ].map((alert) => (
+                    <label key={alert.key} className="flex items-center gap-2 text-sm text-slate-700">
+                      <input type="checkbox" checked={rules[alert.key] === "true"}
+                        onChange={(e) => setRule(alert.key, e.target.checked ? "true" : "false")}
+                        className="rounded accent-emerald-600" />
+                      {alert.label}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* API Keys */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="p-5 border-b border-gray-100 flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold text-slate-900">API Keys</h3>
+                <p className="text-sm text-slate-400 mt-1">For MCP agent authentication and external integrations</p>
+              </div>
+              <button onClick={async () => {
+                const label = prompt("Enter a label for this API key:")
+                if (!label) return
+                const res = await fetch("/api/admin/api-keys", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ label }) })
+                const data = await res.json()
+                if (data.rawKey) {
+                  alert(`Key created!\n\nLabel: ${data.label}\nKey: ${data.rawKey}\n\nSave this key — it will not be shown again.`)
+                  fetchConfig()
+                }
+              }} className="px-3 py-1.5 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors">
+                + New Key
+              </button>
+            </div>
+            <div className="p-5">
+              {keys.length === 0 ? (
+                <p className="text-sm text-slate-400 text-center py-4">No API keys created yet.</p>
+              ) : (
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-100">
+                      <th className="text-left pb-2 font-medium text-slate-600">Label</th>
+                      <th className="text-left pb-2 font-medium text-slate-600">Key Hash</th>
+                      <th className="text-left pb-2 font-medium text-slate-600">Tier</th>
+                      <th className="text-left pb-2 font-medium text-slate-600">Usage</th>
+                      <th className="text-left pb-2 font-medium text-slate-600">Status</th>
+                      <th className="text-left pb-2 font-medium text-slate-600">Created</th>
+                      <th className="text-left pb-2 font-medium text-slate-600">Last Used</th>
+                      <th className="text-right pb-2 font-medium text-slate-600">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {keys.map((k: any) => (
+                      <tr key={k.id} className="border-b border-gray-50 hover:bg-slate-50">
+                        <td className="py-2 text-slate-700">{k.label}</td>
+                        <td className="py-2 text-xs text-slate-400 font-mono">{k.keyHash.slice(0, 16)}...</td>
+                        <td className="py-2 text-xs"><span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-purple-50 text-purple-700">{k.tier || "dev"}</span></td>
+                        <td className="py-2 text-xs text-slate-400">{k.usageCount ?? 0}/{k.monthlyLimit ?? 100}</td>
+                        <td className="py-2">
+                          <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${k.active ? "bg-emerald-50 text-emerald-600" : "bg-slate-100 text-slate-500"}`}>
+                            {k.active ? "Active" : "Inactive"}
+                          </span>
+                        </td>
+                        <td className="py-2 text-xs text-slate-400">{new Date(k.createdAt).toLocaleDateString("en-GH")}</td>
+                        <td className="py-2 text-xs text-slate-400">{k.lastUsedAt ? new Date(k.lastUsedAt).toLocaleDateString("en-GH") : "—"}</td>
+                        <td className="py-2 text-right">
+                          <button onClick={async () => {
+                            if (!confirm("Revoke this API key?")) return
+                            await fetch(`/api/admin/api-keys/${k.id}`, { method: "DELETE" })
+                            fetchConfig()
+                          }} className="text-xs text-red-500 hover:text-red-700 font-medium">Revoke</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
+
+          {/* Seasonal Factors */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="p-5 border-b border-gray-100 flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold text-slate-900">Seasonal Factors</h3>
+                <p className="text-sm text-slate-400 mt-1">Pricing multipliers by region and month</p>
+              </div>
+              <button onClick={async () => {
+                const month = prompt("Month (1-12):")
+                const multiplier = prompt("Multiplier (e.g. 1.05 for +5%):")
+                const region = prompt("Region (optional, e.g. greater-accra):")
+                const material = prompt("Material (optional, e.g. cement):")
+                const reason = prompt("Reason (optional):")
+                if (!month || !multiplier) return
+                await fetch("/api/admin/seasonal-factors", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ month: Number(month), multiplier: Number(multiplier), region: region || null, material: material || null, reason: reason || null }) })
+                fetchConfig()
+              }} className="px-3 py-1.5 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors">
+                + Add Factor
+              </button>
+            </div>
+            <div className="p-5">
+              {factors.length === 0 ? (
+                <p className="text-sm text-slate-400 text-center py-4">No seasonal factors configured.</p>
+              ) : (
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-100">
+                      <th className="text-left pb-2 font-medium text-slate-600">Month</th>
+                      <th className="text-left pb-2 font-medium text-slate-600">Region</th>
+                      <th className="text-left pb-2 font-medium text-slate-600">Material</th>
+                      <th className="text-left pb-2 font-medium text-slate-600">Multiplier</th>
+                      <th className="text-left pb-2 font-medium text-slate-600">Reason</th>
+                      <th className="text-left pb-2 font-medium text-slate-600">Active</th>
+                      <th className="text-right pb-2 font-medium text-slate-600">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {factors.map((f: any) => (
+                      <tr key={f.id} className="border-b border-gray-50 hover:bg-slate-50">
+                        <td className="py-2 text-slate-700">{f.monthLabel || monthLabels[f.month - 1]}</td>
+                        <td className="py-2 text-xs text-slate-400">{f.region || "All"}</td>
+                        <td className="py-2 text-xs text-slate-400">{f.material || "All"}</td>
+                        <td className="py-2 font-mono text-sm">{(f.multiplier > 0 ? "+" : "")}{(f.multiplier * 100 - 100).toFixed(0)}%</td>
+                        <td className="py-2 text-xs text-slate-400">{f.reason || "—"}</td>
+                        <td className="py-2">
+                          <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${f.active ? "bg-emerald-50 text-emerald-600" : "bg-slate-100 text-slate-500"}`}>
+                            {f.active ? "Active" : "Inactive"}
+                          </span>
+                        </td>
+                        <td className="py-2 text-right">
+                          <button onClick={async () => {
+                            if (!confirm("Delete this factor?")) return
+                            await fetch(`/api/admin/seasonal-factors/${f.id}`, { method: "DELETE" })
+                            fetchConfig()
+                          }} className="text-xs text-red-500 hover:text-red-700 font-medium">Delete</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -18,6 +18,7 @@ model User {
   sessions      Session[]
   orders        Order[]
   calculatorLeads CalculatorLead[]
+  subscriptions Subscription[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -67,7 +68,7 @@ model Order {
   currency  String   @default("GHS")
   status    String   @default("pending")
   reference String   @unique
-  metadata  String?
+  metadata  Json?
   reportUrl String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -75,6 +76,79 @@ model Order {
 
   @@index([status])
   @@index([reference])
+}
+
+model ApiKey {
+  id            String    @id @default(cuid())
+  keyHash       String    @unique
+  label         String
+  tier          String    @default("dev")
+  monthlyLimit  Int       @default(100)
+  usageCount    Int       @default(0)
+  lastResetAt   DateTime  @default(now())
+  lastUsedAt    DateTime?
+  active        Boolean   @default(true)
+  ownerEmail    String?
+  createdAt     DateTime  @default(now())
+  expiresAt     DateTime?
+}
+
+model Job {
+  id           String    @id @default(cuid())
+  type         String
+  payload      Json?
+  status       String    @default("pending")
+  attempts     Int       @default(0)
+  maxAttempts  Int       @default(3)
+  lastError    String?
+  scheduledAt  DateTime  @default(now())
+  startedAt    DateTime?
+  completedAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([status, scheduledAt])
+}
+
+model AgentLog {
+  id          String   @id @default(cuid())
+  agent       String
+  action      String
+  entityType  String?
+  entityId    String?
+  details     Json?
+  level       String   @default("info")
+  createdAt   DateTime @default(now())
+
+  @@index([agent, createdAt])
+  @@index([level])
+}
+
+model SeasonalFactor {
+  id        String   @id @default(cuid())
+  region    String?
+  month     Int
+  material  String?
+  multiplier Float
+  reason    String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([region, month, active])
+}
+
+model PriceUpdate {
+  id         String   @id @default(cuid())
+  tier       String
+  oldAmount  Int
+  newAmount  Int
+  reason     String?
+  approved   Boolean  @default(false)
+  approvedBy String?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
 }
 
 model ContactMessage {
@@ -108,9 +182,10 @@ model BlogPost {
 }
 
 model Region {
-  id   String @id @default(cuid())
-  name String @unique
-  slug String @unique
+  id        String @id @default(cuid())
+  name      String @unique
+  slug      String @unique
+  contractors ContractorRegion[]
 }
 
 model FinishingGrade {
@@ -156,6 +231,79 @@ model SiteSetting {
   id    String @id @default(cuid())
   key   String @unique
   value String
+}
+
+model Plan {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  priceMonthly Int
+  priceAnnual  Int
+  features    Json?
+  popular     Boolean  @default(false)
+  active      Boolean  @default(true)
+  subscriptions Subscription[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Subscription {
+  id                    String   @id @default(cuid())
+  email                 String
+  userId                String?
+  planId                String
+  status                String   @default("active")
+  currentPeriodStart    DateTime @default(now())
+  currentPeriodEnd      DateTime
+  paystackSubscriptionCode String?
+  cancelAtPeriodEnd     Boolean  @default(false)
+  canceledAt            DateTime?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  user User?  @relation(fields: [userId], references: [id])
+  plan Plan   @relation(fields: [planId], references: [id])
+
+  @@index([email])
+  @@index([status])
+}
+
+model Contractor {
+  id               String   @id @default(cuid())
+  name             String
+  slug             String   @unique
+  title            String?
+  phone            String
+  email            String?
+  website          String?
+  description      String
+  specialties      Json     @default("[]")
+  yearsOfExperience Int     @default(0)
+  verified         Boolean  @default(false)
+  insurance        String?
+  licenseInfo      String?
+  rating           Float    @default(0)
+  reviewCount      Int      @default(0)
+  portfolioImages  Json     @default("[]")
+  logo             String?
+  regions          ContractorRegion[]
+  status           String   @default("active")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([status, verified])
+  @@index([slug])
+}
+
+model ContractorRegion {
+  id           String     @id @default(cuid())
+  contractorId String
+  regionId     String
+  contractor   Contractor @relation(fields: [contractorId], references: [id], onDelete: Cascade)
+  region       Region     @relation(fields: [regionId], references: [id], onDelete: Cascade)
+
+  @@unique([contractorId, regionId])
 }
 
 model AdminLoginAttempt {

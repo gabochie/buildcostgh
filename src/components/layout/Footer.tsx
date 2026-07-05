@@ -4,7 +4,9 @@ import { NewsletterForm } from "@/components/shared/NewsletterForm"
 
 const companyLinks = [
   { href: "/about", label: "About Us" },
+  { href: "/authors", label: "Authors" },
   { href: "/careers", label: "Careers" },
+  { href: "/csr", label: "CSR & Flood Relief" },
   { href: "/investors", label: "Investors" },
   { href: "/affiliates", label: "Affiliates" },
   { href: "/press-kit", label: "Press Kit" },
@@ -14,6 +16,8 @@ const quickLinks = [
   { href: "/", label: "Home" },
   { href: "/calculator", label: "Calculator" },
   { href: "/pricing", label: "Pricing" },
+  { href: "/contractors", label: "Contractors" },
+  { href: "/flood-safe-land", label: "Flood Safe Land" },
   { href: "/blog", label: "Blog" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
@@ -26,6 +30,12 @@ const services = [
   { href: "/services/contractor-contacts", label: "Contractor Contacts" },
   { href: "/services/consultation", label: "Consultation" },
   { href: "/services/project-monitoring", label: "Project Monitoring" },
+]
+
+const developerLinks = [
+  { href: "/api-docs", label: "API Docs" },
+  { href: "/api-pricing", label: "API Pricing" },
+  { href: "/api-docs", label: "Quick Start" },
 ]
 
 const socialLinks = [
@@ -147,23 +157,20 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="font-semibold text-white mb-4">Connect With Us</h3>
-            <p className="text-sm mb-4">Follow us on social media for construction tips and updates.</p>
-            <div className="flex flex-wrap gap-3 mb-6">
-              {socialLinks.map((social) => (
-                <a
-                  key={social.href}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2 bg-gray-800 rounded-full hover:bg-emerald-600 transition-colors"
-                  aria-label={social.label}
-                >
-                  <SocialIcon type={social.icon} />
-                </a>
+            <h3 className="font-semibold text-white mb-4">Developers</h3>
+            <ul className="space-y-2 text-sm">
+              {developerLinks.map((link) => (
+                <li key={link.label}>
+                  <Link href={link.href} className="hover:text-emerald-400 transition-colors">
+                    {link.label}
+                  </Link>
+                </li>
               ))}
-            </div>
-            <h4 className="font-semibold text-white mb-2">Newsletter</h4>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-white mb-4">Newsletter</h3>
             <p className="text-sm mb-3">Get construction tips and cost updates.</p>
             <NewsletterForm />
           </div>
@@ -171,7 +178,7 @@ export function Footer() {
 
         <div className="mt-8 pt-8 border-t border-gray-800 text-center text-sm">
           <p>&copy; {new Date().getFullYear()} BuildCost GH. All rights reserved.</p>
-          <div className="flex justify-center gap-4 mt-2">
+          <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-2">
             <Link href="/privacy" className="hover:text-emerald-400">Privacy Policy</Link>
             <Link href="/terms" className="hover:text-emerald-400">Terms of Service</Link>
             <Link href="/cookies" className="hover:text-emerald-400">Cookie Policy</Link>

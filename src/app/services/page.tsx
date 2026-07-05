@@ -50,6 +50,21 @@ export default function ServicesPage() {
             </Link>
           ))}
         </div>
+
+        <div className="max-w-2xl mx-auto text-center mb-16">
+          <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl border border-emerald-100 p-8">
+            <h2 className="text-2xl font-heading font-bold text-charcoal mb-3">Ready to Get Started?</h2>
+            <p className="text-gray-600 mb-6">Get an instant cost estimate for your project — free, no card required.</p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+              <Link href="/calculator" className="w-full sm:w-auto px-6 py-3 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700 transition-colors text-center">
+                Try the Calculator
+              </Link>
+              <Link href="/pricing" className="w-full sm:w-auto px-6 py-3 border border-emerald-200 text-emerald-700 rounded-xl font-semibold hover:bg-emerald-50 transition-colors text-center">
+                View Pricing
+              </Link>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )

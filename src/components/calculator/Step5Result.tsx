@@ -19,6 +19,13 @@ const regionMultipliers: Record<string, number> = {
   Ho: 0.68,
   Koforidua: 0.7,
   Bolgatanga: 0.65,
+  Wa: 0.67,
+  Goaso: 0.7,
+  Techiman: 0.73,
+  Dambai: 0.69,
+  "Sefwi Wiawso": 0.76,
+  Nalerigu: 0.63,
+  Damongo: 0.66,
 }
 
 function AnimatedPrice({ value }: { value: number }) {

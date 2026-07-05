@@ -1,4 +1,5 @@
 import { create } from "zustand"
+import { trackEvent } from "@/lib/analytics"
 
 export type Step1Data = { bedrooms: string; location: string }
 export type Step2Data = { floorArea: string; floors: string }
@@ -44,14 +45,25 @@ const initialState = {
   sessionId: null,
 }
 
-export const useCalculatorStore = create<CalculatorStore>((set) => ({
+export const useCalculatorStore = create<CalculatorStore>((set, get) => ({
   ...initialState,
-  setStep: (step) => set({ step }),
-  setStep1: (data) => set({ step1: data }),
+  setStep: (step) => {
+    const prev = get().step
+    set({ step })
+    if (step === 2 && prev === 1) trackEvent("calculator_step_completed", { step: 1 })
+    if (step === 3 && prev === 2) trackEvent("calculator_step_completed", { step: 2 })
+    if (step === 4 && prev === 3) {
+      trackEvent("calculator_step_completed", { step: 3 })
+      trackEvent("email_captured")
+    }
+    if (step === 5 && prev === 4) trackEvent("calculator_step_completed", { step: 4 })
+    if (step === 6 && prev === 5) trackEvent("calculator_step_completed", { step: 5 })
+  },
+  setStep1: (data) => { set({ step1: data }); if (get().step === 1) trackEvent("calculator_started") },
   setStep2: (data) => set({ step2: data }),
   setStep3: (data) => set({ step3: data }),
   setStep4: (data) => set({ step4: data }),
-  setEstimate: (value) => set({ estimate: value }),
+  setEstimate: (value) => { set({ estimate: value }); if (value !== null) trackEvent("estimate_viewed", { value }) },
   setEmail: (email) => set({ email }),
   setHasEmail: (val) => set({ hasEmail: val }),
   setSessionId: (id) => set({ sessionId: id }),

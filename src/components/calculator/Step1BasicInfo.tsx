@@ -8,6 +8,8 @@ const bedrooms = ["1", "2", "3", "4", "5", "6+"]
 const locations = [
   "Accra", "Kumasi", "Tema", "Takoradi", "Tamale",
   "Cape Coast", "Sunyani", "Ho", "Koforidua", "Bolgatanga",
+  "Wa", "Goaso", "Techiman", "Dambai", "Sefwi Wiawso",
+  "Nalerigu", "Damongo",
 ]
 
 export function Step1BasicInfo() {
@@ -42,7 +44,7 @@ export function Step1BasicInfo() {
 
       <div className="space-y-2">
         <Label>Location</Label>
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+        <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
           {locations.map((loc) => (
             <button
               key={loc}
