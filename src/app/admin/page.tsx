@@ -3,6 +3,7 @@
 import { useSession, signIn, signOut } from "next-auth/react"
 import { useEffect, useState } from "react"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -58,6 +59,7 @@ const statusIcons: Record<string, any> = {
 
 export default function AdminPage() {
   const { data: session, status } = useSession()
+  const searchParams = useSearchParams()
   const [tab, setTab] = useState<string>("overview")
   const [maintenanceMode, setMaintenanceMode] = useState(false)
   const [toggling, setToggling] = useState(false)
@@ -70,10 +72,9 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const t = params.get("tab")
+    const t = searchParams.get("tab")
     if (t) setTab(t)
-  }, [])
+  }, [searchParams])
 
   useEffect(() => {
     if (!session) return
@@ -162,9 +163,11 @@ export default function AdminPage() {
         <NewsletterTab subscribers={subscribers} />
       ) : tab === "roadmap" ? (
         <Roadmap />
-      ) : tab === "blog" ? (
-        <BlogTab posts={blogPosts} />
-      ) : null}
+) : tab === "blog" ? (
+    <BlogTab posts={blogPosts} />
+  ) : tab === "settings" ? (
+    <SettingsTab session={session} />
+  ) : null}
     </div>
   )
 }
@@ -512,6 +515,61 @@ function BlogTab({ posts }: { posts: BlogPostItem[] }) {
           </div>
         ))
       )}
+    </div>
+  )
+}
+
+/* ── Settings ── */
+function SettingsTab({ session }: { session: any }) {
+  return (
+    <div className="max-w-2xl space-y-6">
+      <div className="rounded-2xl border bg-white p-6">
+        <h3 className="font-semibold text-slate-900 mb-4">Admin Profile</h3>
+        <div className="space-y-3 text-sm">
+          <div className="flex justify-between py-2 border-b border-slate-100">
+            <span className="text-slate-500">Name</span>
+            <span className="text-slate-900 font-medium">{session?.user?.name || "Admin"}</span>
+          </div>
+          <div className="flex justify-between py-2 border-b border-slate-100">
+            <span className="text-slate-500">Email</span>
+            <span className="text-slate-900 font-medium">{session?.user?.email}</span>
+          </div>
+          <div className="flex justify-between py-2 border-b border-slate-100">
+            <span className="text-slate-500">User ID</span>
+            <span className="text-slate-900 font-medium text-xs font-mono">{session?.user?.id}</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border bg-white p-6">
+        <h3 className="font-semibold text-slate-900 mb-4">Site Information</h3>
+        <div className="space-y-3 text-sm">
+          <div className="flex justify-between py-2 border-b border-slate-100">
+            <span className="text-slate-500">Site URL</span>
+            <span className="text-slate-900 font-medium">https://buildcostgh.com</span>
+          </div>
+          <div className="flex justify-between py-2 border-b border-slate-100">
+            <span className="text-slate-500">Deployment</span>
+            <span className="text-slate-900 font-medium">Vercel (Production)</span>
+          </div>
+          <div className="flex justify-between py-2 border-b border-slate-100">
+            <span className="text-slate-500">Database</span>
+            <span className="text-slate-900 font-medium">PostgreSQL (Neon)</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border bg-amber-50/50 p-6">
+        <h3 className="font-semibold text-slate-900 mb-2">Environment Variables</h3>
+        <p className="text-sm text-slate-500 mb-4">
+          Production API keys for Paystack, Resend, UploadThing, and Google Auth are not configured.
+        </p>
+        <div className="text-xs text-slate-400 space-y-1 font-mono">
+          <p>PAYSTACK_SECRET_KEY <span className="text-amber-500 ml-2">not set</span></p>
+          <p>RESEND_API_KEY <span className="text-amber-500 ml-2">not set</span></p>
+          <p>UPLOADTHING_SECRET <span className="text-amber-500 ml-2">not set</span></p>
+        </div>
+      </div>
     </div>
   )
 }
