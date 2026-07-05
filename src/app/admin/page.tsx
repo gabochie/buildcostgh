@@ -2393,6 +2393,10 @@ function PitchDeckView() {
             ))}
           </div>
           <p className="text-xs text-slate-400 text-center">Future subscription model: $19/mo basic, $99/yr professional</p>
+          <div className="mt-4 bg-gradient-to-r from-violet-50 to-emerald-50 rounded-xl border border-violet-200 p-4">
+            <p className="text-sm font-medium text-violet-900 mb-1">AI-Powered</p>
+            <p className="text-xs text-violet-700">Natural language project description, AI-assisted cost refinement, and smart material price tracking across all tiers. Enterprise tier includes dedicated AI agent for automated re-estimates.</p>
+          </div>
         </div>
       ),
     },
@@ -2509,6 +2513,7 @@ function PitchDeckView() {
                   ["Diaspora-friendly", "✅", "❌", "❌", "❌"],
                   ["Price (per report)", "$16–$83", "$500–$2,000", "Free (time)", "$50–$200"],
                   ["Accuracy", "98%", "95%+", "Varies", "Varies"],
+                  ["AI-powered", "✅", "❌", "❌", "Partial"],
                 ].map((row, i) => (
                   <tr key={i} className="border-b border-slate-100">
                     {row.map((cell, j) => (
@@ -2520,7 +2525,55 @@ function PitchDeckView() {
             </table>
           </div>
           <div className="bg-emerald-50 rounded-xl border border-emerald-200 p-4">
-            <p className="text-sm text-emerald-800 font-medium">Key Differentiator: BuildCost GH is the only platform combining instant estimates, Ghana-specific local pricing, diaspora-friendly experience, and professional PDF reports at an accessible price point.</p>
+            <p className="text-sm text-emerald-800 font-medium">Key Differentiator: BuildCost GH is the only platform combining instant estimates, Ghana-specific local pricing, diaspora-friendly experience, AI-powered cost intelligence, and professional PDF reports at an accessible price point.</p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "AI & Agentic Strategy",
+      content: (
+        <div className="py-8">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center"><TrendingUp className="h-5 w-5 text-violet-600" /></div>
+            <h2 className="text-2xl font-heading font-bold text-slate-900">AI &amp; Agentic Strategy</h2>
+          </div>
+          <div className="bg-gradient-to-r from-violet-600 to-indigo-700 rounded-2xl p-6 text-white mb-6">
+            <p className="text-lg font-medium mb-1">First autonomous construction cost intelligence platform in Africa</p>
+            <p className="text-sm text-violet-200">Multi-agent system: PriceBot, EstimateBot, ContractorMatch, FinanceBot</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            {[
+              { phase: "Phase 1 (Now–3mo)", title: "AI-Assisted", items: ["AI material price suggestions", "Smart location cost adjustments", "Natural language estimate refinement", "Automated PDF generation"] },
+              { phase: "Phase 2 (3–9mo)", title: "Agentic Workflows", items: ["PriceBot: real-time supplier monitoring", "EstimateBot: NL project → estimate", "ContractorMatch: auto contractor matching", "EmailBot: automated engagement"] },
+              { phase: "Phase 3 (9–18mo)", title: "Autonomous Platform", items: ["Multi-agent orchestration with memory", "Auto-quoting for contractors", "Predictive cost trend analytics", "API agents for third-party embed"] },
+            ].map((p) => (
+              <div key={p.phase} className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+                <span className="text-xs font-bold text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full">{p.phase}</span>
+                <h3 className="font-bold text-slate-900 mt-2 mb-2">{p.title}</h3>
+                <ul className="space-y-1">
+                  {p.items.map((item, i) => (
+                    <li key={i} className="text-xs text-slate-600 flex items-start gap-1.5">
+                      <CheckCircle className="h-3 w-3 text-emerald-600 mt-0.5 shrink-0" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+            {[
+              { val: "70%", label: "Auto-estimate target" },
+              { val: "&lt; 2min", label: "AI completion time" },
+              { val: "±5%", label: "Accuracy vs QS" },
+              { val: "24hr", label: "Price data freshness" },
+            ].map((m) => (
+              <div key={m.label} className="bg-slate-50 rounded-xl border border-slate-200 p-3">
+                <div className="text-lg font-bold text-violet-600">{m.val}</div>
+                <div className="text-xs text-slate-500">{m.label}</div>
+              </div>
+            ))}
           </div>
         </div>
       ),
@@ -2622,6 +2675,7 @@ function PitchDeckView() {
                   ["Operating Expenses", "$280K", "$1.1M", "$3.6M"],
                   ["Net Income", "$30K", "$700K", "$3.6M"],
                   ["ARPU", "$23", "$32", "$40"],
+                  ["AI Agent Revenue", "$0", "$180K", "$1.4M"],
                 ].map((row, i) => (
                   <tr key={i} className="border-b border-slate-100">
                     <td className="py-2.5 px-4 font-medium text-slate-900">{row[0]}</td>
