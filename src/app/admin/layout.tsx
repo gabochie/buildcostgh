@@ -6,7 +6,7 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import {
   LayoutDashboard, ShoppingBag, MessageSquare, Users, Mail,
-  FileText, ListChecks, Settings, LogOut, Menu, X, Loader2, Hammer,   Lightbulb, Network,
+  FileText, ListChecks, Settings, LogOut, Menu, X, Loader2, Hammer, Lightbulb, Network, ClipboardCheck,
 } from "lucide-react"
 
 const navItems = [
@@ -19,6 +19,7 @@ const navItems = [
   { href: "/admin?tab=roadmap", label: "Roadmap", icon: ListChecks },
   { href: "/admin?tab=ecosystem", label: "Ecosystem", icon: Network },
   { href: "/admin?tab=strategy", label: "Strategy", icon: Lightbulb },
+  { href: "/admin?tab=prelaunch", label: "Prelaunch", icon: ClipboardCheck },
   { href: "/admin?tab=settings", label: "Settings", icon: Settings },
 ]
 
