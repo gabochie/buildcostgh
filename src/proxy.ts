@@ -1,22 +1,23 @@
 import { getToken } from "next-auth/jwt"
 import { NextRequest, NextResponse } from "next/server"
 
-const PUBLIC_PATHS = ["/maintenance", "/api/maintenance-status", "/_next", "/favicon.ico", "/assets"]
+const BYPASS_PATHS = ["/maintenance", "/api/maintenance-status", "/api/admin/maintenance", "/admin/login", "/_next", "/favicon.ico", "/assets"]
 
 export default async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl
 
-  if (PUBLIC_PATHS.some((p) => pathname.startsWith(p))) {
+  if (BYPASS_PATHS.some((p) => pathname.startsWith(p))) {
     return NextResponse.next()
   }
 
+  // Maintenance mode check — block public pages and API, allow admin through
   try {
     const res = await fetch(new URL("/api/maintenance-status", req.url), {
       headers: { "Cache-Control": "no-cache" },
     })
     const { enabled } = await res.json()
 
-    if (enabled) {
+    if (enabled && !pathname.startsWith("/admin")) {
       if (pathname.startsWith("/api/")) {
         return NextResponse.json({ error: "Service unavailable" }, { status: 503 })
       }
@@ -24,9 +25,10 @@ export default async function proxy(req: NextRequest) {
     }
   } catch {}
 
+  // Auth protection — only /dashboard needs proxy protection
+  // /admin handles auth itself (shows sign-in button client-side)
   const token = await getToken({ req })
-  const protectedPaths = ["/dashboard", "/admin"]
-  const isProtected = protectedPaths.some((p) => pathname === p || pathname.startsWith(`${p}/`))
+  const isProtected = pathname === "/dashboard" || pathname.startsWith("/dashboard/")
 
   if (isProtected && !token) {
     const signInUrl = new URL("/admin", req.nextUrl)
