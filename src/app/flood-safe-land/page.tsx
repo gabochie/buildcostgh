@@ -163,7 +163,9 @@ const riskOrder: FloodRisk[] = ["critical", "high", "medium", "low", "safe"]
 export default function FloodSafeLandPage() {
   const [region, setRegion] = useState("greaterAccra")
   const [search, setSearch] = useState("")
+  const [name, setName] = useState("")
   const [email, setEmail] = useState("")
+  const [phone, setPhone] = useState("")
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
   const [filterRisk, setFilterRisk] = useState<FloodRisk | "all">("all")
 
@@ -172,26 +174,24 @@ export default function FloodSafeLandPage() {
     .filter((l) => filterRisk === "all" || l.risk === filterRisk)
     .filter((l) => l.name.toLowerCase().includes(search.toLowerCase()))
 
-  const handleEmailSubmit = async (e: React.FormEvent) => {
+  const handleLeadSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!email.includes("@")) return
+    if (!name.trim() || !email.includes("@") || !phone.trim()) return
     setStatus("loading")
     try {
-      const res = await fetch("/api/newsletter", {
+      const res = await fetch("/api/lead-magnet", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, source: "flood-safe-land" }),
+        body: JSON.stringify({ name: name.trim(), email, phone: phone.trim(), source: "flood-safe-land" }),
       })
       if (res.ok) {
         setStatus("success")
-        setEmail("")
       } else {
         setStatus("error")
       }
     } catch {
       setStatus("error")
     }
-    setTimeout(() => setStatus("idle"), 5000)
   }
 
   const riskCounts = riskOrder.map((r) => ({
@@ -438,12 +438,29 @@ export default function FloodSafeLandPage() {
           {status === "success" ? (
             <div className="bg-emerald-700/30 border border-emerald-600/30 rounded-xl p-6">
               <CheckCircle className="h-10 w-10 text-emerald-400 mx-auto mb-2" />
-              <p className="text-white font-medium">You're in! Check your inbox for the report.</p>
-              <p className="text-emerald-200/60 text-sm mt-1">We'll also send you updates when new locations are added.</p>
+              <p className="text-white font-bold text-lg">You're in! Your report is ready.</p>
+              <p className="text-emerald-200/80 text-sm mt-1 mb-5">Click below to view your complete flood risk intelligence report.</p>
+              <a
+                href="/reports/flood-risk"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white font-semibold text-sm transition-all shadow-lg"
+              >
+                <Download className="h-4 w-4" /> View Your Free Report
+              </a>
             </div>
           ) : (
-            <form onSubmit={handleEmailSubmit} className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
-              <div className="flex-1 relative">
+            <form onSubmit={handleLeadSubmit} className="max-w-lg mx-auto space-y-3">
+              <div className="relative">
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-400" />
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Your full name"
+                  required
+                  className="w-full pl-10 pr-4 py-3.5 rounded-xl bg-white/10 border border-emerald-600/30 text-white placeholder:text-emerald-300/40 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                />
+              </div>
+              <div className="relative">
                 <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-400" />
                 <input
                   type="email"
@@ -454,15 +471,26 @@ export default function FloodSafeLandPage() {
                   className="w-full pl-10 pr-4 py-3.5 rounded-xl bg-white/10 border border-emerald-600/30 text-white placeholder:text-emerald-300/40 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400"
                 />
               </div>
+              <div className="relative">
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-400" />
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+233 XX XXX XXXX"
+                  required
+                  className="w-full pl-10 pr-4 py-3.5 rounded-xl bg-white/10 border border-emerald-600/30 text-white placeholder:text-emerald-300/40 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                />
+              </div>
               <button
                 type="submit"
                 disabled={status === "loading"}
-                className="px-6 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white font-semibold text-sm transition-all shadow-lg shadow-emerald-900/30 disabled:opacity-60 flex items-center justify-center gap-2 whitespace-nowrap"
+                className="w-full px-6 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white font-semibold text-sm transition-all shadow-lg shadow-emerald-900/30 disabled:opacity-60 flex items-center justify-center gap-2"
               >
                 {status === "loading" ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <><Download className="h-4 w-4" /> Get Free Report</>
+                  <><Download className="h-4 w-4" /> Get My Free Report</>
                 )}
               </button>
             </form>
