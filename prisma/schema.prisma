@@ -151,3 +151,9 @@ model NewsletterSubscriber {
   subscribed Boolean @default(true)
   createdAt DateTime @default(now())
 }
+
+model SiteSetting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+}
