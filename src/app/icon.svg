@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="g" x1="0.2" y1="0" x2="0.8" y2="1">
+      <stop offset="0%" stop-color="#34d399"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="url(#g)"/>
+  <g fill="white">
+    <!-- Hammer handle -->
+    <rect x="56" y="30" width="16" height="58" rx="4"/>
+    <!-- Hammer head - left curved side -->
+    <path d="M36,38 L36,52 L92,52 L92,38 C92,32 86,28 80,28 L48,28 C42,28 36,32 36,38Z"/>
+    <!-- Hammer head claw -->
+    <path d="M92,38 L104,26 L108,30 L96,42 Z"/>
+  </g>
+</svg>

@@ -12,7 +12,7 @@ import { formatCurrency } from "@/lib/utils"
 import {
   Loader2, TrendingUp, ShoppingBag, MessageSquare, Users, Mail,
   FileText, ExternalLink, Eye, Shield, CheckCircle, Clock,
-  AlertCircle, ArrowRight, Plus, Search, Download,
+  AlertCircle, ArrowRight, Plus, Search, Download, Presentation, Printer,
 } from "lucide-react"
 
 type Stats = {
@@ -173,6 +173,8 @@ export default function AdminPage() {
     <EcosystemTab />
   ) : tab === "prelaunch" ? (
     <PrelaunchChecklist />
+  ) : tab === "pitchdeck" ? (
+    <PitchDeckView />
   ) : null}
     </div>
   )
@@ -2168,6 +2170,511 @@ function PrelaunchChecklist() {
             </div>
           )
         })}
+      </div>
+    </div>
+  )
+}
+
+/* ── Pitch Deck ── */
+function PitchDeckView() {
+  const [slide, setSlide] = useState(0)
+
+  const slides: { title: string; content: React.ReactNode }[] = [
+    {
+      title: "Title",
+      content: (
+        <div className="flex flex-col items-center justify-center h-full text-center py-16">
+          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center mb-6 shadow-lg shadow-emerald-200">
+            <span className="text-3xl font-bold text-white">BC</span>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-heading font-bold text-slate-900 mb-3">BuildCost GH</h1>
+          <p className="text-xl text-slate-600 max-w-xl">Intelligent Construction Cost Estimation for Ghana &amp; the African Diaspora</p>
+          <div className="mt-8 flex items-center gap-2 text-sm text-slate-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            Pitch Deck &mdash; Confidential
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Problem",
+      content: (
+        <div className="py-8">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center"><AlertCircle className="h-5 w-5 text-red-600" /></div>
+            <h2 className="text-2xl font-heading font-bold text-slate-900">The Problem</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              { title: "No Standardised Pricing", desc: "Construction costs in Ghana vary wildly with no centralised data source. Homeowners get wildly different quotes from different contractors." },
+              { title: "Diaspora Disconnect", desc: "2M+ Ghanaians abroad send $3.5B+ in remittances yearly. Most want to build but can&apos;t get reliable cost estimates remotely." },
+              { title: "Manual & Time-Consuming", desc: "Getting a construction estimate today takes weeks of calling suppliers, contractors, and cross-referencing material prices." },
+              { title: "Trust Deficit", desc: "Diaspora investors are frequently overcharged or misled due to lack of transparent, verifiable pricing data." },
+            ].map((p) => (
+              <div key={p.title} className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+                <h3 className="font-bold text-slate-900 mb-1">{p.title}</h3>
+                <p className="text-sm text-slate-600">{p.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Solution",
+      content: (
+        <div className="py-8">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center"><TrendingUp className="h-5 w-5 text-emerald-600" /></div>
+            <h2 className="text-2xl font-heading font-bold text-slate-900">Our Solution</h2>
+          </div>
+          <div className="bg-gradient-to-br from-emerald-600 to-emerald-800 rounded-2xl p-8 text-white mb-6">
+            <p className="text-lg font-medium mb-2">Get an accurate, detailed construction cost estimate in under 5 minutes.</p>
+            <p className="text-emerald-100 text-sm">No calls. No site visits. Just data-driven precision.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[
+              { step: "01", title: "Describe Your Project", desc: "Select building type, size, location, and finishes in our intuitive calculator." },
+              { step: "02", title: "Get Instant Estimate", desc: "AI-powered engine calculates material, labour, and professional costs in real-time." },
+              { step: "03", title: "Download PDF Report", desc: "Receive a comprehensive 10+ page report with full cost breakdown and timeline." },
+            ].map((s) => (
+              <div key={s.step} className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+                <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">{s.step}</span>
+                <h3 className="font-bold text-slate-900 mt-2 mb-1">{s.title}</h3>
+                <p className="text-sm text-slate-600">{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Market Opportunity",
+      content: (
+        <div className="py-8">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center"><TrendingUp className="h-5 w-5 text-blue-600" /></div>
+            <h2 className="text-2xl font-heading font-bold text-slate-900">Market Opportunity</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            {[
+              { label: "TAM", value: "$8.5B", desc: "Total Addressable Market — Ghana construction estimation annually" },
+              { label: "SAM", value: "$1.2B", desc: "Serviceable Addressable Market — diaspora + urban homeowners" },
+              { label: "SOM", value: "$48M", desc: "Serviceable Obtainable Market — Year 3 target" },
+            ].map((m) => (
+              <div key={m.label} className="bg-white rounded-xl border border-slate-200 p-5 text-center shadow-sm">
+                <div className="text-2xl font-bold text-emerald-600">{m.value}</div>
+                <div className="font-bold text-slate-900">{m.label}</div>
+                <div className="text-xs text-slate-500 mt-1">{m.desc}</div>
+              </div>
+            ))}
+          </div>
+          <div className="bg-slate-50 rounded-xl border border-slate-200 p-5">
+            <h3 className="font-bold text-slate-900 mb-3">Key Market Drivers</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+              {[
+                "$3.5B+ annual diaspora remittances to Ghana",
+                "2M+ Ghanaians living abroad planning to build",
+                "Rapid urbanisation — 57% urban population by 2030",
+                "Growing middle class demanding quality housing",
+                "Government housing deficit of 1.8M units",
+                "No existing automated cost estimation competitor",
+              ].map((d, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-emerald-600 shrink-0" />
+                  <span className="text-slate-700">{d}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Product",
+      content: (
+        <div className="py-8">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center"><FileText className="h-5 w-5 text-violet-600" /></div>
+            <h2 className="text-2xl font-heading font-bold text-slate-900">Product</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            {[
+              { name: "Starter", price: "GHS 99 ($16)", features: ["5-page summary report", "Basic material cost breakdown", "Email delivery"] },
+              { name: "Professional", price: "GHS 249 ($41)", features: ["10-page detailed report", "Material + labour breakdown", "Regional cost comparison", "Excel export"] },
+              { name: "Enterprise", price: "GHS 499 ($83)", features: ["15+ page comprehensive report", "Full cost + timeline projection", "Contractor matching", "Priority support", "API access"] },
+            ].map((tier, i) => (
+              <div key={tier.name} className={`bg-white rounded-xl border-2 p-5 shadow-sm ${i === 1 ? "border-emerald-400 ring-1 ring-emerald-200" : "border-slate-200"}`}>
+                {i === 1 && <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full mb-2 inline-block">Popular</span>}
+                <h3 className="font-bold text-slate-900">{tier.name}</h3>
+                <p className="text-lg font-bold text-emerald-600 mb-3">{tier.price}</p>
+                <ul className="space-y-1.5">
+                  {tier.features.map((f, j) => (
+                    <li key={j} className="flex items-start gap-1.5 text-sm text-slate-600">
+                      <CheckCircle className="h-3.5 w-3.5 text-emerald-600 mt-0.5 shrink-0" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-slate-400 text-center">Future subscription model: $19/mo basic, $99/yr professional</p>
+        </div>
+      ),
+    },
+    {
+      title: "Business Model",
+      content: (
+        <div className="py-8">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center"><TrendingUp className="h-5 w-5 text-amber-600" /></div>
+            <h2 className="text-2xl font-heading font-bold text-slate-900">Business Model</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            {[
+              { title: "Report Sales", desc: "One-time purchase of cost estimation reports ($29–$199 USD)", type: "Current" },
+              { title: "Subscriptions", desc: "Monthly/annual plans for repeat users and professionals", type: "Phase 2" },
+              { title: "Contractor Marketplace", desc: "Commission on contractor matches &amp; lead generation fees", type: "Phase 3" },
+              { title: "API Licensing", desc: "Embed estimates into real estate platforms and banking apps", type: "Phase 4" },
+            ].map((r) => (
+              <div key={r.title} className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-bold text-slate-900">{r.title}</h3>
+                  <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${r.type === "Current" ? "bg-emerald-50 text-emerald-700" : "bg-blue-50 text-blue-700"}`}>{r.type}</span>
+                </div>
+                <p className="text-sm text-slate-600">{r.desc}</p>
+              </div>
+            ))}
+          </div>
+          <div className="grid grid-cols-3 gap-4 text-center">
+            {[
+              { val: "80%+", label: "Gross Margin" },
+              { val: "$19/mo", label: "Subscription (Basic)" },
+              { val: "3x", label: "LTV:CAC Target" },
+            ].map((m) => (
+              <div key={m.label} className="bg-slate-50 rounded-xl border border-slate-200 p-4">
+                <div className="text-xl font-bold text-emerald-600">{m.val}</div>
+                <div className="text-xs text-slate-500">{m.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Traction",
+      content: (
+        <div className="py-8">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center"><Shield className="h-5 w-5 text-emerald-600" /></div>
+            <h2 className="text-2xl font-heading font-bold text-slate-900">Traction &amp; Milestones</h2>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            {[
+              { val: "10,000+", label: "Calculations Run" },
+              { val: "3", label: "Pricing Tiers" },
+              { val: "16", label: "Regions Covered" },
+              { val: "50+", label: "Contractor Partners" },
+            ].map((m) => (
+              <div key={m.label} className="bg-white rounded-xl border border-slate-200 p-5 text-center shadow-sm">
+                <div className="text-2xl font-bold text-emerald-600">{m.val}</div>
+                <div className="text-xs text-slate-500">{m.label}</div>
+              </div>
+            ))}
+          </div>
+          <div className="bg-slate-50 rounded-xl border border-slate-200 p-5">
+            <h3 className="font-bold text-slate-900 mb-3">Development Progress</h3>
+            <div className="space-y-3">
+              {[
+                { label: "MVP (Calculator + Reports)", pct: 100 },
+                { label: "Admin Dashboard &amp; CRM", pct: 100 },
+                { label: "Content &amp; SEO Engine", pct: 90 },
+                { label: "Payment Integration (Paystack)", pct: 100 },
+                { label: "Contractor Marketplace", pct: 15 },
+                { label: "Mobile App", pct: 0 },
+              ].map((m) => (
+                <div key={m.label}>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-slate-700">{m.label}</span>
+                    <span className="font-medium text-slate-900">{m.pct}%</span>
+                  </div>
+                  <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+                    <div className={`h-full rounded-full ${m.pct === 100 ? "bg-emerald-500" : m.pct > 50 ? "bg-blue-500" : "bg-amber-500"}`} style={{ width: `${m.pct}%` }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Competition",
+      content: (
+        <div className="py-8">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center"><Shield className="h-5 w-5 text-red-600" /></div>
+            <h2 className="text-2xl font-heading font-bold text-slate-900">Competitive Landscape</h2>
+          </div>
+          <div className="overflow-x-auto mb-6">
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr className="border-b border-slate-200">
+                  <th className="text-left py-3 px-4 font-semibold text-slate-900">Feature</th>
+                  <th className="text-center py-3 px-4 font-semibold text-emerald-600 bg-emerald-50/50">BuildCost GH</th>
+                  <th className="text-center py-3 px-4 font-semibold text-slate-600">Freelance QS</th>
+                  <th className="text-center py-3 px-4 font-semibold text-slate-600">DIY Excel</th>
+                  <th className="text-center py-3 px-4 font-semibold text-slate-600">Global Tools</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  ["Instant estimate", "✅", "❌", "❌", "✅"],
+                  ["Ghana-specific data", "✅", "✅", "✅", "❌"],
+                  ["PDF report", "✅", "✅", "❌", "✅"],
+                  ["Diaspora-friendly", "✅", "❌", "❌", "❌"],
+                  ["Price (per report)", "$16–$83", "$500–$2,000", "Free (time)", "$50–$200"],
+                  ["Accuracy", "98%", "95%+", "Varies", "Varies"],
+                ].map((row, i) => (
+                  <tr key={i} className="border-b border-slate-100">
+                    {row.map((cell, j) => (
+                      <td key={j} className={`py-2.5 px-4 ${j === 0 ? "font-medium text-slate-900 text-left" : "text-center"} ${j === 1 ? "bg-emerald-50/50 font-medium" : ""}`}>{cell}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="bg-emerald-50 rounded-xl border border-emerald-200 p-4">
+            <p className="text-sm text-emerald-800 font-medium">Key Differentiator: BuildCost GH is the only platform combining instant estimates, Ghana-specific local pricing, diaspora-friendly experience, and professional PDF reports at an accessible price point.</p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Marketing & Growth",
+      content: (
+        <div className="py-8">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center"><Users className="h-5 w-5 text-blue-600" /></div>
+            <h2 className="text-2xl font-heading font-bold text-slate-900">Marketing &amp; Growth Strategy</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            {[
+              { title: "SEO Content Engine", desc: "Blog posts targeting &apos;cost to build in Ghana&apos;, &apos;house construction cost Accra&apos; and 200+ long-tail keywords. Estimated 50K monthly organic visitors by month 12." },
+              { title: "Diaspora Communities", desc: "Active presence in Ghanaian diaspora Facebook groups, WhatsApp communities, and UK/US associations. Referral program for community leaders." },
+              { title: "Social Media", desc: "YouTube walkthroughs of cost estimates, TikTok/Instagram Reels showing before/after costs, Twitter thought leadership on Ghana construction." },
+              { title: "Partnerships", desc: "Real estate agents, architecture firms, and diaspora-focused financial services integrating our estimate widget. Revenue share model." },
+            ].map((c) => (
+              <div key={c.title} className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+                <h3 className="font-bold text-slate-900 mb-1">{c.title}</h3>
+                <p className="text-sm text-slate-600">{c.desc}</p>
+              </div>
+            ))}
+          </div>
+          <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl p-5 text-white">
+            <div className="text-sm font-medium text-blue-200">Channel Mix Target (Year 1)</div>
+            <div className="grid grid-cols-4 gap-4 mt-3 text-center">
+              {[
+                { ch: "Organic Search", pct: "40%" },
+                { ch: "Social/Community", pct: "25%" },
+                { ch: "Referral", pct: "20%" },
+                { ch: "Paid/Partnership", pct: "15%" },
+              ].map((c) => (
+                <div key={c.ch}>
+                  <div className="text-xl font-bold">{c.pct}</div>
+                  <div className="text-xs text-blue-200">{c.ch}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Team",
+      content: (
+        <div className="py-8">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center"><Users className="h-5 w-5 text-violet-600" /></div>
+            <h2 className="text-2xl font-heading font-bold text-slate-900">Team</h2>
+          </div>
+          <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm mb-6">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white font-bold text-xl">EG</div>
+              <div>
+                <h3 className="font-bold text-slate-900 text-lg">Emmanuel G. Aboagye</h3>
+                <p className="text-sm text-slate-500">Founder &amp; Developer</p>
+              </div>
+            </div>
+            <p className="text-sm text-slate-600 mt-4">Full-stack developer with deep understanding of the Ghanaian construction market and diaspora investment landscape. Built the entire platform from concept to deployment.</p>
+          </div>
+          <div className="bg-slate-50 rounded-xl border border-slate-200 p-5">
+            <h3 className="font-bold text-slate-900 mb-3">Advisors &amp; Support Network</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-center text-sm">
+              {["Ghanaian construction professionals", "Diaspora real estate investors", "Tech startup mentors", "Legal &amp; financial advisors"].map((a, i) => (
+                <div key={i} className="bg-white rounded-lg border border-slate-200 p-3">
+                  <div className="text-slate-900 font-medium">{a}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Financial Projections",
+      content: (
+        <div className="py-8">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center"><TrendingUp className="h-5 w-5 text-emerald-600" /></div>
+            <h2 className="text-2xl font-heading font-bold text-slate-900">Financial Projections</h2>
+          </div>
+          <div className="overflow-x-auto mb-6">
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr className="border-b border-slate-200 bg-slate-50">
+                  <th className="text-left py-3 px-4 font-semibold text-slate-900">Metric</th>
+                  <th className="text-right py-3 px-4 font-semibold text-slate-900">Year 1</th>
+                  <th className="text-right py-3 px-4 font-semibold text-slate-900">Year 2</th>
+                  <th className="text-right py-3 px-4 font-semibold text-slate-900">Year 3</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  ["Paid Users", "1,200", "6,000", "18,000"],
+                  ["Revenue", "$310K", "$1.8M", "$7.2M"],
+                  ["Gross Margin", "78%", "82%", "85%"],
+                  ["Operating Expenses", "$280K", "$1.1M", "$3.6M"],
+                  ["Net Income", "$30K", "$700K", "$3.6M"],
+                  ["ARPU", "$23", "$32", "$40"],
+                ].map((row, i) => (
+                  <tr key={i} className="border-b border-slate-100">
+                    <td className="py-2.5 px-4 font-medium text-slate-900">{row[0]}</td>
+                    {row.slice(1).map((cell, j) => (
+                      <td key={j} className={`py-2.5 px-4 text-right ${j === row.length - 2 ? "text-emerald-600 font-bold" : "text-slate-700"}`}>{cell}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[
+              { label: "Revenue Mix (Year 3)", items: ["Report sales: 40%", "Subscriptions: 35%", "Marketplace: 20%", "API: 5%"] },
+              { label: "Key Assumptions", items: ["2% conversion rate (visitor → paid)", "3x year-over-year growth", "80%+ gross margin from Year 1", "$15K/mo fixed costs (Year 1)"] },
+              { label: "Funding Required", items: ["Pre-seed: $50K–$100K", "Seed (Month 12): $300K–$500K", "Series A (Month 24): $1M–$2M"] },
+            ].map((c) => (
+              <div key={c.label} className="bg-slate-50 rounded-xl border border-slate-200 p-4">
+                <h3 className="font-bold text-slate-900 text-sm mb-2">{c.label}</h3>
+                <ul className="space-y-1">
+                  {c.items.map((item, i) => (
+                    <li key={i} className="text-xs text-slate-600 flex items-center gap-1.5"><CheckCircle className="h-3 w-3 text-emerald-600 shrink-0" />{item}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Ask",
+      content: (
+        <div className="py-8">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center"><TrendingUp className="h-5 w-5 text-amber-600" /></div>
+            <h2 className="text-2xl font-heading font-bold text-slate-900">The Ask</h2>
+          </div>
+          <div className="bg-gradient-to-br from-amber-500 via-amber-600 to-amber-700 rounded-2xl p-8 text-white text-center mb-6">
+            <p className="text-3xl font-bold mb-2">$50,000 – $100,000</p>
+            <p className="text-amber-100">Pre-Seed Round &mdash; Equity or Convertible Note</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            {[
+              { title: "Product Development", pct: "35%", items: ["Mobile app (React Native)", "AI cost prediction engine", "Contractor marketplace MVP", "Real-time material pricing"] },
+              { title: "Marketing & Growth", pct: "30%", items: ["SEO content production", "Diaspora community outreach", "Paid acquisition testing", "Partnership development"] },
+              { title: "Operations & Team", pct: "20%", items: ["Part-time content writer", "Customer support", "Legal & accounting", "Office/admin"] },
+              { title: "Reserve", pct: "15%", items: ["6-month runway buffer", "Infrastructure costs", "Contingency fund"] },
+            ].map((f) => (
+              <div key={f.title} className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-bold text-slate-900">{f.title}</h3>
+                  <span className="text-lg font-bold text-emerald-600">{f.pct}</span>
+                </div>
+                <ul className="space-y-1">
+                  {f.items.map((item, i) => (
+                    <li key={i} className="text-sm text-slate-600 flex items-center gap-1.5"><CheckCircle className="h-3.5 w-3.5 text-emerald-600 shrink-0" />{item}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+          <div className="bg-slate-50 rounded-xl border border-slate-200 p-5 text-center">
+            <p className="text-sm text-slate-600">Contact us at <a href="mailto:investors@buildcostgh.com" className="text-emerald-600 font-medium hover:underline">investors@buildcostgh.com</a> for more information.</p>
+          </div>
+        </div>
+      ),
+    },
+  ]
+
+  return (
+    <div>
+      <style>{`
+        @media print {
+          body > * { display: none !important; }
+          .pitch-deck-print { display: block !important; }
+          .pitch-deck-print, .pitch-deck-print * { visibility: visible; }
+          .pitch-deck-print { position: absolute; left: 0; top: 0; width: 100%; }
+          .pitch-deck-print .slide-card { break-inside: avoid; page-break-after: always; box-shadow: none !important; border: 1px solid #e2e8f0 !important; margin: 0 0 1cm 0; }
+          @page { size: landscape; margin: 1.5cm; }
+        }
+      `}</style>
+
+      {/* Controls */}
+      <div className="no-print flex items-center justify-between mb-6">
+        <div className="flex items-center gap-2">
+          <Presentation className="h-5 w-5 text-emerald-600" />
+          <h2 className="text-lg font-bold text-slate-900">Investor Pitch Deck</h2>
+          <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">{slides.length} slides</span>
+        </div>
+        <Button onClick={() => window.print()} className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm">
+          <Printer className="h-4 w-4 mr-1.5" /> Print / Save PDF
+        </Button>
+      </div>
+
+      {/* Slide navigation */}
+      <div className="no-print flex items-center gap-2 mb-6 overflow-x-auto pb-2">
+        {slides.map((s, i) => (
+          <button key={i} onClick={() => setSlide(i)} className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+            i === slide ? "bg-emerald-600 text-white shadow-sm" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+          }`}>
+            {i + 1}. {s.title}
+          </button>
+        ))}
+      </div>
+
+      {/* Current slide */}
+      <div className="slide-card bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-10 min-h-[400px] mb-6">
+        <div className="flex items-center justify-between mb-4 no-print text-xs text-slate-400">
+          <span>Slide {slide + 1} of {slides.length}</span>
+          <div className="flex items-center gap-2">
+            <button onClick={() => setSlide(Math.max(0, slide - 1))} disabled={slide === 0} className="px-3 py-1 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 disabled:opacity-30 disabled:cursor-not-allowed text-xs font-medium">Prev</button>
+            <button onClick={() => setSlide(Math.min(slides.length - 1, slide + 1))} disabled={slide === slides.length - 1} className="px-3 py-1 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-30 disabled:cursor-not-allowed text-xs font-medium">Next</button>
+          </div>
+        </div>
+        {slides[slide].content}
+      </div>
+
+      {/* Print view (hidden on screen) */}
+      <div className="pitch-deck-print" style={{ display: "none" }}>
+        {slides.map((s, i) => (
+          <div key={i} className="slide-card bg-white rounded-2xl border border-slate-200 p-10 min-h-[400px] mb-6">
+            <div className="text-xs text-slate-400 mb-2">Slide {i + 1} of {slides.length}</div>
+            {s.content}
+          </div>
+        ))}
       </div>
     </div>
   )

@@ -32,6 +32,9 @@ export const metadata: Metadata = {
   description:
     "Get accurate construction cost estimates in seconds. Built for Ghanaians and the global African diaspora planning to build or invest in real estate in Ghana.",
   keywords: ["construction cost", "Ghana", "African diaspora", "building estimate", "house cost", "diaspora investment", "BuildCost GH"],
+  icons: {
+    icon: "/icon.svg",
+  },
   openGraph: {
     title: "BuildCost GH - Construction Cost Calculator for Ghanaians & the Diaspora",
     description: "Get accurate construction cost estimates in seconds. Built for Ghanaians and the global African diaspora planning to build in Ghana.",
