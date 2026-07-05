@@ -280,6 +280,16 @@ export default function PricingPage() {
         </div>
       </section>
 
+      <div className="container mx-auto px-4 mt-6">
+        <div className="max-w-6xl mx-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-gold/10 via-gold/5 to-gold/10 border border-gold/20 text-center">
+          <Zap className="h-4 w-4 text-gold-dark flex-shrink-0" />
+          <p className="text-xs sm:text-sm font-medium text-charcoal/80">
+            Limited-time pricing — current rates locked for your session.{" "}
+            <span className="text-gold-dark font-semibold">Prices may increase with market changes.</span>
+          </p>
+        </div>
+      </div>
+
       <div className="container mx-auto px-4 -mt-12 relative z-20">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto mb-20">
           {packages.map((pkg, i) => {

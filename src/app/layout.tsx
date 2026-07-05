@@ -8,6 +8,7 @@ import { Analytics } from "@/components/shared/Analytics"
 import { ChatWidget } from "@/components/shared/ChatWidget"
 import { CookieConsent } from "@/components/shared/CookieConsent"
 import { WhatsAppButton } from "@/components/shared/WhatsAppButton"
+import { ExitIntentPopup } from "@/components/shared/ExitIntentPopup"
 import { organizationLd } from "./ld"
 
 const inter = Inter({
@@ -55,6 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <CookieConsent />
           <WhatsAppButton />
           <ChatWidget />
+          <ExitIntentPopup />
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationLd()) }}

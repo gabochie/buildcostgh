@@ -122,6 +122,23 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           </div>
         </article>
 
+        <div className="mt-12 p-6 rounded-2xl bg-gradient-to-br from-emerald-900 via-emerald-800 to-charcoal text-center shadow-lg">
+          <div className="relative z-10">
+            <h3 className="text-xl font-bold text-white mb-2">
+              Ready to Estimate Your Build Cost?
+            </h3>
+            <p className="text-emerald-100/70 text-sm mb-5 max-w-md mx-auto">
+              Get a detailed cost breakdown for your dream home in minutes — free, no card required.
+            </p>
+            <Link
+              href="/calculator"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gold text-charcoal font-bold hover:bg-gold/90 transition-all shadow-lg shadow-gold/25"
+            >
+              Start Your Free Estimate <ArrowLeft className="h-4 w-4 rotate-180" />
+            </Link>
+          </div>
+        </div>
+
         {relatedPosts.length > 0 && (
           <div className="mt-16">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Related Articles</h2>
