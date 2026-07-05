@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -158,6 +158,34 @@ const cardVariants = {
 }
 
 export default function PricingPage() {
+  const [currency, setCurrency] = useState<"GHS" | "USD">("GHS")
+  const [rates, setRates] = useState<{ GHS: number }>({ GHS: 15.5 })
+  const [rateDate, setRateDate] = useState("")
+
+  useEffect(() => {
+    fetch("https://api.frankfurter.app/latest?from=USD&to=GHS")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data?.rates?.GHS) {
+          setRates({ GHS: data.rates.GHS })
+          setRateDate(data.date || "")
+        }
+      })
+      .catch(() => {})
+  }, [])
+
+  const rate = rates.GHS || 15.5
+  const fmtPrice = (ghs: number) => {
+    if (currency === "GHS") return `GHS ${ghs.toLocaleString()}`
+    const usd = Math.round((ghs / rate) * 100) / 100
+    return `$${usd.toLocaleString("en-US", { minimumFractionDigits: usd < 10 ? 2 : 0, maximumFractionDigits: 0 })}`
+  }
+  const fmtBtnLabel = (ghs: number) => {
+    if (currency === "GHS") return `GHS ${ghs.toLocaleString()}`
+    const usd = Math.round(ghs / rate)
+    return `$${usd}`
+  }
+
   const [selected, setSelected] = useState<string | null>(null)
   const [form, setForm] = useState({ fullName: "", email: "", phone: "", notes: "" })
   const [loading, setLoading] = useState(false)
@@ -227,6 +255,19 @@ export default function PricingPage() {
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 text-emerald-200 text-xs font-medium border border-white/10">
                 <Smartphone className="h-3.5 w-3.5" /> Pay with Card or Mobile Money
               </div>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 text-emerald-200 text-xs font-medium border border-white/10">
+                <span className={`${currency === "GHS" ? "text-white font-semibold" : "text-emerald-300/60"}`}>GHS</span>
+                <button
+                  onClick={() => setCurrency(currency === "GHS" ? "USD" : "GHS")}
+                  className="relative w-8 h-4 rounded-full transition-colors bg-white/20"
+                >
+                  <span className={`absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full shadow-sm transition-transform ${currency === "USD" ? "translate-x-4" : ""}`} />
+                </button>
+                <span className={`${currency === "USD" ? "text-white font-semibold" : "text-emerald-300/60"}`}>USD</span>
+                {rateDate && (
+                  <span className="hidden sm:inline text-[10px] text-emerald-300/40 ml-1">1 USD = {rate} GHS</span>
+                )}
+              </div>
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-white mb-4">
               Find the Right Plan for Your{" "}
@@ -288,9 +329,9 @@ export default function PricingPage() {
                         <div className="text-4xl font-bold text-gray-300">Free</div>
                       ) : (
                         <>
-                          <span className="text-sm text-gray-400 align-top mr-0.5">GHS</span>
+                          <span className="text-sm text-gray-400 align-top mr-0.5">{currency === "GHS" ? "GHS" : "$"}</span>
                           <span className={`text-5xl font-bold ${isPopular ? "text-gradient-gold" : "text-emerald-600"}`}>
-                            {pkg.price}
+                            {currency === "GHS" ? pkg.price : Math.round(pkg.price / rate)}
                           </span>
                         </>
                       )}
@@ -336,7 +377,7 @@ export default function PricingPage() {
                         className="group relative w-full overflow-hidden rounded-xl px-5 py-3 text-sm font-bold text-white transition-all bg-gradient-gold hover:shadow-lg hover:shadow-gold/25"
                       >
                         <span className="relative z-10 flex items-center justify-center gap-1.5">
-                          {isSelected ? "Selected" : `Get ${pkg.name} — GHS ${pkg.price}`}
+                          {isSelected ? "Selected" : `Get ${pkg.name} — ${fmtBtnLabel(pkg.price)}`}
                           <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                         </span>
                       </button>
@@ -346,7 +387,7 @@ export default function PricingPage() {
                         className="group relative w-full overflow-hidden rounded-xl px-5 py-3 text-sm font-semibold text-white transition-all bg-emerald-600 hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-200"
                       >
                         <span className="relative z-10 flex items-center justify-center gap-1.5">
-                          {isSelected ? "Selected" : `Get ${pkg.name} — GHS ${pkg.price}`}
+                          {isSelected ? "Selected" : `Get ${pkg.name} — ${fmtBtnLabel(pkg.price)}`}
                           <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                         </span>
                       </button>
@@ -414,7 +455,7 @@ export default function PricingPage() {
                           ) : (
                             <>
                               <Smartphone className="h-4 w-4" />
-                              Pay GHS {pkg.price} — Card &amp; Mobile Money
+                              Pay {fmtBtnLabel(pkg.price)} — Card &amp; Mobile Money
                             </>
                           )}
                         </Button>
