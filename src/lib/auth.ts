@@ -1,5 +1,13 @@
 import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
+import { checkRateLimit, recordAttempt } from "./rate-limit"
+
+function getIp(request?: Request): string | null {
+  if (!request) return null
+  return request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+    || request.headers.get("x-real-ip")
+    || null
+}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   session: { strategy: "jwt" },
@@ -10,13 +18,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, request) {
         const email = credentials?.email as string
         const password = credentials?.password as string
+        const ip = getIp(request)
 
-        if (email !== "gabochie@gmail.com") return null
-        if (password !== process.env.ADMIN_PASSWORD) return null
+        const rateCheck = await checkRateLimit(ip)
+        if (!rateCheck.allowed) return null
 
+        const valid = email === "gabochie@gmail.com" && password === process.env.ADMIN_PASSWORD
+        await recordAttempt(ip, email, valid)
+
+        if (!valid) return null
         return { id: "1", name: "Admin", email: "gabochie@gmail.com" }
       },
     }),
