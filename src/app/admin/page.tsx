@@ -961,8 +961,12 @@ function EcosystemTab() {
         "Educational blog & video library ('Building in Ghana 101')",
         "ROI calculator for rental properties",
         "Feasibility quiz that recommends the right path",
+        "Diaspora building guide ebook ($9.99 download)",
+        "Live Q&A webinars with Ghana-based experts",
+        "AI chatbot assistant for quick questions (WhatsApp integration)",
+        "Curated list of vetted diaspora-focused real estate agents",
       ],
-      revenue: "Free / Lead generation",
+      revenue: "Free / Lead generation + $10 ebook",
       link: "→ connects to Cost Estimation",
     },
     {
@@ -973,6 +977,10 @@ function EcosystemTab() {
         "Title search & due diligence service (partner with surveyors)",
         "Legal document review (partner law firms)",
         "Land valuation report",
+        "Drone site survey & aerial mapping service",
+        "GPS land boundary mapping & beacon installation",
+        "Community chief / family head verification call",
+        "Land litigation history check (court records search)",
       ],
       revenue: "Commission (3–5% per sale) + Legal referral fee",
       link: "→ feeds into Design & Permits",
@@ -985,6 +993,10 @@ function EcosystemTab() {
         "Custom architectural design service (partner architects)",
         "Building permit application assistant (submit on your behalf)",
         "Community bylaw compliance check",
+        "3D exterior & interior visualization renderings",
+        "Material takeoff quantity list from architectural plans",
+        "Virtual design consultation (30-min video call with architect)",
+        "Structural engineering review of plans",
       ],
       revenue: "Per-plan sale ($99–$499) + Permit processing fee",
       link: "→ feeds into Budgeting & Financing",
@@ -998,6 +1010,10 @@ function EcosystemTab() {
         "Savings plan generator (how much to save monthly)",
         "Bank loan comparison tool",
         "Payment plan builder for staged construction",
+        "Multi-property portfolio cost analysis (developers)",
+        "Construction loan application support service",
+        "Currency exchange planning tool (USD/GHS/GBP rates)",
+        "Cost escalation & inflation contingency calculator",
       ],
       revenue: "Report sales + Affiliate fee from bank referrals",
       link: "→ feeds into Contractor Hiring",
@@ -1010,7 +1026,10 @@ function EcosystemTab() {
         "Bid comparison tool (get 3 quotes, compare side-by-side)",
         "Contractor background check (criminal, past litigation)",
         "Client review & rating system",
-        "Escrow payment protection",
+        "Escrow payment protection (milestone-based release)",
+        "Contractor insurance verification service",
+        "Project portfolio gallery with real photos & budgets",
+        "Direct messaging & contract signing platform",
       ],
       revenue: "Contractor subscription ($29/mo) + Commission on matched projects (5%)",
       link: "→ feeds into Construction Management",
@@ -1025,6 +1044,9 @@ function EcosystemTab() {
         "Material delivery verification (photo of delivered materials)",
         "Weekly written status report for diaspora owners",
         "On-site coordinator visits (partner network)",
+        "Live CCTV feed access for active construction sites",
+        "Budget vs actual spend tracking with alerts",
+        "Change order management & approval workflow",
       ],
       revenue: "Monthly subscription ($19–$49/mo per project)",
       link: "→ feeds into Materials Procurement",
@@ -1036,8 +1058,11 @@ function EcosystemTab() {
         "Real-time material price index (cement, steel, roofing, tiles, paint)",
         "Verified supplier directory (wholesale prices)",
         "Bulk procurement coordination (buy together, save 10–15%)",
-        "Material delivery tracking",
+        "Material delivery tracking to site",
         "Quality verification (product testing partnership)",
+        "Material quantity calculator (exact amounts needed)",
+        "Supplier scorecard with delivery reliability ratings",
+        "Price drop alerts & seasonal buying recommendations",
       ],
       revenue: "Supplier listing fee + Commission on orders (2–5%)",
       link: "→ feeds into Quality Assurance",
@@ -1051,6 +1076,9 @@ function EcosystemTab() {
         "Snag list / punch list management",
         "Engineer sign-off coordination for permits",
         "Structural integrity report",
+        "Electrical & plumbing compliance testing",
+        "Soil test & foundation suitability analysis",
+        "Thermal imaging inspection for insulation & moisture",
       ],
       revenue: "Per-inspection fee ($49–$149)",
       link: "→ feeds into Interior & Finishing",
@@ -1064,6 +1092,9 @@ function EcosystemTab() {
         "Specialized contractor listing (tilers, painters, cabinet makers)",
         "Smart home installation service",
         "Landscaping design & execution",
+        "Custom kitchen & wardrobe design service",
+        "Paint color visualization tool (upload room photo, try colors)",
+        "Lighting design & plan service",
       ],
       revenue: "Commission on sales (10–15%) + Designer referral fee",
       link: "→ feeds into Move-in & Property Management",
@@ -1078,6 +1109,9 @@ function EcosystemTab() {
         "Rental listing platform (if building for investment)",
         "Home insurance referral",
         "Security system installation partner",
+        "Property handover inspection checklist & walkthrough",
+        "Utility connection setup service (water, electricity, internet)",
+        "Yearly maintenance reminder & scheduling",
       ],
       revenue: "Property management fee (8–12% of rent) + Insurance commission",
       link: "→ Returns to Dream: refer friends, start next project",
@@ -1096,9 +1130,25 @@ function EcosystemTab() {
           className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${subTab === "businessmodel" ? "bg-emerald-100 text-emerald-800 shadow-sm" : "text-slate-500 hover:text-slate-700 hover:bg-slate-100"}`}>
           Business Model
         </button>
+        <button onClick={() => setSubTab("revenuemodel")}
+          className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${subTab === "revenuemodel" ? "bg-emerald-100 text-emerald-800 shadow-sm" : "text-slate-500 hover:text-slate-700 hover:bg-slate-100"}`}>
+          Revenue Model
+        </button>
+        <button onClick={() => setSubTab("annualrevenue")}
+          className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${subTab === "annualrevenue" ? "bg-emerald-100 text-emerald-800 shadow-sm" : "text-slate-500 hover:text-slate-700 hover:bg-slate-100"}`}>
+          Annual Revenue Potential
+        </button>
+        <button onClick={() => setSubTab("pricingaudit")}
+          className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${subTab === "pricingaudit" ? "bg-emerald-100 text-emerald-800 shadow-sm" : "text-slate-500 hover:text-slate-700 hover:bg-slate-100"}`}>
+          Pricing Audit
+        </button>
       </div>
 
-      {subTab === "valuechain" ? <ValueChainView stages={stages} /> : <BusinessModelView />}
+      {subTab === "valuechain" ? <ValueChainView stages={stages} /> :
+       subTab === "businessmodel" ? <BusinessModelView /> :
+       subTab === "revenuemodel" ? <RevenueModelView /> :
+       subTab === "annualrevenue" ? <AnnualRevenueView /> :
+       <PricingAuditView />}
     </div>
   )
 }
@@ -1206,28 +1256,8 @@ function ValueChainView({ stages }: { stages: typeof import("react").useState ex
 
 /* ── Business Model (sub-view) ── */
 function BusinessModelView() {
-  const streams = [
-    { name: "Cost Reports (One-Time)", est: "$29–$199", margin: "85%", freq: "Per purchase", notes: "Core product. Digital good — near-zero marginal cost after calculator is built." },
-    { name: "PDF / Excel Add-ons", est: "$10–$15", margin: "90%", freq: "Per download", notes: "Upsell from free/Starter tier. Pure digital delivery." },
-    { name: "QS Consultation", est: "$49", margin: "60%", freq: "Per session", notes: "Partner with licensed quantity surveyors. Revenue share model." },
-    { name: "House Plan Catalog", est: "$99–$499", margin: "70%", freq: "Per download", notes: "Pre-designed plans. Partner architects get 40% rev share." },
-    { name: "Permit Processing", est: "$50–$150", margin: "50%", freq: "Per project", notes: "Service fee for handling permit applications. Labour-intensive, scales with local hires." },
-    { name: "Land Sale Commission", est: "3–5%", margin: "80%", freq: "Per transaction", notes: "Broker-style commission on verified land listings. High-value, low volume." },
-    { name: "Contractor Subscriptions", est: "$29/mo", margin: "90%", freq: "Monthly", notes: "Contractors pay to be listed. Recurring. Target 500+ contractors in year 1." },
-    { name: "Project Matching Fee", est: "5%", margin: "85%", freq: "Per project", notes: "Commission on contractor projects sourced through platform. Avg project $10K–$50K." },
-    { name: "Project Management SaaS", est: "$19–$49/mo", margin: "80%", freq: "Monthly", notes: "Recurring subscription for project tracking. Annual plans at 2-month discount." },
-    { name: "Material Order Commission", est: "2–5%", margin: "75%", freq: "Per order", notes: "Commission on supplier transactions. Avg order $500–$5,000." },
-    { name: "Supplier Listings", est: "$19/mo", margin: "90%", freq: "Monthly", notes: "Suppliers pay for verified listing + analytics. Recurring." },
-    { name: "Site Inspection", est: "$49–$149", margin: "55%", freq: "Per visit", notes: "Engineer visit fee. Partner network, rev share 60/40." },
-    { name: "Furniture/Fixture Commission", est: "10–15%", margin: "70%", freq: "Per sale", notes: "Marketplace commission on interior goods. Partner with local suppliers." },
-    { name: "Property Management", est: "8–12% of rent", margin: "60%", freq: "Monthly", notes: "Ongoing management fee. Recurring, tied to rental income. Target 100+ properties." },
-    { name: "Insurance Commission", est: "10–15%", margin: "80%", freq: "Per policy", notes: "Referral fee from insurance partners. Building + contractor insurance." },
-    { name: "Bank/Affiliate Referrals", est: "Fixed per lead", margin: "90%", freq: "Per lead", notes: "Refer diaspora clients to banks for mortgages. CPA model." },
-  ]
-
   return (
     <div className="space-y-8">
-      {/* Revenue model framework */}
       <div className="rounded-2xl border bg-gradient-to-br from-amber-50 to-orange-50 p-6">
         <h2 className="text-xl font-bold text-slate-900 mb-2">Business Model</h2>
         <p className="text-slate-600 text-sm leading-relaxed max-w-3xl">
@@ -1238,218 +1268,71 @@ function BusinessModelView() {
       </div>
 
       {/* Unit economics snapshot */}
-      <div className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded-xl border bg-white p-5 shadow-sm">
-          <div className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1">Revenue Model</div>
-          <div className="text-lg font-bold text-slate-900">Hybrid</div>
-          <div className="text-sm text-slate-500 mt-1">Transactional + Subscription + Commission</div>
-        </div>
-        <div className="rounded-xl border bg-white p-5 shadow-sm">
-          <div className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1">Est. Blended Gross Margin</div>
-          <div className="text-lg font-bold text-emerald-600">78%</div>
-          <div className="text-sm text-slate-500 mt-1">Weighted average across all streams</div>
-        </div>
-        <div className="rounded-xl border bg-white p-5 shadow-sm">
-          <div className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1">Target LTV:CAC Ratio</div>
-          <div className="text-lg font-bold text-emerald-600">5:1</div>
-          <div className="text-sm text-slate-500 mt-1">LTV ~$800+ / CAC ~$150 (paid channels)</div>
-        </div>
+      <div className="grid gap-4 sm:grid-cols-4">
+        {[
+          { label: "Revenue Model", value: "Hybrid", sub: "Transactional + Subscription + Commission" },
+          { label: "Est. Blended Gross Margin", value: "78%", sub: "Weighted across all streams", color: true },
+          { label: "Target LTV:CAC Ratio", value: "5:1", sub: "LTV ~$800+ / CAC ~$150", color: true },
+          { label: "Path to Profitability", value: "M9–12", sub: "At ~$12.5K+/mo MRR breakeven", color: true },
+        ].map((c) => (
+          <div key={c.label} className="rounded-xl border bg-white p-5 shadow-sm">
+            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1">{c.label}</div>
+            <div className={`text-lg font-bold ${c.color ? "text-emerald-600" : "text-slate-900"}`}>{c.value}</div>
+            <div className="text-sm text-slate-500 mt-1">{c.sub}</div>
+          </div>
+        ))}
       </div>
 
-      {/* Revenue streams table */}
-      <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
-        <div className="px-5 py-4 border-b bg-slate-50">
-          <h3 className="font-bold text-slate-900">Revenue Streams (16 Identified)</h3>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b bg-slate-50/50">
-                <th className="text-left px-5 py-3 font-semibold text-slate-600">Revenue Stream</th>
-                <th className="text-left px-5 py-3 font-semibold text-slate-600">Price</th>
-                <th className="text-left px-5 py-3 font-semibold text-slate-600">Gross Margin</th>
-                <th className="text-left px-5 py-3 font-semibold text-slate-600">Frequency</th>
-                <th className="text-left px-5 py-3 font-semibold text-slate-600">Notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              {streams.map((s, i) => (
-                <tr key={s.name} className={`border-b last:border-0 ${i % 2 === 0 ? "bg-white" : "bg-slate-50/30"}`}>
-                  <td className="px-5 py-3 font-medium text-slate-800">{s.name}</td>
-                  <td className="px-5 py-3 text-emerald-600 font-medium">{s.est}</td>
-                  <td className="px-5 py-3">
-                    <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
-                      parseInt(s.margin) >= 80 ? "bg-emerald-100 text-emerald-700" :
-                      parseInt(s.margin) >= 60 ? "bg-amber-100 text-amber-700" :
-                      "bg-rose-100 text-rose-700"
-                    }`}>{s.margin}</span>
-                  </td>
-                  <td className="px-5 py-3 text-slate-600">{s.freq}</td>
-                  <td className="px-5 py-3 text-slate-500 max-w-xs">{s.notes}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* Business model canvas */}
+      <div className="rounded-2xl border bg-white p-6 shadow-sm">
+        <h3 className="font-bold text-slate-900 mb-4">Business Model Canvas</h3>
+        <div className="grid gap-3 sm:grid-cols-3">
+          {[
+            { bg: "bg-sky-50", title: "Key Partners", items: ["Architects & QS firms", "Land surveyors & lawyers", "Banks (diaspora mortgages)", "Material suppliers", "Insurance companies", "Ghana Land Commission"] },
+            { bg: "bg-emerald-50", title: "Key Activities", items: ["Cost data aggregation & accuracy", "Platform development", "Partner network management", "SEO content production", "Diaspora community building"] },
+            { bg: "bg-purple-50", title: "Value Propositions", items: ["Transparency — know real costs", "Trust — vetted partners", "Convenience — manage from abroad", "Data — Ghana-specific pricing", "End-to-end — one platform"] },
+            { bg: "bg-amber-50", title: "Customer Relationships", items: ["WhatsApp support", "Email onboarding", "Facebook community group", "Account manager (enterprise)"] },
+            { bg: "bg-rose-50", title: "Customer Segments", items: ["Ghanaian diaspora (primary)", "Local property developers", "Real estate agents", "Architects & contractors", "Banks & insurance companies"] },
+            { bg: "bg-teal-50", title: "Key Resources", items: ["Pricing data (proprietary)", "Platform & calculator tech", "Partner network", "SEO content library", "Diaspora community trust"] },
+            { bg: "bg-indigo-50", title: "Channels", items: ["SEO / organic search", "Facebook diaspora groups", "YouTube (demo videos)", "LinkedIn (professionals)", "WhatsApp viral sharing", "Partner referrals"] },
+            { bg: "bg-orange-50", title: "Cost Structure", items: ["~$6K/mo lean burn", "Biggest: Marketing (30%)", "Content production (25%)", "Ops & support (15%)", "Infrastructure (15%)"] },
+            { bg: "bg-lime-50", title: "Revenue Streams", items: ["16 identified streams", "Blended margin ~78%", "Target Y1: ~$310K", "MRR by M12: ~$35K", "LTV:CAC target: 5:1"] },
+          ].map((block) => (
+            <div key={block.title} className={`p-3 rounded-lg ${block.bg}`}>
+              <div className="text-xs font-bold text-slate-700 uppercase mb-1">{block.title}</div>
+              <ul className="text-xs text-slate-700 space-y-1">{block.items.map((i) => <li key={i}>• {i}</li>)}</ul>
+            </div>
+          ))}
         </div>
       </div>
 
       {/* Cost structure */}
-      <div className="grid gap-6 sm:grid-cols-2">
-        <div className="rounded-xl border bg-white p-5 shadow-sm">
-          <h3 className="font-bold text-slate-900 mb-3">Cost Structure</h3>
-          <div className="space-y-3">
-            {[
-              { item: "Hosting & Infrastructure (Vercel + Neon + UploadThing)", pct: "15%", fixed: 200, desc: "Scales with traffic. Vercel Pro $20/mo, Neon $0–$25, UploadThing $10" },
-              { item: "Payment Processing (Paystack fees ~1.5% + $0.20)", pct: "5%", fixed: "Variable", desc: "Per-transaction cost. 1.5% + $0.20 on local cards, 3.5% on intl cards" },
-              { item: "Content & SEO (writers, video, design)", pct: "25%", fixed: 1500, desc: "Freelance writers for blog ($200/article), video production ($500/video)" },
-              { item: "Sales & Marketing (paid ads, partnerships)", pct: "30%", fixed: 2000, desc: "Facebook/Google ads targeting diaspora. Initial focus on organic to validate" },
-              { item: "Operations & Support (virtual assistant, QS partners)", pct: "15%", fixed: 1000, desc: "Customer support (chat/email), partner payout management, admin" },
-              { item: "Product Development (dev tools, design, AI credits)", pct: "10%", fixed: 800, desc: "LLM API costs for AI features, design tools, monitoring (Sentry)" },
-            ].map((c) => (
-              <div key={c.item} className="flex items-start justify-between gap-4 border-b border-dashed pb-3 last:border-0">
-                <div className="flex-1">
-                  <div className="text-sm font-medium text-slate-800">{c.item}</div>
-                  <div className="text-xs text-slate-500 mt-0.5">{c.desc}</div>
-                </div>
-                <div className="text-right flex-shrink-0">
-                  <div className="text-sm font-semibold text-slate-900">{c.pct}</div>
-                  <div className="text-xs text-slate-400">~${c.fixed}/mo</div>
-                </div>
+      <div className="rounded-xl border bg-white p-5 shadow-sm">
+        <h3 className="font-bold text-slate-900 mb-3">Cost Structure Breakdown</h3>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {[
+            { item: "Sales & Marketing (paid ads, partnerships)", pct: "30%", amount: "$2,000/mo", desc: "Facebook/Google ads targeting diaspora. Initial organic focus to validate." },
+            { item: "Content & SEO (writers, video, design)", pct: "25%", amount: "$1,500/mo", desc: "Freelance writers ($200/article), video production ($500/video), design assets." },
+            { item: "Operations & Support (VA, partners)", pct: "15%", amount: "$1,000/mo", desc: "Customer support (chat/email), partner payout management, admin." },
+            { item: "Hosting & Infrastructure (Vercel + Neon + UploadThing)", pct: "15%", amount: "$200/mo", desc: "Scales with traffic. Vercel Pro $20, Neon $0–$25, UploadThing $10." },
+            { item: "Product Development (tools, AI credits)", pct: "10%", amount: "$800/mo", desc: "LLM API costs for AI features, design tools, Sentry monitoring." },
+            { item: "Payment Processing (Paystack fees)", pct: "5%", amount: "Variable", desc: "1.5% + $0.20 local cards, 3.5% intl cards. Scales with revenue." },
+          ].map((c) => (
+            <div key={c.item} className="flex items-start justify-between gap-3 border-b border-dashed pb-2 last:border-0">
+              <div className="flex-1">
+                <div className="text-sm font-medium text-slate-800">{c.item}</div>
+                <div className="text-xs text-slate-500">{c.desc}</div>
               </div>
-            ))}
-          </div>
-          <div className="mt-4 pt-3 border-t flex justify-between text-sm font-bold text-slate-900">
-            <span>Est. Monthly Burn (Lean)</span>
-            <span>~$6,000</span>
-          </div>
-        </div>
-
-        <div className="rounded-xl border bg-white p-5 shadow-sm">
-          <h3 className="font-bold text-slate-900 mb-3">Revenue Projections (Year 1)</h3>
-          <div className="space-y-4">
-            {[
-              { period: "Months 1–3 (MVP Launch)", users: "100", reports: "$4,500", services: "$0", mrr: "$0", total: "$4,500", note: "Soft launch + beta. Free reports to build case studies." },
-              { period: "Months 4–6 (Growth)", users: "500", reports: "$18,000", services: "$3,500", mrr: "$2,900", total: "$24,400", note: "Contractor subscriptions + PM SaaS kick in. Blog SEO begins ranking." },
-              { period: "Months 7–9 (Scale)", users: "2,000", reports: "$55,000", services: "$15,000", mrr: "$12,500", total: "$82,500", note: "Land commissions + supplier fees start. Content flywheel active." },
-              { period: "Months 10–12 (Optimize)", users: "5,000", reports: "$120,000", services: "$40,000", mrr: "$38,000", total: "$198,000", note: "Property management + insurance recurring. Full ecosystem live." },
-            ].map((q) => (
-              <div key={q.period} className="border rounded-lg p-3">
-                <div className="flex justify-between items-center mb-2">
-                  <div className="text-sm font-semibold text-slate-800">{q.period}</div>
-                  <div className="text-sm font-bold text-emerald-600">{q.total}</div>
-                </div>
-                <div className="grid grid-cols-3 gap-2 text-xs text-slate-500 mb-1">
-                  <span>{q.users} users</span>
-                  <span>Reports: {q.reports}</span>
-                  <span>Services: {q.services}</span>
-                </div>
-                <div className="text-xs text-slate-500">MRR: {q.mrr} — {q.note}</div>
+              <div className="text-right flex-shrink-0">
+                <div className="text-sm font-semibold text-slate-900">{c.pct}</div>
+                <div className="text-xs text-slate-400">{c.amount}</div>
               </div>
-            ))}
-          </div>
-          <div className="mt-4 pt-3 border-t flex justify-between text-sm font-bold text-slate-900">
-            <span>Year 1 Revenue Target</span>
-            <span className="text-emerald-600">~$310,000</span>
-          </div>
-          <div className="text-xs text-slate-400 mt-1">Blended MRR by month 12: ~$35K+</div>
+            </div>
+          ))}
         </div>
-      </div>
-
-      {/* Business model canvas summary */}
-      <div className="rounded-2xl border bg-white p-6 shadow-sm">
-        <h3 className="font-bold text-slate-900 mb-4">Business Model Canvas</h3>
-        <div className="grid gap-3 sm:grid-cols-3">
-          <div className="p-3 rounded-lg bg-sky-50">
-            <div className="text-xs font-bold text-sky-700 uppercase mb-1">Key Partners</div>
-            <ul className="text-xs text-sky-800 space-y-1">
-              <li>• Architects & QS firms</li>
-              <li>• Land surveyors & lawyers</li>
-              <li>• Banks (diaspora mortgages)</li>
-              <li>• Material suppliers</li>
-              <li>• Insurance companies</li>
-              <li>• Ghana Land Commission</li>
-            </ul>
-          </div>
-          <div className="p-3 rounded-lg bg-emerald-50">
-            <div className="text-xs font-bold text-emerald-700 uppercase mb-1">Key Activities</div>
-            <ul className="text-xs text-emerald-800 space-y-1">
-              <li>• Cost data aggregation & accuracy</li>
-              <li>• Platform development</li>
-              <li>• Partner network management</li>
-              <li>• SEO content production</li>
-              <li>• Diaspora community building</li>
-            </ul>
-          </div>
-          <div className="p-3 rounded-lg bg-purple-50">
-            <div className="text-xs font-bold text-purple-700 uppercase mb-1">Value Propositions</div>
-            <ul className="text-xs text-purple-800 space-y-1">
-              <li>• Transparency — know real costs</li>
-              <li>• Trust — vetted partners</li>
-              <li>• Convenience — manage from abroad</li>
-              <li>• Data — Ghana-specific pricing</li>
-              <li>• End-to-end — one platform</li>
-            </ul>
-          </div>
-          <div className="p-3 rounded-lg bg-amber-50">
-            <div className="text-xs font-bold text-amber-700 uppercase mb-1">Customer Relationships</div>
-            <ul className="text-xs text-amber-800 space-y-1">
-              <li>• WhatsApp support</li>
-              <li>• Email onboarding</li>
-              <li>• Facebook community group</li>
-              <li>• Account manager (enterprise)</li>
-            </ul>
-          </div>
-          <div className="p-3 rounded-lg bg-rose-50">
-            <div className="text-xs font-bold text-rose-700 uppercase mb-1">Customer Segments</div>
-            <ul className="text-xs text-rose-800 space-y-1">
-              <li>• Ghanaian diaspora (primary)</li>
-              <li>• Local property developers</li>
-              <li>• Real estate agents</li>
-              <li>• Architects & contractors</li>
-              <li>• Banks & insurance companies</li>
-            </ul>
-          </div>
-          <div className="p-3 rounded-lg bg-teal-50">
-            <div className="text-xs font-bold text-teal-700 uppercase mb-1">Key Resources</div>
-            <ul className="text-xs text-teal-800 space-y-1">
-              <li>• Pricing data (proprietary)</li>
-              <li>• Platform & calculator tech</li>
-              <li>• Partner network</li>
-              <li>• SEO content library</li>
-              <li>• Diaspora community trust</li>
-            </ul>
-          </div>
-          <div className="p-3 rounded-lg bg-indigo-50">
-            <div className="text-xs font-bold text-indigo-700 uppercase mb-1">Channels</div>
-            <ul className="text-xs text-indigo-800 space-y-1">
-              <li>• SEO / organic search</li>
-              <li>• Facebook diaspora groups</li>
-              <li>• YouTube (demo videos)</li>
-              <li>• LinkedIn (professionals)</li>
-              <li>• WhatsApp viral sharing</li>
-              <li>• Partner referrals</li>
-            </ul>
-          </div>
-          <div className="p-3 rounded-lg bg-orange-50">
-            <div className="text-xs font-bold text-orange-700 uppercase mb-1">Cost Structure</div>
-            <ul className="text-xs text-orange-800 space-y-1">
-              <li>• ~$6K/mo lean burn</li>
-              <li>• Biggest: Marketing (30%)</li>
-              <li>• Content production (25%)</li>
-              <li>• Ops & support (15%)</li>
-              <li>• Infrastructure (15%)</li>
-            </ul>
-          </div>
-          <div className="p-3 rounded-lg bg-lime-50">
-            <div className="text-xs font-bold text-lime-700 uppercase mb-1">Revenue Streams</div>
-            <ul className="text-xs text-lime-800 space-y-1">
-              <li>• 16 identified streams</li>
-              <li>• Blended margin ~78%</li>
-              <li>• Target Y1: ~$310K</li>
-              <li>• MRR by M12: ~$35K</li>
-              <li>• LTV:CAC target: 5:1</li>
-            </ul>
-          </div>
+        <div className="mt-4 pt-3 border-t flex justify-between text-sm font-bold text-slate-900">
+          <span>Est. Monthly Burn (Lean)</span>
+          <span className="text-emerald-600">~$6,000</span>
         </div>
       </div>
 
@@ -1460,21 +1343,515 @@ function BusinessModelView() {
           {[
             { label: "Revenue Metrics", items: ["MRR / ARR", "Avg Revenue Per User (ARPU)", "LTV (12-month)", "Blended Gross Margin", "Net Revenue Retention"] },
             { label: "Acquisition Metrics", items: ["CAC by channel", "CAC payback period", "Conversion rate (visit → paid)", "Organic vs paid split", "Referral rate"] },
-            { label: "Engagement Metrics", items: ["Reports completed/week", "Ecosystem adoption (# of stages used)", "Monthly active users", "Avg session duration", "Report → marketplace conversion"] },
+            { label: "Engagement Metrics", items: ["Reports completed/week", "Ecosystem adoption (# stages used)", "Monthly active users", "Avg session duration", "Report → marketplace conversion"] },
             { label: "Platform Metrics", items: ["# contractors listed", "# suppliers listed", "# properties managed", "Marketplace GMV", "Platform take rate"] },
           ].map((group) => (
             <div key={group.label}>
               <div className="text-sm font-semibold text-slate-700 mb-2">{group.label}</div>
-              <ul className="space-y-1">
-                {group.items.map((item) => (
-                  <li key={item} className="text-xs text-slate-500 flex items-center gap-1.5">
-                    <span className="w-1 h-1 rounded-full bg-emerald-400" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
+              <ul className="space-y-1">{group.items.map((item) => <li key={item} className="text-xs text-slate-500 flex items-center gap-1.5"><span className="w-1 h-1 rounded-full bg-emerald-400" />{item}</li>)}</ul>
             </div>
           ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ── Revenue Model (sub-view) ── */
+function RevenueModelView() {
+  const streams = [
+    { name: "Cost Reports (One-Time)", est: "$29–$199", margin: "85%", type: "Transactional", stage: 4, freq: "Per purchase", notes: "Core product. Near-zero marginal cost after calculator is built." },
+    { name: "PDF / Excel Add-ons", est: "$10–$15", margin: "90%", type: "Transactional", stage: 4, freq: "Per download", notes: "Upsell from free/Starter tier. Pure digital delivery." },
+    { name: "QS Consultation", est: "$49", margin: "60%", type: "Service", stage: 4, freq: "Per session", notes: "Partner with licensed quantity surveyors. Revenue share." },
+    { name: "House Plan Catalog", est: "$99–$499", margin: "70%", type: "Transactional", stage: 3, freq: "Per download", notes: "Pre-designed plans. Partner architects get 40% rev share." },
+    { name: "Permit Processing", est: "$50–$150", margin: "50%", type: "Service", stage: 3, freq: "Per project", notes: "Fee for handling permit apps. Labour-intensive, scales with local hires." },
+    { name: "Land Sale Commission", est: "3–5%", margin: "80%", type: "Commission", stage: 2, freq: "Per transaction", notes: "Broker commission on verified land listings. High-value, low volume." },
+    { name: "Contractor Subscriptions", est: "$29/mo", margin: "90%", type: "Subscription", stage: 5, freq: "Monthly", notes: "Contractors pay to be listed. Target 500+ in year 1." },
+    { name: "Project Matching Fee", est: "5%", margin: "85%", type: "Commission", stage: 5, freq: "Per project", notes: "Commission on contractor projects. Avg project $10K–$50K." },
+    { name: "Project Management SaaS", est: "$19–$49/mo", margin: "80%", type: "Subscription", stage: 6, freq: "Monthly", notes: "Recurring subscription for project tracking." },
+    { name: "Material Order Commission", est: "2–5%", margin: "75%", type: "Commission", stage: 7, freq: "Per order", notes: "Commission on supplier transactions. Avg order $500–$5,000." },
+    { name: "Supplier Listings", est: "$19/mo", margin: "90%", type: "Subscription", stage: 7, freq: "Monthly", notes: "Suppliers pay for verified listing + analytics." },
+    { name: "Site Inspection", est: "$49–$149", margin: "55%", type: "Service", stage: 8, freq: "Per visit", notes: "Engineer visit fee. Partner rev share 60/40." },
+    { name: "Furniture/Fixture Commission", est: "10–15%", margin: "70%", type: "Commission", stage: 9, freq: "Per sale", notes: "Marketplace commission on interior goods." },
+    { name: "Property Management", est: "8–12% of rent", margin: "60%", type: "Subscription", stage: 10, freq: "Monthly", notes: "Ongoing mgmt fee. Recurring, tied to rental income." },
+    { name: "Insurance Commission", est: "10–15%", margin: "80%", type: "Commission", stage: 10, freq: "Per policy", notes: "Referral fee from insurance partners." },
+    { name: "Bank/Affiliate Referrals", est: "Fixed/lead", margin: "90%", type: "Commission", stage: 4, freq: "Per lead", notes: "Refer diaspora clients for mortgages. CPA model." },
+  ]
+
+  const types = [...new Set(streams.map((s) => s.type))]
+  const stageNames = ["", "Dream", "Land", "Design", "Budget", "Contractor", "Construction", "Materials", "QA", "Interior", "Move-in"]
+
+  return (
+    <div className="space-y-8">
+      <div className="rounded-2xl border bg-gradient-to-br from-emerald-50 to-teal-50 p-6">
+        <h2 className="text-xl font-bold text-slate-900 mb-2">Revenue Model</h2>
+        <p className="text-slate-600 text-sm leading-relaxed max-w-3xl">
+          16 revenue streams organized by type and value chain stage. The model is designed to capture
+          value at every touchpoint — from a one-time report purchase to recurring property management fees.
+        </p>
+      </div>
+
+      {/* Revenue type summary */}
+      <div className="grid gap-4 sm:grid-cols-3">
+        {[
+          { type: "Transactional", count: 3, est: "$29–$499", margin: "82%", icon: "🛒", desc: "One-time purchases: reports, plans, add-ons" },
+          { type: "Subscription", count: 4, est: "$19–$49/mo", margin: "80%", icon: "🔄", desc: "Recurring: contractor listing, PM SaaS, supplier, property mgmt" },
+          { type: "Commission", count: 6, est: "2–15%", margin: "77%", icon: "📊", desc: "Per-transaction: land, projects, materials, insurance, referrals" },
+          { type: "Service", count: 3, est: "$49–$150", margin: "55%", icon: "🔧", desc: "Labour-based: QS consultation, permits, site inspections" },
+        ].map((t) => (
+          <div key={t.type} className="rounded-xl border bg-white p-4 shadow-sm">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-lg">{t.icon}</span>
+              <div>
+                <div className="font-semibold text-slate-800">{t.type}</div>
+                <div className="text-xs text-slate-400">{t.count} streams</div>
+              </div>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-slate-500">Price range</span>
+              <span className="font-medium text-slate-800">{t.est}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-slate-500">Avg margin</span>
+              <span className="font-medium text-emerald-600">{t.margin}</span>
+            </div>
+            <div className="text-xs text-slate-400 mt-1">{t.desc}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Revenue streams table */}
+      <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
+        <div className="px-5 py-4 border-b bg-slate-50">
+          <h3 className="font-bold text-slate-900">Revenue Streams — Full Breakdown</h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b bg-slate-50/50">
+                <th className="text-left px-5 py-3 font-semibold text-slate-600">Revenue Stream</th>
+                <th className="text-left px-5 py-3 font-semibold text-slate-600">Price</th>
+                <th className="text-left px-5 py-3 font-semibold text-slate-600">Margin</th>
+                <th className="text-left px-5 py-3 font-semibold text-slate-600">Type</th>
+                <th className="text-left px-5 py-3 font-semibold text-slate-600">Stage</th>
+                <th className="text-left px-5 py-3 font-semibold text-slate-600">Frequency</th>
+                <th className="text-left px-5 py-3 font-semibold text-slate-600">Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {streams.map((s, i) => (
+                <tr key={s.name} className={`border-b last:border-0 ${i % 2 === 0 ? "bg-white" : "bg-slate-50/30"}`}>
+                  <td className="px-5 py-3 font-medium text-slate-800">{s.name}</td>
+                  <td className="px-5 py-3 text-emerald-600 font-medium whitespace-nowrap">{s.est}</td>
+                  <td className="px-5 py-3">
+                    <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
+                      parseInt(s.margin) >= 80 ? "bg-emerald-100 text-emerald-700" :
+                      parseInt(s.margin) >= 60 ? "bg-amber-100 text-amber-700" :
+                      "bg-rose-100 text-rose-700"
+                    }`}>{s.margin}</span>
+                  </td>
+                  <td className="px-5 py-3"><span className="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600">{s.type}</span></td>
+                  <td className="px-5 py-3 text-slate-500 text-xs">{stageNames[s.stage]}</td>
+                  <td className="px-5 py-3 text-slate-600 text-xs">{s.freq}</td>
+                  <td className="px-5 py-3 text-slate-500 max-w-xs text-xs">{s.notes}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Revenue by value chain stage */}
+      <div className="rounded-xl border bg-white p-5 shadow-sm">
+        <h3 className="font-bold text-slate-900 mb-4">Revenue by Value Chain Stage</h3>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          {stageNames.slice(1).map((name, i) => {
+            const stageStreams = streams.filter((s) => s.stage === i + 1)
+            if (!stageStreams.length) return null
+            const avgMargin = Math.round(stageStreams.reduce((a, s) => a + parseInt(s.margin), 0) / stageStreams.length)
+            return (
+              <div key={name} className="border rounded-lg p-3">
+                <div className="text-xs font-semibold text-slate-400 uppercase">Stage {i + 1}</div>
+                <div className="text-sm font-bold text-slate-800 mb-1">{name}</div>
+                <div className="text-xs text-slate-500">{stageStreams.length} streams</div>
+                <div className="text-xs text-slate-500">Avg margin <span className="font-medium text-emerald-600">{avgMargin}%</span></div>
+                <div className="mt-1 text-xs text-slate-400">{stageStreams.map((s) => s.name.split(" (")[0]).join(", ")}</div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ── Annual Revenue Potential (sub-view) ── */
+function AnnualRevenueView() {
+  const years = [
+    {
+      year: "Year 1 (MVP → Market Fit)",
+      users: "5,000",
+      mrr: "$35K",
+      arr: "$310K",
+      color: "text-emerald-600",
+      quarters: [
+        { label: "Q1 (M1–3)", users: 100, reports: 4500, subscriptions: 0, commissions: 0, services: 0, total: 4500, note: "Soft launch + beta. Free reports, build case studies." },
+        { label: "Q2 (M4–6)", users: 500, reports: 18000, subscriptions: 2900, commissions: 0, services: 600, total: 21500, note: "Contractor subs + PM SaaS begin. SEO starts ranking." },
+        { label: "Q3 (M7–9)", users: 2000, reports: 55000, subscriptions: 9500, commissions: 4000, services: 1500, total: 70000, note: "Land commissions + supplier fees start. Content flywheel." },
+        { label: "Q4 (M10–12)", users: 5000, reports: 120000, subscriptions: 28000, commissions: 45000, services: 5000, total: 198000, note: "Property mgmt + insurance recurring. Full ecosystem live." },
+      ],
+    },
+    {
+      year: "Year 2 (Scale & Expand)",
+      users: "25,000",
+      mrr: "$175K",
+      arr: "$1.8M",
+      color: "text-blue-600",
+      quarters: [
+        { label: "Q1", users: 8000, reports: 175000, subscriptions: 55000, commissions: 95000, services: 15000, total: 340000, note: "Nigeria expansion prep. Contractor marketplace scales." },
+        { label: "Q2", users: 12000, reports: 250000, subscriptions: 85000, commissions: 180000, services: 25000, total: 540000, note: "Land verification service launches. Bank partnerships active." },
+        { label: "Q3", users: 18000, reports: 360000, subscriptions: 120000, commissions: 300000, services: 40000, total: 820000, note: "Property management portfolio grows. Insurance recurring." },
+        { label: "Q4", users: 25000, reports: 450000, subscriptions: 180000, commissions: 450000, services: 60000, total: 1140000, note: "Full ecosystem across Ghana. 1,000+ contractors." },
+      ],
+    },
+    {
+      year: "Year 3 (Multi-Market Dominance)",
+      users: "100,000",
+      mrr: "$650K",
+      arr: "$7.2M",
+      color: "text-violet-600",
+      quarters: [
+        { label: "Q1", users: 35000, reports: 600000, subscriptions: 300000, commissions: 800000, services: 120000, total: 1820000, note: "Nigeria live. Kenya pilot. AI-powered cost prediction." },
+        { label: "Q2", users: 50000, reports: 850000, subscriptions: 450000, commissions: 1400000, services: 200000, total: 2900000, note: "Mobile app launched. Real-time material pricing." },
+        { label: "Q3", users: 75000, reports: 1200000, subscriptions: 650000, commissions: 2200000, services: 300000, total: 4350000, note: "Kenya scaled. Embedded API for banks & real estate portals." },
+        { label: "Q4", users: 100000, reports: 1600000, subscriptions: 900000, commissions: 3200000, services: 450000, total: 6150000, note: "Dominant in 3 markets. 5,000+ contractors. 500+ suppliers." },
+      ],
+    },
+  ]
+
+  const tamSamSom = [
+    { tier: "TAM (Total Addressable Market)", value: "$8.5B", desc: "Annual remittances to Ghana for housing + construction ($3.5B remittances × ~40% housing) + local construction spend ($5B+ SME/residential)" },
+    { tier: "SAM (Serviceable Addressable Market)", value: "$1.2B", desc: "Diaspora Ghanaian homeowners actively building/planning (est. 200K projects/yr × $6K avg platform value)" },
+    { tier: "SOM (Serviceable Obtainable Market)", value: "$48M", desc: "Year 3 target: 100K users × $480 avg platform revenue per user = ~4% of SAM" },
+  ]
+
+  return (
+    <div className="space-y-8">
+      <div className="rounded-2xl border bg-gradient-to-br from-blue-50 to-indigo-50 p-6">
+        <h2 className="text-xl font-bold text-slate-900 mb-2">Annual Revenue Potential</h2>
+        <p className="text-slate-600 text-sm leading-relaxed max-w-3xl">
+          3-year financial projection based on phased ecosystem rollout. Conservative estimates assuming
+          organic growth driven by SEO, diaspora referrals, and partner networks. Paid acquisition
+          would accelerate timeline by 30–50%.
+        </p>
+      </div>
+
+      {/* TAM / SAM / SOM */}
+      <div className="grid gap-4 sm:grid-cols-3">
+        {tamSamSom.map((t) => (
+          <div key={t.tier} className="rounded-xl border bg-white p-5 shadow-sm">
+            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1">{t.tier}</div>
+            <div className="text-2xl font-bold text-emerald-600 mb-1">{t.value}</div>
+            <div className="text-xs text-slate-500 leading-relaxed">{t.desc}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Breakeven & revenue milestone markers */}
+      <div className="rounded-xl border bg-amber-50 p-5">
+        <div className="flex flex-wrap items-center gap-4 text-sm">
+          <span className="font-semibold text-slate-800">Key Milestones:</span>
+          <span className="bg-white px-3 py-1 rounded-full border text-amber-700">Breakeven at ~$6K/mo (M9–12)</span>
+          <span className="bg-white px-3 py-1 rounded-full border text-emerald-700">Y1 Target: $310K ARR</span>
+          <span className="bg-white px-3 py-1 rounded-full border text-blue-700">Y2 Target: $1.8M ARR</span>
+          <span className="bg-white px-3 py-1 rounded-full border text-violet-700">Y3 Target: $7.2M ARR</span>
+          <span className="bg-white px-3 py-1 rounded-full border text-sky-700">4% SOM capture by Y3</span>
+        </div>
+      </div>
+
+      {/* 3-year quarterly projection */}
+      <div className="space-y-6">
+        {years.map((y) => (
+          <div key={y.year} className="rounded-xl border bg-white shadow-sm overflow-hidden">
+            <div className={`px-5 py-4 border-b flex items-center justify-between ${y.color.replace("text-", "bg-").replace("600", "50")}`}>
+              <div>
+                <h3 className="font-bold text-slate-900">{y.year}</h3>
+                <div className="text-xs text-slate-500">{y.users} users · {y.mrr} MRR · {y.arr} ARR</div>
+              </div>
+              <div className={`text-2xl font-bold ${y.color}`}>{y.arr}</div>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b bg-slate-50/50">
+                    <th className="text-left px-4 py-2.5 font-semibold text-slate-600">Quarter</th>
+                    <th className="text-left px-4 py-2.5 font-semibold text-slate-600">Users</th>
+                    <th className="text-left px-4 py-2.5 font-semibold text-slate-600">Reports</th>
+                    <th className="text-left px-4 py-2.5 font-semibold text-slate-600">Subscriptions</th>
+                    <th className="text-left px-4 py-2.5 font-semibold text-slate-600">Commissions</th>
+                    <th className="text-left px-4 py-2.5 font-semibold text-slate-600">Services</th>
+                    <th className="text-left px-4 py-2.5 font-semibold text-slate-600">Total</th>
+                    <th className="text-left px-4 py-2.5 font-semibold text-slate-600">Note</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {y.quarters.map((q) => (
+                    <tr key={q.label} className="border-b last:border-0">
+                      <td className="px-4 py-2.5 font-medium text-slate-700">{q.label}</td>
+                      <td className="px-4 py-2.5 text-slate-600">{q.users.toLocaleString()}</td>
+                      <td className="px-4 py-2.5 text-slate-600">${q.reports.toLocaleString()}</td>
+                      <td className="px-4 py-2.5 text-slate-600">${q.subscriptions.toLocaleString()}</td>
+                      <td className="px-4 py-2.5 text-slate-600">${q.commissions.toLocaleString()}</td>
+                      <td className="px-4 py-2.5 text-slate-600">${q.services.toLocaleString()}</td>
+                      <td className="px-4 py-2.5 font-semibold text-emerald-600">${q.total.toLocaleString()}</td>
+                      <td className="px-4 py-2.5 text-slate-400 text-xs max-w-[200px]">{q.note}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Revenue mix visualization */}
+      <div className="rounded-xl border bg-white p-5 shadow-sm">
+        <h3 className="font-bold text-slate-900 mb-4">Revenue Mix Evolution</h3>
+        <div className="grid gap-4 sm:grid-cols-3">
+          {[
+            { year: "Year 1", total: "$310K", segments: [{ label: "Reports (one-time)", pct: 64, color: "bg-emerald-500" }, { label: "Subscriptions", pct: 13, color: "bg-blue-500" }, { label: "Commissions", pct: 16, color: "bg-amber-500" }, { label: "Services", pct: 7, color: "bg-violet-500" }] },
+            { year: "Year 2", total: "$1.8M", segments: [{ label: "Reports", pct: 35, color: "bg-emerald-500" }, { label: "Subscriptions", pct: 20, color: "bg-blue-500" }, { label: "Commissions", pct: 36, color: "bg-amber-500" }, { label: "Services", pct: 9, color: "bg-violet-500" }] },
+            { year: "Year 3", total: "$7.2M", segments: [{ label: "Reports", pct: 22, color: "bg-emerald-500" }, { label: "Subscriptions", pct: 25, color: "bg-blue-500" }, { label: "Commissions", pct: 44, color: "bg-amber-500" }, { label: "Services", pct: 9, color: "bg-violet-500" }] },
+          ].map((mix) => (
+            <div key={mix.year} className="border rounded-lg p-4">
+              <div className="flex justify-between items-center mb-3">
+                <div className="font-bold text-slate-900">{mix.year}</div>
+                <div className="text-lg font-bold text-emerald-600">{mix.total}</div>
+              </div>
+              <div className="space-y-2">
+                {mix.segments.map((seg) => (
+                  <div key={seg.label}>
+                    <div className="flex justify-between text-xs mb-0.5">
+                      <span className="text-slate-600">{seg.label}</span>
+                      <span className="font-medium text-slate-700">{seg.pct}%</span>
+                    </div>
+                    <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                      <div className={`h-full rounded-full ${seg.color}`} style={{ width: `${seg.pct}%` }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ── Pricing Audit (sub-view) ── */
+function PricingAuditView() {
+  const tiers = [
+    { name: "Starter", price: "$29", target: "DIY homeowners, single-room estimate", value: "Basic cost breakdown by trade", competitors: "$0–$19 (freemium tools)", margin: "92%", vol: "High", score: 7 },
+    { name: "Standard", price: "$79", target: "Full house estimate, diaspora users", value: "Detailed estimate + regional costing", competitors: "N/A (unique to Ghana)", margin: "90%", vol: "Medium", score: 9 },
+    { name: "Premium", price: "$199", target: "Serious builders, property developers", value: "Full report + materials list + PDF + Excel", competitors: "N/A (no direct competitor)", margin: "88%", vol: "Low", score: 8 },
+  ]
+
+  const riskFactors = [
+    { factor: "Willingness to Pay (WTP)", verdict: "POSITIVE", color: "text-emerald-600", detail: "Diaspora users pay $200+ for visa consultations, $500+ for legal fees. A $79–$199 report that saves them thousands in overcharges is well within WTP threshold." },
+    { factor: "Competitive Landscape", verdict: "FAVORABLE", color: "text-emerald-600", detail: "No direct competitor serving the Ghanaian market. International estimators (HomeAdvisor, CostCertified) don't have Ghana pricing data. Free alternatives (manual research) take 2–4 weeks." },
+    { factor: "Value Perception", verdict: "STRONG", color: "text-emerald-600", detail: "Report saves users 2–4 weeks of research and prevents being overcharged by 20–50%. The $79 report on a $50K build is 0.16% of project cost — negligible relative to value." },
+    { factor: "Price Anchoring", verdict: "EFFECTIVE", color: "text-emerald-600", detail: "Three-tier structure ($29 → $79 → $199) anchors users to the middle tier. $29 feels low-risk, $199 feels premium, $79 feels like the 'smart choice'." },
+    { factor: "Regional Pricing (GHS)", verdict: "NEEDS WORK", color: "text-amber-600", detail: "Current pricing is USD-only. Ghanaian local users find $29–$199 expensive (GHS 350–2,400). Need local pricing tier at 40–50% of USD rates for local market penetration." },
+    { factor: "Subscription Viability", verdict: "UNTESTED", color: "text-amber-600", detail: "Monthly subscription ($19/mo) for unlimited estimates assumes high repeat usage. Unclear if users need multiple estimates. Consider annual prepaid plans at $99/yr to reduce churn risk." },
+    { factor: "Conversion Friction", verdict: "MODERATE RISK", color: "text-amber-600", detail: "Users complete 5-step calculator → see results → pay to unlock. Dropoff at payment screen is likely. Consider paywall placement: free summary + paid full report." },
+    { factor: "Add-on Pricing", verdict: "OPPORTUNITY", color: "text-emerald-600", detail: "PDF download ($9.99), Excel ($14.99), QS review ($49) as add-ons increase AOV by 15–30%. Low marginal cost, high perceived value." },
+    { factor: "Enterprise / B2B Pricing", verdict: "UNPRICED", color: "text-amber-600", detail: "No pricing for real estate developers, banks, or government agencies who might need bulk estimates. Potential $500–$2,000/mo enterprise tier with API access." },
+    { factor: "Price Elasticity", verdict: "LOW (FAVORABLE)", color: "text-emerald-600", detail: "Target diaspora segment is price-insensitive relative to value received. A 20% price increase would reduce volume by <5% (inelastic demand at current levels)." },
+  ]
+
+  const recommendations = [
+    { priority: "High", action: "Introduce GHS pricing tier at 50% of USD rates", impact: "Unlocks local market (50%+ of Ghana's addressable users)", effort: "Low", timeline: "Week 1" },
+    { priority: "High", action: "Add free estimate summary (20% of data) before paywall", impact: "Increases conversion by building trust & demonstrating value", effort: "Medium", timeline: "Week 2–3" },
+    { priority: "High", action: "Launch annual subscription ($99/yr) for unlimited estimates", impact: "Creates recurring revenue, reduces churn vs monthly", effort: "Low", timeline: "Week 2" },
+    { priority: "Medium", action: "Introduce 'Team' plan ($29/mo, 5 users) for contractors", impact: "Opens B2B sales channel, increases MRR", effort: "Medium", timeline: "Month 2" },
+    { priority: "Medium", action: "Run LAUNCH100 discount (50% off) — measure conversion uplift", impact: "Validates price sensitivity, builds initial user base", effort: "Low", timeline: "Week 1" },
+    { priority: "Medium", action: "Create enterprise tier ($500–$2K/mo) with API access", impact: "High-value contracts with developers, banks, government", effort: "High", timeline: "Month 3–4" },
+    { priority: "Low", action: "A/B test paywall placement (after step 3 vs after full calculation)", impact: "Data-driven optimization of conversion funnel", effort: "Medium", timeline: "Month 2–3" },
+    { priority: "Low", action: "Test 'Pay What You Want' for first report (minimum $9)", impact: "Reduces entry barrier, collects WTP data", effort: "Low", timeline: "Month 3" },
+  ]
+
+  return (
+    <div className="space-y-8">
+      <div className="rounded-2xl border bg-gradient-to-br from-rose-50 to-amber-50 p-6">
+        <h2 className="text-xl font-bold text-slate-900 mb-2">Pricing Audit & Sustainability Analysis</h2>
+        <p className="text-slate-600 text-sm leading-relaxed max-w-3xl">
+          Evaluation of our current pricing model ($29/$79/$199 tiers) for market viability, competitive positioning,
+          and long-term sustainability. Based on value-based pricing principles, competitor analysis, and willingness-to-pay
+          assumptions for the Ghanaian diaspora market.
+        </p>
+      </div>
+
+      {/* Current pricing breakdown */}
+      <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
+        <div className="px-5 py-4 border-b bg-slate-50">
+          <h3 className="font-bold text-slate-900">Current Pricing Tiers — Sustainability Scorecard</h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b bg-slate-50/50">
+                <th className="text-left px-5 py-3 font-semibold text-slate-600">Tier</th>
+                <th className="text-left px-5 py-3 font-semibold text-slate-600">Price</th>
+                <th className="text-left px-5 py-3 font-semibold text-slate-600">Target</th>
+                <th className="text-left px-5 py-3 font-semibold text-slate-600">Value Delivered</th>
+                <th className="text-left px-5 py-3 font-semibold text-slate-600">Competitors</th>
+                <th className="text-left px-5 py-3 font-semibold text-slate-600">Margin</th>
+                <th className="text-left px-5 py-3 font-semibold text-slate-600">Volume</th>
+                <th className="text-left px-5 py-3 font-semibold text-slate-600">Score</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tiers.map((t, i) => (
+                <tr key={t.name} className={`border-b last:border-0 ${i % 2 === 0 ? "bg-white" : "bg-slate-50/30"}`}>
+                  <td className="px-5 py-3 font-semibold text-slate-800">{t.name}</td>
+                  <td className="px-5 py-3 font-bold text-emerald-600">{t.price}</td>
+                  <td className="px-5 py-3 text-slate-600 text-xs">{t.target}</td>
+                  <td className="px-5 py-3 text-slate-600 text-xs">{t.value}</td>
+                  <td className="px-5 py-3 text-slate-500 text-xs">{t.competitors}</td>
+                  <td className="px-5 py-3 text-emerald-600 font-medium">{t.margin}</td>
+                  <td className="px-5 py-3 text-slate-600">{t.vol}</td>
+                  <td className="px-5 py-3">
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold ${
+                      t.score >= 8 ? "bg-emerald-100 text-emerald-700" :
+                      t.score >= 6 ? "bg-amber-100 text-amber-700" : "bg-rose-100 text-rose-700"
+                    }`}>{t.score}/10</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Risk factor assessment */}
+      <div className="rounded-xl border bg-white p-5 shadow-sm">
+        <h3 className="font-bold text-slate-900 mb-4">Risk Factor Assessment</h3>
+        <div className="space-y-3">
+          {riskFactors.map((r) => (
+            <div key={r.factor} className="flex items-start gap-4 border-b border-dashed pb-3 last:border-0">
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-slate-800">{r.factor}</span>
+                  <span className={`text-xs font-bold ${r.color}`}>{r.verdict}</span>
+                </div>
+                <p className="text-xs text-slate-500 mt-0.5">{r.detail}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Overall score summary */}
+      <div className="grid gap-4 sm:grid-cols-4">
+        {[
+          { label: "Overall Sustainability", value: "7.5/10", color: "text-emerald-600", note: "Strong foundation, gaps in local pricing & recurring revenue" },
+          { label: "Competitive Moat", value: "9/10", color: "text-emerald-600", note: "No direct competitor — data moat grows with every report" },
+          { label: "Pricing Confidence", value: "7/10", color: "text-amber-600", note: "Tiers work but need local currency & subscription validation" },
+          { label: "Scalability Score", value: "6/10", color: "text-amber-600", note: "B2B/enterprise pricing missing. Volume economics unproven" },
+        ].map((s) => (
+          <div key={s.label} className="rounded-xl border bg-white p-4 shadow-sm text-center">
+            <div className="text-xs font-semibold text-slate-400 uppercase mb-1">{s.label}</div>
+            <div className={`text-2xl font-bold ${s.color}`}>{s.value}</div>
+            <div className="text-xs text-slate-500 mt-1">{s.note}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Recommendations */}
+      <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
+        <div className="px-5 py-4 border-b bg-slate-50">
+          <h3 className="font-bold text-slate-900">Pricing Recommendations</h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b bg-slate-50/50">
+                <th className="text-left px-5 py-3 font-semibold text-slate-600">Priority</th>
+                <th className="text-left px-5 py-3 font-semibold text-slate-600">Action</th>
+                <th className="text-left px-5 py-3 font-semibold text-slate-600">Impact</th>
+                <th className="text-left px-5 py-3 font-semibold text-slate-600">Effort</th>
+                <th className="text-left px-5 py-3 font-semibold text-slate-600">Timeline</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recommendations.map((r, i) => (
+                <tr key={r.action} className={`border-b last:border-0 ${i % 2 === 0 ? "bg-white" : "bg-slate-50/30"}`}>
+                  <td className="px-5 py-3">
+                    <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
+                      r.priority === "High" ? "bg-rose-100 text-rose-700" :
+                      r.priority === "Medium" ? "bg-amber-100 text-amber-700" : "bg-sky-100 text-sky-700"
+                    }`}>{r.priority}</span>
+                  </td>
+                  <td className="px-5 py-3 font-medium text-slate-800">{r.action}</td>
+                  <td className="px-5 py-3 text-slate-600">{r.impact}</td>
+                  <td className="px-5 py-3 text-slate-600">{r.effort}</td>
+                  <td className="px-5 py-3 text-slate-600 font-medium">{r.timeline}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Unit economics validation */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="rounded-xl border bg-white p-5 shadow-sm">
+          <h3 className="font-bold text-slate-900 mb-3">Unit Economics Validation</h3>
+          <div className="space-y-3">
+            {[
+              { metric: "Avg Revenue Per Paying User (ARPPU)", value: "$79", note: "Standard tier is the anchor. Upsells push to ~$95." },
+              { metric: "Cost to Serve (hosting + payment fees)", value: "$3.50", note: "~$0.50 hosting + ~$3.00 Paystack fees. Near-zero marginal cost." },
+              { metric: "Gross Profit Per Report", value: "$75.50", note: "$79 - $3.50. 95.6% gross margin on standard tier." },
+              { metric: "Customer Acquisition Cost (organic)", value: "$0–$5", note: "SEO-driven acquisition. ~$50/article produces 200+ visits/mo for years." },
+              { metric: "Customer Acquisition Cost (paid)", value: "$15–$30", note: "Facebook/IG ads targeting diaspora. CPA varies by creative quality." },
+              { metric: "LTV (one-time report buyer)", value: "$95", note: "Single report + add-ons. No recurring revenue." },
+              { metric: "LTV (subscription user)", value: "$228–$588", note: "$19–$49/mo × 12 months. Assumes 50% annual churn." },
+              { metric: "Payback Period (organic)", value: "1 day", note: "Report is sold before any cost is incurred. Negative cash conversion cycle." },
+            ].map((m) => (
+              <div key={m.metric} className="flex justify-between items-center border-b border-dashed pb-2 last:border-0">
+                <div>
+                  <div className="text-sm text-slate-700">{m.metric}</div>
+                  <div className="text-xs text-slate-400">{m.note}</div>
+                </div>
+                <div className="text-sm font-bold text-emerald-600 flex-shrink-0 ml-4">{m.value}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="rounded-xl border bg-white p-5 shadow-sm">
+          <h3 className="font-bold text-slate-900 mb-3">Recommended Pricing Structure</h3>
+          <div className="space-y-4">
+            {[
+              { tier: "Free", price: "$0", items: "Summary report (20% of data), blog access, cost calculator demo", target: "Top of funnel — capture email, build trust" },
+              { tier: "Starter", price: "$19 ($29→$19)", items: "Full estimate for 1–2 rooms, basic PDF", target: "Budget-conscious, single-room builders" },
+              { tier: "Standard", price: "$79", items: "Full house estimate, regional costing, PDF + Excel", target: "Diaspora homeowners (sweet spot — keep)" },
+              { tier: "Premium", price: "$149 ($199→$149)", items: "Full report + materials list + QS review + 3D viz", target: "Serious builders, price-sensitive to $199" },
+              { tier: "Annual Unlimited", price: "$99/yr", items: "Unlimited estimates, all add-ons included", target: "Repeat users, contractors, property managers" },
+              { tier: "Team", price: "$29/mo", items: "5 seats, shared project dashboard", target: "Architecture firms, real estate agencies" },
+              { tier: "Enterprise", price: "$500–$2K/mo", items: "API access, white-label reports, dedicated support", target: "Banks, developers, government agencies" },
+            ].map((p) => (
+              <div key={p.tier} className="border rounded-lg p-3">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="font-semibold text-slate-800">{p.tier}</span>
+                  <span className="font-bold text-emerald-600">{p.price}</span>
+                </div>
+                <div className="text-xs text-slate-500">{p.items}</div>
+                <div className="text-xs text-slate-400 mt-0.5">{p.target}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
