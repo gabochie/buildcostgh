@@ -175,22 +175,17 @@ function OverviewTab({ stats, orders, messages, maintenanceMode, toggling, toggl
   maintenanceMode: boolean; toggling: boolean; toggleMaintenance: () => void
 }) {
   const cards = [
-    { label: "Total Revenue", value: formatCurrency(stats?.totalRevenue || 0), icon: TrendingUp, gradient: "from-emerald-500 to-emerald-600" },
-    { label: "Orders", value: String(stats?.totalOrders || 0), sub: `${stats?.completedOrders || 0} completed`, icon: ShoppingBag, gradient: "from-blue-500 to-blue-600" },
-    { label: "Messages", value: String(stats?.totalMessages || 0), sub: `${stats?.unreadMessages || 0} unread`, icon: MessageSquare, gradient: "from-violet-500 to-violet-600" },
-    { label: "Leads", value: String(stats?.totalLeads || 0), sub: `${stats?.totalSubscribers || 0} subscribers`, icon: Users, gradient: "from-amber-500 to-amber-600" },
+    { label: "Total Revenue", value: formatCurrency(stats?.totalRevenue || 0), icon: TrendingUp, bg: "bg-gradient-to-br from-emerald-500 to-emerald-600" },
+    { label: "Orders", value: String(stats?.totalOrders || 0), sub: `${stats?.completedOrders || 0} completed`, icon: ShoppingBag, bg: "bg-gradient-to-br from-blue-500 to-blue-600" },
+    { label: "Messages", value: String(stats?.totalMessages || 0), sub: `${stats?.unreadMessages || 0} unread`, icon: MessageSquare, bg: "bg-gradient-to-br from-violet-500 to-violet-600" },
+    { label: "Leads", value: String(stats?.totalLeads || 0), sub: `${stats?.totalSubscribers || 0} subscribers`, icon: Users, bg: "bg-gradient-to-br from-amber-500 to-amber-600" },
   ]
 
   return (
     <div className="space-y-6">
-      {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {cards.map((card) => (
-          <div
-            key={card.label}
-            className="relative overflow-hidden rounded-2xl bg-gradient-to-br p-5 text-white shadow-lg transition-all duration-200 hover:shadow-xl hover:-translate-y-0.5"
-            style={{ backgroundImage: `linear-gradient(135deg, var(--tw-gradient-stops))`, [`--tw-gradient-from`]: `var(--${card.gradient.split(" ")[0].replace("from-", "")})`, [`--tw-gradient-to`]: `var(--${card.gradient.split(" ")[1].replace("to-", "")})` } as React.CSSProperties}
-          >
+          <div key={card.label} className={`relative overflow-hidden rounded-2xl ${card.bg} p-5 text-white shadow-lg transition-all duration-200 hover:shadow-xl hover:-translate-y-0.5`}>
             <div className="relative z-10">
               <div className="flex items-center justify-between mb-2">
                 <p className="text-sm font-medium text-white/80">{card.label}</p>
@@ -404,11 +399,11 @@ function LeadsTab({ leads }: { leads: CalculatorLead[] }) {
     <div className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
-          { label: "Total Leads", value: leads.length, gradient: "from-blue-500 to-blue-600" },
-          { label: "Completed", value: completed, gradient: "from-emerald-500 to-emerald-600" },
-          { label: "Abandoned", value: abandoned, gradient: "from-amber-500 to-amber-600" },
+          { label: "Total Leads", value: leads.length, bg: "bg-gradient-to-br from-blue-500 to-blue-600" },
+          { label: "Completed", value: completed, bg: "bg-gradient-to-br from-emerald-500 to-emerald-600" },
+          { label: "Abandoned", value: abandoned, bg: "bg-gradient-to-br from-amber-500 to-amber-600" },
         ].map((item) => (
-          <div key={item.label} className="rounded-2xl bg-gradient-to-br p-5 text-white shadow-lg" style={{ backgroundImage: `linear-gradient(135deg, var(--tw-gradient-stops))` } as React.CSSProperties}>
+          <div key={item.label} className={`rounded-2xl ${item.bg} p-5 text-white shadow-lg`}>
             <p className="text-sm text-white/80">{item.label}</p>
             <p className="text-3xl font-bold mt-1">{item.value}</p>
           </div>
@@ -447,11 +442,11 @@ function NewsletterTab({ subscribers }: { subscribers: NewsletterSubscriber[] })
     <div className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
-          { label: "Total Subscribers", value: subscribers.length, gradient: "from-blue-500 to-blue-600" },
-          { label: "Active", value: active, gradient: "from-emerald-500 to-emerald-600" },
-          { label: "Unsubscribed", value: unsubscribed, gradient: "from-slate-500 to-slate-600" },
+          { label: "Total Subscribers", value: subscribers.length, bg: "bg-gradient-to-br from-blue-500 to-blue-600" },
+          { label: "Active", value: active, bg: "bg-gradient-to-br from-emerald-500 to-emerald-600" },
+          { label: "Unsubscribed", value: unsubscribed, bg: "bg-gradient-to-br from-slate-500 to-slate-600" },
         ].map((item) => (
-          <div key={item.label} className="rounded-2xl bg-gradient-to-br p-5 text-white shadow-lg" style={{ backgroundImage: `linear-gradient(135deg, var(--tw-gradient-stops))` } as React.CSSProperties}>
+          <div key={item.label} className={`rounded-2xl ${item.bg} p-5 text-white shadow-lg`}>
             <p className="text-sm text-white/80">{item.label}</p>
             <p className="text-3xl font-bold mt-1">{item.value}</p>
           </div>
