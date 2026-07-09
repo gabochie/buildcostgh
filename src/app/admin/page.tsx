@@ -1,7 +1,7 @@
 "use client"
 
 import { useSession, signIn, signOut } from "next-auth/react"
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -76,9 +76,9 @@ export default function AdminPage() {
     if (t) setTab(t)
   }, [searchParams])
 
-  useEffect(() => {
+  const loadData = React.useCallback(async (showLoader = false) => {
     if (!session) return
-    setLoading(true)
+    if (showLoader) setLoading(true)
     Promise.all([
       fetch("/api/admin/stats").then(r => r.json()),
       fetch("/api/orders").then(r => r.json()),
@@ -93,8 +93,16 @@ export default function AdminPage() {
         setBlogPosts(b); setLeads(l); setSubscribers(n)
         setMaintenanceMode(mt.enabled)
       })
-      .finally(() => setLoading(false))
+      .finally(() => { if (showLoader) setLoading(false) })
   }, [session])
+
+  useEffect(() => { loadData(true) }, [loadData])
+
+  useEffect(() => {
+    if (!session) return
+    const interval = setInterval(() => loadData(false), 30000)
+    return () => clearInterval(interval)
+  }, [loadData])
 
   if (status === "loading") {
     return (
@@ -2031,27 +2039,34 @@ function PrelaunchChecklist() {
         "Set NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY in Vercel",
         "Set RESEND_API_KEY in Vercel",
         "Set UPLOADTHING_SECRET & UPLOADTHING_APP_ID in Vercel",
+        "Set OPENAI_API_KEY in Vercel",
         "Verify Neon database connection is stable",
-        "Configure Vercel custom domain (buildcostgh.com)",
-        "Verify Cloudflare proxy is working",
+        "Configure Vercel custom domain (buildcostgh.com) — DONE",
+        "Verify Cloudflare proxy is working — DONE",
         "Set up Vercel Analytics / monitoring",
         "Configure error tracking (Sentry)",
         "Set up automated database backups",
+        "PG-based job queue (SKIP LOCKED) — DONE",
+        "Server-side PDF generation (Puppeteer) — DONE",
+        "Health check endpoint (/api/health) — DONE",
       ],
     },
     {
       name: "Security & Compliance",
       items: [
-        "Add security headers (CSP, HSTS, X-Frame-Options)",
-        "Add Zod input validation to all API routes",
-        "Add auth checks to all admin API routes",
+        "Security headers (CSP, HSTS, X-Frame-Options) — DONE",
+        "Env var validation at startup — DONE",
+        "Generic rate limiter for all public endpoints — DONE",
+        "Add auth checks to all admin API routes — DONE",
         "Add auth to file upload endpoint",
         "Rate limiting on admin login — DONE",
         "Privacy Policy page — DONE",
         "Terms of Service page — DONE",
-        "Cookie consent banner",
+        "Cookie consent banner — DONE",
         "Refund Policy page — DONE",
         "GDPR compliance review",
+        "Fix Order.metadata type (String → Json) — DONE",
+        "Paystack webhook endpoint (HMAC-signed) — DONE",
       ],
     },
     {
@@ -2062,25 +2077,49 @@ function PrelaunchChecklist() {
         "Create robots.txt — DONE",
         "Set up Open Graph images for all pages",
         "Write meta descriptions for all pages",
-        "Create 'About' page with team story",
+        "Create 'About' page with team story — DONE",
         "Create 'How it Works' explainer page",
         "Create FAQ page addressing diaspora questions",
         "Create 'Pricing' page explaining tiers — DONE",
         "Set up blog RSS feed — DONE",
+        "Flood Safe Land lead magnet page — DONE",
+        "CSR / Flood Relief page — DONE",
+        "Flood risk report page — DONE",
       ],
     },
     {
       name: "Payment & Orders",
       items: [
         "Test Paystack payment flow end-to-end (sandbox)",
-        "Test Paystack webhook handling",
+        "Paystack webhook for async payment confirmation — DONE",
         "Test email delivery via Resend",
-        "Test PDF report generation & download",
+        "Auto-generate PDF report after payment — DONE",
+        "Auto-send receipt email after payment — DONE",
         "Test order confirmation flow",
         "Set up invoice/receipt generation",
         "Test refund flow end-to-end",
-        "Verify multi-currency pricing (USD + GHS)",
+        "Verify multi-currency pricing (USD + GHS) — DONE",
         "Test payment failure recovery flow",
+      ],
+    },
+    {
+      name: "Autonomous Agents & MCP",
+      items: [
+        "MCP Server with 10 tools (GET/POST /api/mcp) — DONE",
+        "PaymentBot: webhook → PDF → receipt flow — DONE",
+        "ReportBot: auto-generate PDF reports — DONE",
+        "LeadBot: capture → score → nurture flow — DONE",
+        "PriceBot: market data + seasonal factors — DONE",
+        "SupportBot: AI-powered assistant (MCP tool) — DONE",
+        "Agent activity audit trail (AgentLog model) — DONE",
+        "API Key management for MCP auth — DONE",
+        "Seasonal factor editor in admin — DONE",
+        "Business rules persistence (SiteSetting) — DONE",
+        "Command Center admin tab — DONE",
+        "Real agent health monitoring — DONE",
+        "SSE-based MCP transport (for full protocol compliance)",
+        "Connect external AI agents (Claude Desktop, etc.)",
+        "OpenAI integration for LLM-powered SupportBot",
       ],
     },
     {
@@ -2096,6 +2135,8 @@ function PrelaunchChecklist() {
         "Create list of diaspora Facebook groups to post in",
         "Prepare pitch for Ghana tech media (TechCabal, etc.)",
         "Create product demo video (2-3 min walkthrough)",
+        "Pitch Deck admin tab with 12 slides — DONE",
+        "Competitive Analysis with 11 competitors — DONE",
       ],
     },
     {
@@ -2105,12 +2146,15 @@ function PrelaunchChecklist() {
         "Verify pricing accuracy across all Ghana regions",
         "Mobile responsiveness audit (all screen sizes)",
         "Page load speed optimization (<3s on 3G)",
-        "Custom 404 page with helpful navigation",
+        "Custom 404 page with helpful navigation — DONE",
         "Add loading states for all data fetches",
         "Add error boundaries for all major pages",
         "Test user dashboard order history",
         "Verify all links across the site work",
         "Test on Safari, Chrome, Firefox, Edge",
+        "Exit-intent popup for lead capture — DONE",
+        "Blog article CTA (calculator link) — DONE",
+        "Pricing urgency banner — DONE",
       ],
     },
     {
@@ -3394,174 +3438,178 @@ function CompetitiveAnalysisView() {
 /* ── Command Center ── */
 function CommandCenter() {
   const [subTab, setSubTab] = useState("dashboard")
-  const [agents, setAgents] = useState<any[]>([])
   const [logs, setLogs] = useState<any[]>([])
   const [queueStats, setQueueStats] = useState({ pending: 0, processing: 0, completed: 0, failed: 0 })
   const [loading, setLoading] = useState(true)
-  const [agentsPaused, setAgentsPaused] = useState(false)
+  const [agentStats, setAgentStats] = useState<any[]>([])
+  const [keys, setKeys] = useState<any[]>([])
+  const [factors, setFactors] = useState<any[]>([])
+  const [rules, setRules] = useState<Record<string, string>>({})
+  const [savingRules, setSavingRules] = useState(false)
 
   const fetchData = async () => {
     setLoading(true)
     try {
-      const [hRes, lRes] = await Promise.all([
+      const [hRes, lRes, aRes] = await Promise.all([
         fetch("/api/health").then(r => r.json()).catch(() => ({})),
-        fetch("/api/agent-logs?limit=30").then(r => r.json()).catch(() => ({ logs: [] })),
+        fetch("/api/agent-logs?limit=50").then(r => r.json()).catch(() => ({ logs: [] })),
+        fetch("/api/admin/agent-stats").then(r => r.json()).catch(() => []),
       ])
       if (hRes.queue) setQueueStats(hRes.queue)
       setLogs(lRes.logs || [])
+      setAgentStats(aRes)
     } finally {
       setLoading(false)
     }
   }
 
-  useEffect(() => { fetchData(); const i = setInterval(fetchData, 15000); return () => clearInterval(i) }, [])
+  const fetchConfig = async () => {
+    const [rRes, kRes, fRes] = await Promise.all([
+      fetch("/api/admin/rules").then(r => r.json()).catch(() => ({})),
+      fetch("/api/admin/api-keys").then(r => r.json()).catch(() => []),
+      fetch("/api/admin/seasonal-factors").then(r => r.json()).catch(() => []),
+    ])
+    setRules(rRes)
+    setKeys(kRes)
+    setFactors(fRes)
+  }
+
+  useEffect(() => { fetchData(); fetchConfig(); const i = setInterval(fetchData, 15000); return () => clearInterval(i) }, [])
+
+  const saveRules = async () => {
+    setSavingRules(true)
+    await fetch("/api/admin/rules", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(rules) })
+    setSavingRules(false)
+  }
+
+  const setRule = (key: string, value: string) => setRules(prev => ({ ...prev, [key]: value }))
 
   const subTabs = [
-    { id: "dashboard", label: "Executive Dashboard", icon: Activity },
-    { id: "feed", label: "Activity Feed", icon: Clock },
-    { id: "queue", label: "Job Queue", icon: CheckSquare },
-    { id: "agents", label: "Agent Control", icon: Cpu },
-    { id: "rules", label: "Business Rules", icon: Sliders },
+    { id: "dashboard", label: "Dashboard", icon: Activity },
+    { id: "feed", label: "Activity", icon: Clock },
+    { id: "queue", label: "Queue", icon: CheckSquare },
+    { id: "agents", label: "Agents", icon: Cpu },
+    { id: "config", label: "Configuration", icon: Sliders },
   ]
+
+  const monthLabels = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap gap-1.5">
         {subTabs.map((st) => (
-          <button
-            key={st.id}
-            onClick={() => setSubTab(st.id)}
+          <button key={st.id} onClick={() => setSubTab(st.id)}
             className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${
-              subTab === st.id
-                ? "bg-emerald-100 text-emerald-800 shadow-sm"
-                : "text-slate-500 hover:text-slate-700 hover:bg-slate-100"
-            }`}
-          >
+              subTab === st.id ? "bg-emerald-100 text-emerald-800 shadow-sm" : "text-slate-500 hover:text-slate-700 hover:bg-slate-100"
+            }`}>
             <st.icon className="h-4 w-4" /> {st.label}
           </button>
         ))}
       </div>
 
-      {loading && (
-        <div className="flex justify-center py-12">
-          <Loader2 className="h-6 w-6 animate-spin text-emerald-600" />
-        </div>
-      )}
+      {loading && <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-emerald-600" /></div>}
 
       {!loading && subTab === "dashboard" && (
         <div className="space-y-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { label: "Pending Jobs", value: queueStats.pending, icon: Clock, bg: "bg-gradient-to-br from-amber-500 to-amber-600" },
-              { label: "Processing", value: queueStats.processing, icon: RefreshCw, bg: "bg-gradient-to-br from-blue-500 to-blue-600" },
-              { label: "Completed", value: queueStats.completed, icon: CheckCircle, bg: "bg-gradient-to-br from-emerald-500 to-emerald-600" },
-              { label: "Failed", value: queueStats.failed, icon: AlertCircle, bg: "bg-gradient-to-br from-red-500 to-red-600" },
-            ].map((card) => (
-              <div key={card.label} className={`${card.bg} rounded-xl p-4 text-white shadow-lg`}>
-                <div className="flex items-center justify-between mb-2">
-                  <card.icon className="h-5 w-5 opacity-80" />
-                </div>
-                <div className="text-2xl font-bold">{card.value}</div>
-                <div className="text-xs opacity-80 mt-1">{card.label}</div>
+              { label: "Pending Jobs", value: queueStats.pending, icon: Clock, bg: "from-amber-500 to-amber-600" },
+              { label: "Processing", value: queueStats.processing, icon: RefreshCw, bg: "from-blue-500 to-blue-600" },
+              { label: "Completed", value: queueStats.completed, icon: CheckCircle, bg: "from-emerald-500 to-emerald-600" },
+              { label: "Failed", value: queueStats.failed, icon: AlertCircle, bg: "from-red-500 to-red-600" },
+            ].map((c) => (
+              <div key={c.label} className={`bg-gradient-to-br ${c.bg} rounded-xl p-4 text-white shadow-lg`}>
+                <c.icon className="h-5 w-5 opacity-80 mb-2" />
+                <div className="text-2xl font-bold">{c.value}</div>
+                <div className="text-xs opacity-80 mt-1">{c.label}</div>
               </div>
             ))}
           </div>
 
-          <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
-            <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
-              <Cpu className="h-4 w-4 text-emerald-600" /> System Status
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-              {[
-                { label: "Job Queue", status: queueStats.failed > 0 ? "warning" : queueStats.pending > 0 ? "active" : "idle" },
-                { label: "Payment Bot", status: "active" },
-                { label: "Report Bot", status: "active" },
-                { label: "Lead Bot", status: queueStats.pending > 0 ? "active" : "idle" },
-                { label: "MCP Server", status: "active" },
-                { label: "Agents", status: agentsPaused ? "paused" : "running" },
-              ].map((item) => (
-                <div key={item.label} className="flex items-center gap-2 p-2 rounded-lg bg-slate-50">
-                  <div className={`w-2 h-2 rounded-full ${
-                    item.status === "active" ? "bg-emerald-500" :
-                    item.status === "warning" ? "bg-amber-500" :
-                    item.status === "paused" ? "bg-slate-400" :
-                    "bg-slate-300"
-                  }`} />
-                  <span>{item.label}</span>
-                  <span className="text-xs text-slate-400 ml-auto capitalize">{item.status}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
-            <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
-              <Activity className="h-4 w-4 text-emerald-600" /> Recent Agent Activity
-            </h3>
-            {logs.length === 0 ? (
-              <p className="text-sm text-slate-400">No activity yet. Agent actions will appear here.</p>
-            ) : (
-              <div className="space-y-2 max-h-64 overflow-y-auto">
-                {logs.slice(0, 10).map((log: any) => (
-                  <div key={log.id} className="flex items-start gap-3 text-sm p-2 rounded-lg hover:bg-slate-50">
-                    <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${
-                      log.level === "error" ? "bg-red-500" :
-                      log.level === "warning" ? "bg-amber-500" :
-                      log.level === "success" ? "bg-emerald-500" :
-                      "bg-blue-500"
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+              <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                <Cpu className="h-4 w-4 text-emerald-600" /> Agent Health
+              </h3>
+              <div className="space-y-2">
+                {agentStats.map((a: any) => (
+                  <div key={a.name} className="flex items-center gap-3 p-2 rounded-lg bg-slate-50">
+                    <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
+                      a.status === "active" ? "bg-emerald-500" : a.status === "error" ? "bg-red-500" : "bg-slate-300"
                     }`} />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="font-medium text-slate-700">{log.agent}</span>
-                        <span className="text-slate-400">/</span>
-                        <span className="text-slate-600">{log.action}</span>
+                        <span className="text-sm font-medium text-slate-700">{a.name}</span>
+                        <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded capitalize ${
+                          a.status === "active" ? "bg-emerald-50 text-emerald-600" :
+                          a.status === "error" ? "bg-red-50 text-red-600" : "bg-slate-100 text-slate-500"
+                        }`}>{a.status}</span>
                       </div>
-                      <p className="text-xs text-slate-400 mt-0.5">
-                        {new Date(log.createdAt).toLocaleString("en-GH")}
-                        {log.entityType && ` — ${log.entityType}: ${log.entityId || ""}`}
+                      <p className="text-xs text-slate-400">
+                        {a.totalActions} actions · {a.errors} errors
+                        {a.minutesSinceLastSeen !== null && ` · ${a.minutesSinceLastSeen}m ago`}
                       </p>
                     </div>
-                    <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded capitalize ${
-                      log.level === "error" ? "bg-red-50 text-red-600" :
-                      log.level === "warning" ? "bg-amber-50 text-amber-600" :
-                      log.level === "success" ? "bg-emerald-50 text-emerald-600" :
-                      "bg-blue-50 text-blue-600"
-                    }`}>{log.level}</span>
                   </div>
                 ))}
+                {agentStats.length === 0 && <p className="text-sm text-slate-400">No agent data yet</p>}
               </div>
-            )}
+            </div>
+
+            <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+              <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                <Activity className="h-4 w-4 text-emerald-600" /> Recent Activity
+              </h3>
+              <div className="space-y-2 max-h-72 overflow-y-auto">
+                {logs.slice(0, 12).map((log: any) => (
+                  <div key={log.id} className="flex items-start gap-2 text-sm p-1.5 rounded hover:bg-slate-50">
+                    <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${
+                      log.level === "error" ? "bg-red-500" : log.level === "warning" ? "bg-amber-500" :
+                      log.level === "success" ? "bg-emerald-500" : "bg-blue-500"
+                    }`} />
+                    <div className="flex-1 min-w-0">
+                      <span className="font-medium text-slate-700">{log.agent}</span>
+                      <span className="text-slate-400 mx-1">/</span>
+                      <span className="text-slate-600">{log.action}</span>
+                      <p className="text-[10px] text-slate-400">{new Date(log.createdAt).toLocaleString("en-GH")}</p>
+                    </div>
+                  </div>
+                ))}
+                {logs.length === 0 && <p className="text-sm text-slate-400">No activity yet</p>}
+              </div>
+            </div>
           </div>
         </div>
       )}
 
       {!loading && subTab === "feed" && (
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-          <div className="p-5 border-b border-gray-100">
-            <h3 className="font-semibold text-slate-900">Agent Activity Feed</h3>
-            <p className="text-sm text-slate-400 mt-1">Real-time log of all autonomous actions</p>
+          <div className="p-5 border-b border-gray-100 flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold text-slate-900">Activity Feed</h3>
+              <p className="text-sm text-slate-400 mt-1">All autonomous agent actions, webhooks, and emails</p>
+            </div>
+            <span className="text-xs text-slate-400">{logs.length} events</span>
           </div>
           <div className="p-5">
             {logs.length === 0 ? (
               <p className="text-sm text-slate-400 text-center py-8">No activity recorded yet.</p>
             ) : (
-              <div className="space-y-1">
+              <div className="space-y-0.5">
                 {logs.map((log: any) => (
-                  <div key={log.id} className="flex items-start gap-3 py-2.5 px-2 rounded-lg hover:bg-slate-50 text-sm border-l-2 transition-colors"
+                  <div key={log.id} className="flex items-start gap-3 py-2 px-2 rounded-lg hover:bg-slate-50 text-sm border-l-2 transition-colors"
                     style={{ borderLeftColor: log.level === "error" ? "#ef4444" : log.level === "warning" ? "#f59e0b" : log.level === "success" ? "#10b981" : "#3b82f6" }}>
-                    <span className="text-xs text-slate-400 font-mono w-16 flex-shrink-0">
-                      {new Date(log.createdAt).toLocaleTimeString("en-GH", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+                    <span className="text-[11px] text-slate-400 font-mono w-14 flex-shrink-0">
+                      {new Date(log.createdAt).toLocaleTimeString("en-GH", { hour: "2-digit", minute: "2-digit" })}
                     </span>
-                    <span className="font-medium text-slate-700 w-24 flex-shrink-0">{log.agent}</span>
-                    <span className="text-slate-600 flex-1">{log.action}</span>
+                    <span className="font-medium text-slate-700 w-20 flex-shrink-0 text-xs">{log.agent}</span>
+                    <span className="text-slate-600 flex-1 text-xs">{log.action}</span>
                     {log.entityType && (
-                      <span className="text-xs text-slate-400 flex-shrink-0">{log.entityType}: {log.entityId ? log.entityId.slice(0, 12) + "..." : "—"}</span>
+                      <span className="text-[11px] text-slate-400 flex-shrink-0">{log.entityType} {log.entityId?.slice(0, 10)}</span>
                     )}
                     <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded capitalize flex-shrink-0 ${
-                      log.level === "error" ? "bg-red-50 text-red-600" :
-                      log.level === "warning" ? "bg-amber-50 text-amber-600" :
-                      log.level === "success" ? "bg-emerald-50 text-emerald-600" :
-                      "bg-blue-50 text-blue-600"
+                      log.level === "error" ? "bg-red-50 text-red-600" : log.level === "warning" ? "bg-amber-50 text-amber-600" :
+                      log.level === "success" ? "bg-emerald-50 text-emerald-600" : "bg-blue-50 text-blue-600"
                     }`}>{log.level}</span>
                   </div>
                 ))}
@@ -3575,19 +3623,12 @@ function CommandCenter() {
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
           <div className="p-5 border-b border-gray-100 flex items-center justify-between">
             <div>
-              <h3 className="font-semibold text-slate-900">Job Queue Management</h3>
-              <p className="text-sm text-slate-400 mt-1">{queueStats.pending} pending, {queueStats.failed} failed</p>
+              <h3 className="font-semibold text-slate-900">Job Queue</h3>
+              <p className="text-sm text-slate-400 mt-1">{queueStats.pending} pending · {queueStats.failed} failed · {queueStats.completed} completed</p>
             </div>
             <div className="flex gap-2">
-              <button
-                onClick={async () => {
-                  const res = await fetch("/api/jobs/enqueue", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "process_queue" }) })
-                  if (res.ok) fetchData()
-                }}
-                className="px-3 py-1.5 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors"
-              >
-                Process Queue
-              </button>
+              <button onClick={async () => { await fetch("/api/jobs/enqueue", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "process_queue" }) }); fetchData() }}
+                className="px-3 py-1.5 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors">Process Queue</button>
             </div>
           </div>
           <div className="p-5">
@@ -3598,20 +3639,15 @@ function CommandCenter() {
                 { label: "Completed", value: queueStats.completed, color: "text-emerald-600" },
                 { label: "Failed", value: queueStats.failed, color: "text-red-600" },
               ].map((s) => (
-                <div key={s.label} className="text-center p-3 rounded-lg bg-slate-50">
+                <div key={s.label} className="text-center p-4 rounded-lg bg-slate-50">
                   <div className={`text-3xl font-bold ${s.color}`}>{s.value}</div>
                   <div className="text-xs text-slate-500 mt-1">{s.label}</div>
                 </div>
               ))}
             </div>
             {queueStats.failed > 0 && (
-              <button
-                onClick={async () => {
-                  await fetch("/api/jobs/retry-failed", { method: "POST" })
-                  fetchData()
-                }}
-                className="px-3 py-1.5 bg-amber-100 text-amber-700 text-sm font-medium rounded-lg hover:bg-amber-200 transition-colors flex items-center gap-1.5"
-              >
+              <button onClick={async () => { await fetch("/api/jobs/retry-failed", { method: "POST" }); fetchData() }}
+                className="px-3 py-1.5 bg-amber-100 text-amber-700 text-sm font-medium rounded-lg hover:bg-amber-200 transition-colors flex items-center gap-1.5">
                 <RefreshCw className="h-3.5 w-3.5" /> Retry All Failed ({queueStats.failed})
               </button>
             )}
@@ -3621,119 +3657,237 @@ function CommandCenter() {
 
       {!loading && subTab === "agents" && (
         <div className="space-y-4">
-          <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
-            <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
-              <Cpu className="h-4 w-4 text-emerald-600" /> Agent Controls
-            </h3>
-            <div className="flex flex-wrap gap-3">
-              <button
-                onClick={() => setAgentsPaused(!agentsPaused)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
-                  agentsPaused ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200" : "bg-amber-100 text-amber-700 hover:bg-amber-200"
-                }`}
-              >
-                {agentsPaused ? <><Play className="h-4 w-4" /> Resume All Agents</> : <><Pause className="h-4 w-4" /> Pause All Agents</>}
-              </button>
-              <button
-                onClick={async () => {
-                  await fetch("/api/jobs/clear", { method: "POST" })
-                  fetchData()
-                }}
-                className="px-4 py-2 bg-red-50 text-red-600 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors flex items-center gap-1.5"
-              >
-                <Trash2 className="h-4 w-4" /> Clear All Jobs
-              </button>
-            </div>
+          <div className="flex flex-wrap gap-3">
+            <button className="px-4 py-2 bg-amber-100 text-amber-700 rounded-lg text-sm font-medium hover:bg-amber-200 transition-colors flex items-center gap-1.5">
+              <Pause className="h-4 w-4" /> Pause All Agents
+            </button>
+            <button onClick={async () => { await fetch("/api/jobs/clear", { method: "POST" }); fetchData() }}
+              className="px-4 py-2 bg-red-50 text-red-600 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors flex items-center gap-1.5">
+              <Trash2 className="h-4 w-4" /> Clear All Jobs
+            </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[
-              { name: "PaymentBot", desc: "Webhook → PDF → Receipt", status: "active", actions: 0 },
-              { name: "ReportBot", desc: "Auto-generate PDF reports", status: "active", actions: 0 },
-              { name: "LeadBot", desc: "Capture → Score → Nurture", status: queueStats.pending > 0 ? "active" : "idle", actions: 0 },
-              { name: "PriceBot", desc: "Market data → Seasonal updates", status: "idle", actions: 0 },
-              { name: "SupportBot", desc: "AI-powered customer support", status: "active", actions: 0 },
-              { name: "MCP Server", desc: "Agent protocol endpoint", status: "active", actions: 0 },
-            ].map((agent) => (
-              <div key={agent.name} className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
-                <div className="flex items-center justify-between mb-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {agentStats.map((a: any) => (
+              <div key={a.name} className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+                <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${
-                      agent.status === "active" ? "bg-emerald-500" : "bg-slate-300"
+                    <div className={`w-2.5 h-2.5 rounded-full ${
+                      a.status === "active" ? "bg-emerald-500" : a.status === "error" ? "bg-red-500" : "bg-slate-300"
                     }`} />
-                    <h4 className="font-semibold text-sm text-slate-900">{agent.name}</h4>
+                    <h4 className="font-semibold text-sm text-slate-900">{a.name}</h4>
                   </div>
                   <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded capitalize ${
-                    agent.status === "active" ? "bg-emerald-50 text-emerald-600" : "bg-slate-100 text-slate-500"
-                  }`}>{agent.status}</span>
+                    a.status === "active" ? "bg-emerald-50 text-emerald-600" :
+                    a.status === "error" ? "bg-red-50 text-red-600" : "bg-slate-100 text-slate-500"
+                  }`}>{a.status}</span>
                 </div>
-                <p className="text-xs text-slate-500">{agent.desc}</p>
+                <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                  <div className="bg-slate-50 rounded-lg p-2">
+                    <div className="font-semibold text-slate-700">{a.totalActions}</div>
+                    <div className="text-slate-400">Actions</div>
+                  </div>
+                  <div className="bg-slate-50 rounded-lg p-2">
+                    <div className={`font-semibold ${a.errors > 0 ? "text-red-600" : "text-slate-700"}`}>{a.errors}</div>
+                    <div className="text-slate-400">Errors</div>
+                  </div>
+                  <div className="bg-slate-50 rounded-lg p-2">
+                    <div className="font-semibold text-slate-700">
+                      {a.minutesSinceLastSeen !== null ? `${a.minutesSinceLastSeen}m` : "—"}
+                    </div>
+                    <div className="text-slate-400">Last Seen</div>
+                  </div>
+                </div>
+                {a.lastAction && (
+                  <p className="text-[11px] text-slate-400 mt-2">Last: {a.lastAction}</p>
+                )}
               </div>
             ))}
+            {agentStats.length === 0 && <p className="text-sm text-slate-400 col-span-full text-center py-8">No agent data. Run some actions first.</p>}
           </div>
         </div>
       )}
 
-      {!loading && subTab === "rules" && (
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-          <div className="p-5 border-b border-gray-100">
-            <h3 className="font-semibold text-slate-900">Business Rules Configuration</h3>
-            <p className="text-sm text-slate-400 mt-1">Configure thresholds and rules for autonomous behavior</p>
-          </div>
-          <div className="p-5 space-y-6">
-            <div>
-              <h4 className="text-sm font-semibold text-slate-700 mb-3">Agent Thresholds</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-slate-600">Max Auto Price Change (%)</label>
-                  <div className="flex items-center gap-2">
-                    <input type="range" min="1" max="20" defaultValue="5" className="flex-1 accent-emerald-600" />
-                    <span className="text-sm font-mono text-slate-700 w-8">5%</span>
+      {!loading && subTab === "config" && (
+        <div className="space-y-8">
+          {/* Business Rules */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="p-5 border-b border-gray-100 flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold text-slate-900">Business Rules</h3>
+                <p className="text-sm text-slate-400 mt-1">Thresholds for autonomous behavior</p>
+              </div>
+              <button onClick={saveRules} disabled={savingRules}
+                className="px-3 py-1.5 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50">
+                {savingRules ? "Saving..." : "Save Rules"}
+              </button>
+            </div>
+            <div className="p-5 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {[
+                  { key: "maxAutoPriceChangePct", label: "Max Auto Price Change (%)", min: "1", max: "20", step: "1", suffix: "%" },
+                  { key: "leadScoreHITLThreshold", label: "Lead Score HITL Threshold", min: "0", max: "100", step: "5", suffix: "" },
+                  { key: "maxUnattendedOrderValue", label: "Max Unattended Order (GHS)", min: "100", max: "5000", step: "100", suffix: "" },
+                  { key: "autoRefundMax", label: "Auto Refund Max (GHS)", min: "0", max: "500", step: "10", suffix: "" },
+                ].map((field) => (
+                  <div key={field.key} className="space-y-1.5">
+                    <label className="text-xs font-medium text-slate-600">{field.label}</label>
+                    <div className="flex items-center gap-3">
+                      <input type="range" min={field.min} max={field.max} step={field.step}
+                        value={rules[field.key] || "0"} onChange={(e) => setRule(field.key, e.target.value)}
+                        className="flex-1 accent-emerald-600" />
+                      <span className="text-sm font-mono text-slate-700 w-16 text-right">
+                        {Number(rules[field.key] || 0).toLocaleString()}{field.suffix}
+                      </span>
+                    </div>
                   </div>
-                  <p className="text-[10px] text-slate-400">Above this threshold, human approval required</p>
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-slate-600">Lead Score HITL Threshold</label>
-                  <div className="flex items-center gap-2">
-                    <input type="range" min="0" max="100" defaultValue="80" className="flex-1 accent-emerald-600" />
-                    <span className="text-sm font-mono text-slate-700 w-8">80</span>
-                  </div>
-                  <p className="text-[10px] text-slate-400">Leads above this score trigger manual follow-up</p>
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-slate-600">Max Unattended Order Value (GHS)</label>
-                  <div className="flex items-center gap-2">
-                    <input type="range" min="100" max="5000" step="100" defaultValue="1000" className="flex-1 accent-emerald-600" />
-                    <span className="text-sm font-mono text-slate-700 w-12">1,000</span>
-                  </div>
-                  <p className="text-[10px] text-slate-400">Orders above this require manual review</p>
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-slate-600">Auto Refund Max (GHS)</label>
-                  <div className="flex items-center gap-2">
-                    <input type="range" min="0" max="500" step="10" defaultValue="50" className="flex-1 accent-emerald-600" />
-                    <span className="text-sm font-mono text-slate-700 w-12">50</span>
-                  </div>
-                  <p className="text-[10px] text-slate-400">Refunds below this processed automatically</p>
+                ))}
+              </div>
+              <div className="pt-4 border-t border-gray-100">
+                <h4 className="text-sm font-semibold text-slate-700 mb-3">Alert Configuration</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  {[
+                    { key: "alertsErrorSpike", label: "Error spike (>5 errors in 10 min)" },
+                    { key: "alertsPaymentFailure", label: "Payment failure notification" },
+                    { key: "alertsQueueBacklog", label: "Queue backlog (>50 pending jobs)" },
+                    { key: "alertsPricingDrift", label: "Pricing drift (>10% from market)" },
+                    { key: "alertsHighValueLead", label: "High-value lead alert (score > 80)" },
+                  ].map((alert) => (
+                    <label key={alert.key} className="flex items-center gap-2 text-sm text-slate-700">
+                      <input type="checkbox" checked={rules[alert.key] === "true"}
+                        onChange={(e) => setRule(alert.key, e.target.checked ? "true" : "false")}
+                        className="rounded accent-emerald-600" />
+                      {alert.label}
+                    </label>
+                  ))}
                 </div>
               </div>
             </div>
-            <div className="pt-4 border-t border-gray-100">
-              <h4 className="text-sm font-semibold text-slate-700 mb-3">Alert Configuration</h4>
-              <div className="space-y-2">
-                {[
-                  { label: "Error spike (>5 errors in 10 min)", defaultChecked: true },
-                  { label: "Payment failure notification", defaultChecked: true },
-                  { label: "Queue backlog (>50 pending jobs)", defaultChecked: true },
-                  { label: "Pricing drift (>10% from market)", defaultChecked: false },
-                  { label: "High-value lead alert (score > 80)", defaultChecked: true },
-                ].map((alert) => (
-                  <label key={alert.label} className="flex items-center gap-2 text-sm text-slate-700">
-                    <input type="checkbox" defaultChecked={alert.defaultChecked} className="rounded accent-emerald-600" />
-                    {alert.label}
-                  </label>
-                ))}
+          </div>
+
+          {/* API Keys */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="p-5 border-b border-gray-100 flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold text-slate-900">API Keys</h3>
+                <p className="text-sm text-slate-400 mt-1">For MCP agent authentication and external integrations</p>
               </div>
+              <button onClick={async () => {
+                const label = prompt("Enter a label for this API key:")
+                if (!label) return
+                const res = await fetch("/api/admin/api-keys", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ label }) })
+                const data = await res.json()
+                if (data.rawKey) {
+                  alert(`Key created!\n\nLabel: ${data.label}\nKey: ${data.rawKey}\n\nSave this key — it will not be shown again.`)
+                  fetchConfig()
+                }
+              }} className="px-3 py-1.5 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors">
+                + New Key
+              </button>
+            </div>
+            <div className="p-5">
+              {keys.length === 0 ? (
+                <p className="text-sm text-slate-400 text-center py-4">No API keys created yet.</p>
+              ) : (
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-100">
+                      <th className="text-left pb-2 font-medium text-slate-600">Label</th>
+                      <th className="text-left pb-2 font-medium text-slate-600">Key Hash</th>
+                      <th className="text-left pb-2 font-medium text-slate-600">Status</th>
+                      <th className="text-left pb-2 font-medium text-slate-600">Created</th>
+                      <th className="text-left pb-2 font-medium text-slate-600">Last Used</th>
+                      <th className="text-right pb-2 font-medium text-slate-600">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {keys.map((k: any) => (
+                      <tr key={k.id} className="border-b border-gray-50 hover:bg-slate-50">
+                        <td className="py-2 text-slate-700">{k.label}</td>
+                        <td className="py-2 text-xs text-slate-400 font-mono">{k.keyHash.slice(0, 16)}...</td>
+                        <td className="py-2">
+                          <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${k.active ? "bg-emerald-50 text-emerald-600" : "bg-slate-100 text-slate-500"}`}>
+                            {k.active ? "Active" : "Inactive"}
+                          </span>
+                        </td>
+                        <td className="py-2 text-xs text-slate-400">{new Date(k.createdAt).toLocaleDateString("en-GH")}</td>
+                        <td className="py-2 text-xs text-slate-400">{k.lastUsedAt ? new Date(k.lastUsedAt).toLocaleDateString("en-GH") : "—"}</td>
+                        <td className="py-2 text-right">
+                          <button onClick={async () => {
+                            if (!confirm("Revoke this API key?")) return
+                            await fetch(`/api/admin/api-keys/${k.id}`, { method: "DELETE" })
+                            fetchConfig()
+                          }} className="text-xs text-red-500 hover:text-red-700 font-medium">Revoke</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
+
+          {/* Seasonal Factors */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="p-5 border-b border-gray-100 flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold text-slate-900">Seasonal Factors</h3>
+                <p className="text-sm text-slate-400 mt-1">Pricing multipliers by region and month</p>
+              </div>
+              <button onClick={async () => {
+                const month = prompt("Month (1-12):")
+                const multiplier = prompt("Multiplier (e.g. 1.05 for +5%):")
+                const region = prompt("Region (optional, e.g. greater-accra):")
+                const material = prompt("Material (optional, e.g. cement):")
+                const reason = prompt("Reason (optional):")
+                if (!month || !multiplier) return
+                await fetch("/api/admin/seasonal-factors", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ month: Number(month), multiplier: Number(multiplier), region: region || null, material: material || null, reason: reason || null }) })
+                fetchConfig()
+              }} className="px-3 py-1.5 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors">
+                + Add Factor
+              </button>
+            </div>
+            <div className="p-5">
+              {factors.length === 0 ? (
+                <p className="text-sm text-slate-400 text-center py-4">No seasonal factors configured.</p>
+              ) : (
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-100">
+                      <th className="text-left pb-2 font-medium text-slate-600">Month</th>
+                      <th className="text-left pb-2 font-medium text-slate-600">Region</th>
+                      <th className="text-left pb-2 font-medium text-slate-600">Material</th>
+                      <th className="text-left pb-2 font-medium text-slate-600">Multiplier</th>
+                      <th className="text-left pb-2 font-medium text-slate-600">Reason</th>
+                      <th className="text-left pb-2 font-medium text-slate-600">Active</th>
+                      <th className="text-right pb-2 font-medium text-slate-600">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {factors.map((f: any) => (
+                      <tr key={f.id} className="border-b border-gray-50 hover:bg-slate-50">
+                        <td className="py-2 text-slate-700">{f.monthLabel || monthLabels[f.month - 1]}</td>
+                        <td className="py-2 text-xs text-slate-400">{f.region || "All"}</td>
+                        <td className="py-2 text-xs text-slate-400">{f.material || "All"}</td>
+                        <td className="py-2 font-mono text-sm">{(f.multiplier > 0 ? "+" : "")}{(f.multiplier * 100 - 100).toFixed(0)}%</td>
+                        <td className="py-2 text-xs text-slate-400">{f.reason || "—"}</td>
+                        <td className="py-2">
+                          <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${f.active ? "bg-emerald-50 text-emerald-600" : "bg-slate-100 text-slate-500"}`}>
+                            {f.active ? "Active" : "Inactive"}
+                          </span>
+                        </td>
+                        <td className="py-2 text-right">
+                          <button onClick={async () => {
+                            if (!confirm("Delete this factor?")) return
+                            await fetch(`/api/admin/seasonal-factors/${f.id}`, { method: "DELETE" })
+                            fetchConfig()
+                          }} className="text-xs text-red-500 hover:text-red-700 font-medium">Delete</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
           </div>
         </div>
