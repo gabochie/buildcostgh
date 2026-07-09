@@ -177,6 +177,8 @@ export default function AdminPage() {
     <PitchDeckView />
   ) : tab === "competitiveanalysis" ? (
     <CompetitiveAnalysisView />
+  ) : tab === "commandcenter" ? (
+    <CommandCenter />
   ) : null}
     </div>
   )
