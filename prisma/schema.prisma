@@ -67,7 +67,7 @@ model Order {
   currency  String   @default("GHS")
   status    String   @default("pending")
   reference String   @unique
-  metadata  String?
+  metadata  Json?
   reportUrl String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -75,6 +75,74 @@ model Order {
 
   @@index([status])
   @@index([reference])
+}
+
+model ApiKey {
+  id          String    @id @default(cuid())
+  keyHash     String    @unique
+  label       String
+  lastUsedAt  DateTime?
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  expiresAt   DateTime?
+}
+
+model Job {
+  id           String    @id @default(cuid())
+  type         String
+  payload      Json?
+  status       String    @default("pending")
+  attempts     Int       @default(0)
+  maxAttempts  Int       @default(3)
+  lastError    String?
+  scheduledAt  DateTime  @default(now())
+  startedAt    DateTime?
+  completedAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([status, scheduledAt])
+}
+
+model AgentLog {
+  id          String   @id @default(cuid())
+  agent       String
+  action      String
+  entityType  String?
+  entityId    String?
+  details     Json?
+  level       String   @default("info")
+  createdAt   DateTime @default(now())
+
+  @@index([agent, createdAt])
+  @@index([level])
+}
+
+model SeasonalFactor {
+  id        String   @id @default(cuid())
+  region    String?
+  month     Int
+  material  String?
+  multiplier Float
+  reason    String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([region, month, active])
+}
+
+model PriceUpdate {
+  id         String   @id @default(cuid())
+  tier       String
+  oldAmount  Int
+  newAmount  Int
+  reason     String?
+  approved   Boolean  @default(false)
+  approvedBy String?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
 }
 
 model ContactMessage {
