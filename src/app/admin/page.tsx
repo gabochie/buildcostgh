@@ -2196,6 +2196,9 @@ function PrelaunchChecklist() {
         "PG-based job queue (SKIP LOCKED) — DONE",
         "Server-side PDF generation (Puppeteer) — DONE",
         "Health check endpoint (/api/health) — DONE",
+        "16-region pricing data for all Ghana — DONE",
+        "Subscription + Contractor DB models (migrations applied) — DONE",
+        "API key tiers (dev/pro/enterprise) with usage tracking — DONE",
       ],
     },
     {
@@ -2214,6 +2217,7 @@ function PrelaunchChecklist() {
         "GDPR compliance review",
         "Fix Order.metadata type (String → Json) — DONE",
         "Paystack webhook endpoint (HMAC-signed) — DONE",
+        "API auth middleware with tier-based rate limits — DONE",
       ],
     },
     {
@@ -2232,6 +2236,10 @@ function PrelaunchChecklist() {
         "Flood Safe Land lead magnet page — DONE",
         "CSR / Flood Relief page — DONE",
         "Flood risk report page — DONE",
+        "API Documentation page (/api-docs) — DONE",
+        "API Pricing page (/api-pricing) — DONE",
+        "Contractor marketplace listing page — DONE",
+        "Contractor detail/profile pages — DONE",
       ],
     },
     {
@@ -2247,6 +2255,9 @@ function PrelaunchChecklist() {
         "Test refund flow end-to-end",
         "Verify multi-currency pricing (USD + GHS) — DONE",
         "Test payment failure recovery flow",
+        "Subscription plans (Monthly $19, Annual $99/yr) — DONE",
+        "Subscription toggle on pricing page — DONE",
+        "Plan + Subscription DB models + migration — DONE",
       ],
     },
     {
@@ -2267,6 +2278,9 @@ function PrelaunchChecklist() {
         "SSE-based MCP transport (for full protocol compliance)",
         "Connect external AI agents (Claude Desktop, etc.)",
         "OpenAI integration for LLM-powered SupportBot",
+        "B2B API v1 endpoint (POST /api/v1/estimate) — DONE",
+        "Self-service API key generation (/api/public/keys) — DONE",
+        "API authentication library with tier enforcement — DONE",
       ],
     },
     {
@@ -2284,6 +2298,8 @@ function PrelaunchChecklist() {
         "Create product demo video (2-3 min walkthrough)",
         "Pitch Deck admin tab with 12 slides — DONE",
         "Competitive Analysis with 11 competitors — DONE",
+        "Academic Research strategy (6 target universities) — DONE",
+        "Exit Strategy (4 scenarios, $3M-$500M range) — DONE",
       ],
     },
     {
@@ -2302,6 +2318,9 @@ function PrelaunchChecklist() {
         "Exit-intent popup for lead capture — DONE",
         "Blog article CTA (calculator link) — DONE",
         "Pricing urgency banner — DONE",
+        "Subscription pricing with monthly/annual toggle — DONE",
+        "Contractor listing with search, region, specialty filters — DONE",
+        "Calculator location grid with all 16 regions — DONE",
       ],
     },
     {
@@ -2316,6 +2335,9 @@ function PrelaunchChecklist() {
         "Register trademark for BuildCost.GH",
         "Set up WhatsApp Business account for support",
         "Set up business email (hello@buildcostgh.com)",
+        "Contractor management UI in admin — DONE",
+        "Developer footer links (/api-docs, /api-pricing) — DONE",
+        "Contractors in header nav + footer — DONE",
       ],
     },
   ]
@@ -3488,6 +3510,7 @@ function CompetitiveAnalysisView() {
                   desc: "No competitor offers agentic workflows. PriceBot, EstimateBot, and ContractorMatch would be genuine market-first features. Prioritize this in the roadmap.",
                   impact: "High",
                   effort: "High",
+                  status: "done",
                 },
                 {
                   priority: "Critical",
@@ -3495,6 +3518,7 @@ function CompetitiveAnalysisView() {
                   desc: "Every major competitor offers free estimates. A basic free tier (summary only) would improve conversion and SEO rankings.",
                   impact: "High",
                   effort: "Low",
+                  status: "done",
                 },
                 {
                   priority: "High",
@@ -3502,6 +3526,7 @@ function CompetitiveAnalysisView() {
                   desc: "GhanaHousePlanner has this. Users expect location-specific pricing. Without it, BuildCost GH loses credibility for regional accuracy.",
                   impact: "High",
                   effort: "Medium",
+                  status: "done",
                 },
                 {
                   priority: "High",
@@ -3509,6 +3534,7 @@ function CompetitiveAnalysisView() {
                   desc: "ToSi has mobile. Most construction happens on-site. A mobile app with offline mode and photo capture would be a strong differentiator.",
                   impact: "Medium",
                   effort: "High",
+                  status: "pending",
                 },
                 {
                   priority: "High",
@@ -3516,6 +3542,7 @@ function CompetitiveAnalysisView() {
                   desc: "CostmyBuild and ToSi have marketplaces. This is a major revenue stream (commission-based) that BuildCost GH is missing.",
                   impact: "High",
                   effort: "High",
+                  status: "done",
                 },
                 {
                   priority: "Medium",
@@ -3523,6 +3550,7 @@ function CompetitiveAnalysisView() {
                   desc: "GhanaHousePlanner's UCC/KNUST study gives them credibility. Partner with a Ghanaian university for a comparative cost study.",
                   impact: "Medium",
                   effort: "Medium",
+                  status: "in-progress",
                 },
                 {
                   priority: "Medium",
@@ -3530,6 +3558,7 @@ function CompetitiveAnalysisView() {
                   desc: "Recurring revenue is essential for valuation. Target $19/mo basic tier with monthly estimate credits.",
                   impact: "High",
                   effort: "Medium",
+                  status: "done",
                 },
                 {
                   priority: "Low",
@@ -3537,6 +3566,7 @@ function CompetitiveAnalysisView() {
                   desc: "No competitor offers embeddable estimates. Banks, real estate sites, and fintech apps could integrate BuildCost GH estimates via API.",
                   impact: "Medium",
                   effort: "Medium",
+                  status: "done",
                 },
               ].map((r, i) => (
                 <div key={i} className={`rounded-xl border p-5 ${
@@ -3548,6 +3578,16 @@ function CompetitiveAnalysisView() {
                         r.priority === "Critical" ? "bg-red-500 text-white" : r.priority === "High" ? "bg-amber-500 text-white" : "bg-emerald-500 text-white"
                       }`}>{r.priority}</span>
                       <h4 className="font-bold text-slate-900">{r.title}</h4>
+                      {r.status === "done" && (
+                        <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
+                          <CheckCircle className="h-3 w-3" /> DONE
+                        </span>
+                      )}
+                      {r.status === "in-progress" && (
+                        <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
+                          <Clock className="h-3 w-3" /> IN PROGRESS
+                        </span>
+                      )}
                     </div>
                     <div className="flex items-center gap-2 text-xs text-slate-500">
                       <span>Impact: <strong className={r.impact === "High" ? "text-emerald-600" : "text-amber-600"}>{r.impact}</strong></span>
