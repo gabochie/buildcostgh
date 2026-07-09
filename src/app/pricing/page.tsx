@@ -148,7 +148,7 @@ const faqs = [
   },
   {
     q: "How is the cost data updated?",
-    a: "We update our cost database monthly using data from suppliers, contractors, and market research across all 10 regions of Ghana.",
+    a: "We update our cost database monthly using data from suppliers, contractors, and market research across all 16 regions of Ghana.",
   },
 ]
 
