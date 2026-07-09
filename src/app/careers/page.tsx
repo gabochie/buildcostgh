@@ -18,7 +18,7 @@ const positions = [
     title: "Construction Cost Analyst",
     type: "Accra, Ghana",
     dept: "Research",
-    description: "Research and verify construction material prices across all 10 regions of Ghana. Maintain our cost database.",
+    description: "Research and verify construction material prices across all 16 regions of Ghana. Maintain our cost database.",
   },
   {
     title: "Marketing Lead",

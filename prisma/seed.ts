@@ -6,6 +6,8 @@ async function main() {
   const regions = [
     "Accra", "Kumasi", "Tema", "Takoradi", "Tamale",
     "Cape Coast", "Sunyani", "Ho", "Koforidua", "Bolgatanga",
+    "Wa", "Goaso", "Techiman", "Dambai", "Sefwi Wiawso",
+    "Nalerigu", "Damongo",
   ]
 
   for (const name of regions) {
