@@ -14,7 +14,7 @@ export const services: Service[] = [
     title: "Cost Estimation",
     subtitle: "Accurate construction cost estimates powered by real Ghana market data — for Ghanaians & the global diaspora",
     description:
-      "Get a detailed breakdown of your construction project costs based on your specific requirements. Our estimates factor in material prices, labor rates, and regional variations across all 10 regions of Ghana. Whether you're in Accra or abroad, simply enter your project details — bedrooms, location, floor area, finishing grade, and additional features — and receive an instant, accurate estimate.",
+      "Get a detailed breakdown of your construction project costs based on your specific requirements. Our estimates factor in material prices, labor rates, and regional variations across all 16 regions of Ghana. Whether you're in Accra or abroad, simply enter your project details — bedrooms, location, floor area, finishing grade, and additional features — and receive an instant, accurate estimate.",
     benefits: [
       "Instant estimates based on real-time market data",
       "Region-specific pricing for Accra, Kumasi, Tamale and more",
