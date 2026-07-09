@@ -12,7 +12,7 @@ import { formatCurrency } from "@/lib/utils"
 import {
   Loader2, TrendingUp, ShoppingBag, MessageSquare, Users, Mail,
   FileText, ExternalLink, Eye, Shield, CheckCircle, Clock,
-  AlertCircle, ArrowRight, Plus, Search, Download, Presentation, Printer, Crosshair, Zap, Target, Globe, Award, Lightbulb, Cpu, Activity, CheckSquare, Sliders, RefreshCw, Pause, Play, Trash2,
+  AlertCircle, ArrowRight, Plus, Search, Download, Presentation, Printer, Crosshair, Zap, Target, Globe, Award, Lightbulb, Cpu, Activity, CheckSquare, Sliders, RefreshCw, Pause, Play, Trash2, Building2, Star, BadgeCheck, Briefcase, MapPin, Edit,
 } from "lucide-react"
 
 type Stats = {
@@ -185,6 +185,8 @@ export default function AdminPage() {
     <PitchDeckView />
   ) : tab === "competitiveanalysis" ? (
     <CompetitiveAnalysisView />
+  ) : tab === "contractors" ? (
+    <ContractorManager />
   ) : tab === "commandcenter" ? (
     <CommandCenter />
   ) : null}
@@ -606,6 +608,8 @@ function StrategyTab() {
     { id: "investor", label: "Investor Strategy" },
     { id: "product", label: "Product Strategy" },
     { id: "ai", label: "AI/Agentic Strategy" },
+    { id: "research", label: "Academic Research" },
+    { id: "exit", label: "Exit Strategy" },
   ]
 
   const strategies: Record<string, { title: string; sections: { heading: string; items: string[] }[] }> = {
@@ -987,8 +991,151 @@ function StrategyTab() {
         },
       ],
     },
+    research: {
+      title: "Academic Research & University Partnerships",
+      sections: [
+        {
+          heading: "Why Academic Research Matters",
+          items: [
+            "GhanaHousePlanner's UCC/KNUST study gives them credibility — BuildCost GH lacks the same academic validation",
+            "A peer-reviewed cost comparison study would differentiate BuildCost GH as the research-backed standard",
+            "University partnerships open doors to grants, government contracts, and media coverage",
+            "Student projects (theses, capstones) can generate free research output that benefits the platform",
+            "Academic backing strengthens investor pitch: validated methodology reduces perceived risk",
+          ],
+        },
+        {
+          heading: "Target Universities & Departments",
+          items: [
+            "Kwame Nkrumah University of Science and Technology (KNUST) — Department of Construction Technology & Management",
+            "University of Ghana, Legon — Department of Geography & Resource Development (urban planning focus)",
+            "University of Cape Coast — School of Agriculture (rural/affordable housing focus)",
+            "Ghana Institute of Management and Public Administration (GIMPA) — Real Estate program",
+            "Accra Technical University — Building Technology department",
+            "Regional: University for Development Studies (Tamale), WA Polytechnic, Ho Technical University",
+          ],
+        },
+        {
+          heading: "Research Proposal Topics",
+          items: [
+            "Study 1: 'Comparative Analysis of Construction Cost Estimation Platforms in Ghana' — benchmark BuildCost GH vs GhanaHousePlanner vs manual QS. Target: peer-reviewed journal (e.g., Journal of Engineering, Design and Technology)",
+            "Study 2: 'Regional Cost Variation in Ghanaian Residential Construction: A Data-Driven Approach' — use platform data to publish the first academic study of cost differentials across all 16 regions",
+            "Study 3: 'Diaspora Remittances and Construction Investment: The Role of Digital Estimation Tools' — survey-based study of diaspora builders who use the platform vs traditional methods",
+            "Study 4: 'AI-Assisted Cost Estimation in Developing Economies: Accuracy, Adoption, and Impact' — publish findings on agentic estimation accuracy in the Ghanaian context",
+            "Study 5: 'Material Price Volatility in West Africa: A Longitudinal Study' — leverage PriceBot data to track cement, steel, and roofing cost trends over 12-24 months",
+          ],
+        },
+        {
+          heading: "Partnership Model",
+          items: [
+            "Tier 1 — Data Access: Universities get free API access to pricing data for research purposes. BuildCost GH gets citation and co-authorship on papers",
+            "Tier 2 — Sponsored Research: Fund a graduate student thesis (approx. GHS 15,000-25,000) that directly studies platform accuracy. Results published with BuildCost GH as industry partner",
+            "Tier 3 — Research Lab: Establish a 'Construction Economics Lab' at a partner university with ongoing data feeds, joint supervision, and annual symposium",
+            "Tier 4 — Chair Endowment: Fund a professorial chair in Construction Economics at KNUST or Legon (requires significant capital, target Phase 5)",
+          ],
+        },
+        {
+          heading: "Outreach Timeline",
+          items: [
+            "Month 1: Identify and contact 3-5 faculty leads at target universities via LinkedIn and email. Prepare a one-pager explaining the research opportunity",
+            "Month 2: Schedule meetings with interested faculty. Offer Tier 1 data access immediately to build goodwill",
+            "Month 3: Propose Study 1 (Comparative Analysis) and Study 2 (Regional Cost Variation) as initial collaborations",
+            "Month 4-6: First student projects begin. Publish initial blog posts about the partnerships to build credibility",
+            "Month 7-12: Target first conference presentation (e.g., Ghana Institution of Engineers annual conference) or journal submission",
+            "Year 2: Formalize a MoU with at least one university. Expand to Tier 2-3 partnerships. Use research findings in investor materials and marketing",
+          ],
+        },
+        {
+          heading: "Expected Outcomes",
+          items: [
+            "2+ peer-reviewed publications within 12 months citing BuildCost GH methodology",
+            "3+ active university partnerships with ongoing student research projects",
+            "Media coverage of research findings (e.g., 'First academic study of construction costs across all 16 regions')",
+            "Enhanced credibility in investor pitch: 'Research-backed, peer-validated cost data'",
+            "Pipeline for hiring top graduates from partner universities",
+            "Potential grant funding from Ghanaian government research councils or international development organizations",
+          ],
+        },
+        {
+          heading: "Budget Estimate",
+          items: [
+            "Tier 1 (Data access): ~$0-500/year per university (API infrastructure costs only)",
+            "Tier 2 (Sponsored thesis): ~$1,500-3,000 per student project stipend",
+            "Conference attendance + publication fees: ~$2,000-5,000 per year",
+            "Research assistant part-time: ~$3,000-6,000 per year",
+            "Total Year 1 budget: ~$8,000-15,000 — extremely high ROI for the credibility gain",
+          ],
+        },
+      ],
+    },
+    exit: {
+      title: "Exit Strategy",
+      sections: [
+        {
+          heading: "Exit Philosophy",
+          items: [
+            "BuildCost GH is being built as a scalable, defensible business with or without an exit — but understanding the exit landscape informs key strategic decisions",
+            "The Ghanaian and West African proptech/construction-tech space is nascent, making BuildCost GH an early consolidation target",
+            "A well-timed exit (3-7 years) maximizes returns for founders, angel investors, and seed-stage backers",
+            "Primary exit path: Strategic acquisition by a larger platform expanding into Africa. Secondary path: Growth equity buyout or Series A+ → long-term independent player",
+          ],
+        },
+        {
+          heading: "Likely Acquirers",
+          items: [
+            "Type 1 — Global Proptech: BuildZoom (US, $500M+ valuation), Houzz (US, est. $600M+), PlanRadar (EU, est. €200M+). These platforms seek Africa expansion and lack Ghana-specific cost data",
+            "Type 2 — Pan-African Platforms: Fara, DiasporaBuild, or similar platforms building across Africa. Acquiring BuildCost GH gives them instant estimation engine + Ghana data",
+            "Type 3 — African Financial Institutions: Banks (Ecobank, Stanbic, Access Bank) and fintechs (Paystack, Flutterwave, M-Pesa) expanding into construction finance. Estimation data underpins project loans",
+            "Type 4 — Regional Construction Conglomerates: West African construction firms seeking digital transformation and cost data assets",
+            "Type 5 — Private Equity / Growth Equity: African-focused funds (TLcom, Partech, IFC) backing vertical SaaS platforms with strong unit economics and data moats",
+          ],
+        },
+        {
+          heading: "Exit Timeline Scenarios",
+          items: [
+            "Scenario A — Fast Exit (18-36 months): Build a dominant position in Ghana (60%+ market share), demonstrate $1M+ ARR with 80%+ gross margins. Sell to a pan-African platform for $5-15M. Key risk: leaving money on the table",
+            "Scenario B — Strategic Exit (3-5 years): Expand to Nigeria and Kenya, build contractor marketplace revenue, reach $3-5M ARR. Sell to global proptech or African financial institution for $15-40M",
+            "Scenario C — Long-Build (5-7 years): Become the definitive construction OS for West Africa. $10M+ ARR with agentic AI moat. Exit to private equity or pursue Series B/C → IPO path. Valuation: $50-200M+",
+            "Scenario D — Independence: Build a profitable, bootstrapped lifestyle business. $1-3M ARR, 40%+ margins, no outside investors. Sustainable dividend-paying company. No forced exit",
+          ],
+        },
+        {
+          heading: "Valuation Drivers (What Acquirers Care About)",
+          items: [
+            "ARR (Annual Recurring Revenue) — subscription revenue is valued 5-10x higher than one-time report sales. Transition to subscription model is critical for exit valuation",
+            "Data Moat — unique Ghana cost database across 16 regions with 12+ months of history. The more data, the higher the premium",
+            "Market Share — dominance in Ghana (70%+) makes the company a 'must-buy' for any platform entering West Africa",
+            "Tech Stack — modern Next.js/TypeScript/PostgreSQL stack reduces integration cost for acquirers. AI agents add technology premium",
+            "Team — retaining key technical and research talent post-acquisition increases offer price by 20-50%",
+            "Growth Rate — YoY growth of 100%+ commands 10-15x revenue multiples. Below 50% drops to 3-5x",
+          ],
+        },
+        {
+          heading: "Preparation Checklist",
+          items: [
+            "Month 1-6: Clean cap table. Ensure all IP is assigned to the company (founder IP, contractor work). Set up proper financial records and audit trail",
+            "Month 6-12: Achieve $100K+ ARR with subscription revenue >30% of total. This proves recurring revenue model before any serious M&A discussion",
+            "Year 1-2: Build the data moat. 12+ months of pricing history across 16 regions is a meaningful barrier. Track and document all proprietary data sources",
+            "Year 2-3: Develop the contractor marketplace. Two-sided marketplaces command 2-3x higher multiples than single-sided SaaS",
+            "Year 2-3: File for relevant trademarks and patents (particularly around agentic estimation methodology). IP portfolio increases deal value",
+            "Year 3+: Engage boutique M&A advisor with African tech experience. Begin proactive outreach to potential acquirers to build relationships before a formal process",
+            "Ongoing: Maintain immaculate financial records, clean codebase, and organized data room. Acquirers start diligence within weeks of first conversation",
+          ],
+        },
+        {
+          heading: "Expected Exit Range",
+          items: [
+            "Conservative (18-36 months, Ghana-only): $3-8M exit to pan-African platform",
+            "Moderate (3-5 years, Ghana + Nigeria): $15-30M exit to global proptech or bank",
+            "Optimistic (5-7 years, West Africa, AI moat): $50-100M+ exit to PE or strategic",
+            "Home Run (7+ years, pan-African OS): $100-500M+ IPO or large strategic exit",
+            "Key insight: Every year of data accumulation doubles the valuation floor. The database is the asset that appreciates fastest",
+          ],
+        },
+      ],
+    },
   }
-
+ 
   const current = strategies[subTab]
   if (!current) return null
 
@@ -3435,6 +3582,156 @@ function CompetitiveAnalysisView() {
   )
 }
 
+/* ── Contractor Manager ── */
+function ContractorManager() {
+  const [contractors, setContractors] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [showForm, setShowForm] = useState(false)
+  const [editing, setEditing] = useState<any | null>(null)
+  const [form, setForm] = useState({ name: "", title: "", phone: "", email: "", description: "", specialties: "", yearsOfExperience: 0, verified: false, website: "" })
+  const [saving, setSaving] = useState(false)
+
+  const fetchAll = async () => {
+    setLoading(true)
+    try {
+      const res = await fetch("/api/admin/contractors")
+      setContractors(await res.json())
+    } catch {} finally { setLoading(false) }
+  }
+
+  useEffect(() => { fetchAll() }, [])
+
+  const openNew = () => { setEditing(null); setForm({ name: "", title: "", phone: "", email: "", description: "", specialties: "", yearsOfExperience: 0, verified: false, website: "" }); setShowForm(true) }
+
+  const openEdit = (c: any) => {
+    setEditing(c)
+    setForm({
+      name: c.name, title: c.title || "", phone: c.phone, email: c.email || "",
+      description: c.description, specialties: (JSON.parse(JSON.stringify(c.specialties)) || []).join(", "),
+      yearsOfExperience: c.yearsOfExperience, verified: c.verified, website: c.website || "",
+    })
+    setShowForm(true)
+  }
+
+  const handleSave = async () => {
+    setSaving(true)
+    const specialties = form.specialties.split(",").map((s: string) => s.trim()).filter(Boolean)
+    const body = { ...form, specialties: JSON.stringify(specialties), id: editing?.id }
+    try {
+      const url = "/api/admin/contractors"
+      const method = editing ? "PUT" : "POST"
+      await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
+      setShowForm(false); setEditing(null); fetchAll()
+    } catch {} finally { setSaving(false) }
+  }
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Delete this contractor?")) return
+    await fetch(`/api/admin/contractors?id=${id}`, { method: "DELETE" })
+    fetchAll()
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold text-gray-900">Contractor Management</h2>
+        <button onClick={openNew} className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 text-white rounded-xl text-sm font-semibold hover:bg-emerald-700 transition-all">
+          <Plus className="h-4 w-4" /> Add Contractor
+        </button>
+      </div>
+
+      {showForm && (
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+          <h3 className="font-bold text-gray-900 mb-4">{editing ? "Edit" : "New"} Contractor</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Name *</Label>
+              <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="h-9 text-sm" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Title</Label>
+              <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="h-9 text-sm" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Phone *</Label>
+              <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="h-9 text-sm" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Email</Label>
+              <Input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="h-9 text-sm" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Website</Label>
+              <Input value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} className="h-9 text-sm" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Years of Experience</Label>
+              <Input type="number" value={form.yearsOfExperience} onChange={(e) => setForm({ ...form, yearsOfExperience: parseInt(e.target.value) || 0 })} className="h-9 text-sm" />
+            </div>
+            <div className="space-y-1.5 md:col-span-2">
+              <Label className="text-xs">Description *</Label>
+              <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="w-full h-24 rounded-lg border border-gray-200 text-sm p-3 resize-none" />
+            </div>
+            <div className="space-y-1.5 md:col-span-2">
+              <Label className="text-xs">Specialties (comma-separated)</Label>
+              <Input value={form.specialties} onChange={(e) => setForm({ ...form, specialties: e.target.value })} className="h-9 text-sm" />
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <label className="flex items-center gap-2 text-sm cursor-pointer">
+              <input type="checkbox" checked={form.verified} onChange={(e) => setForm({ ...form, verified: e.target.checked })} className="rounded border-gray-300 text-emerald-600" />
+              Verified
+            </label>
+            <div className="flex-1" />
+            <button onClick={() => setShowForm(false)} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700">Cancel</button>
+            <button onClick={handleSave} disabled={saving || !form.name || !form.phone || !form.description} className="px-4 py-2 bg-emerald-600 text-white rounded-xl text-sm font-semibold hover:bg-emerald-700 disabled:opacity-50">
+              {saving ? "Saving..." : editing ? "Update" : "Create"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-slate-50 border-b border-gray-200">
+                <th className="text-left py-3 px-4 font-semibold text-gray-900">Name</th>
+                <th className="text-left py-3 px-4 font-semibold text-gray-900">Phone</th>
+                <th className="text-left py-3 px-4 font-semibold text-gray-900">Title</th>
+                <th className="text-center py-3 px-4 font-semibold text-gray-900">Verified</th>
+                <th className="text-center py-3 px-4 font-semibold text-gray-900">Rating</th>
+                <th className="text-center py-3 px-4 font-semibold text-gray-900">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr><td colSpan={6} className="text-center py-8 text-gray-400">Loading...</td></tr>
+              ) : contractors.length === 0 ? (
+                <tr><td colSpan={6} className="text-center py-8 text-gray-400">No contractors yet</td></tr>
+              ) : contractors.map((c: any) => (
+                <tr key={c.id} className="border-b border-gray-100 hover:bg-slate-50">
+                  <td className="py-3 px-4 font-medium text-gray-900">{c.name}</td>
+                  <td className="py-3 px-4 text-gray-600">{c.phone}</td>
+                  <td className="py-3 px-4 text-gray-500 text-xs">{c.title || "-"}</td>
+                  <td className="py-3 px-4 text-center">{c.verified ? <BadgeCheck className="h-4 w-4 text-emerald-600 mx-auto" /> : <span className="text-gray-300">-</span>}</td>
+                  <td className="py-3 px-4 text-center"><span className="flex items-center justify-center gap-1"><Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />{c.rating.toFixed(1)}</span></td>
+                  <td className="py-3 px-4">
+                    <div className="flex items-center justify-center gap-2">
+                      <button onClick={() => openEdit(c)} className="p-1.5 text-gray-400 hover:text-emerald-600 transition-colors"><Edit className="h-4 w-4" /></button>
+                      <button onClick={() => handleDelete(c.id)} className="p-1.5 text-gray-400 hover:text-red-600 transition-colors"><Trash2 className="h-4 w-4" /></button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 /* ── Command Center ── */
 function CommandCenter() {
   const [subTab, setSubTab] = useState("dashboard")
@@ -3794,6 +4091,8 @@ function CommandCenter() {
                     <tr className="border-b border-gray-100">
                       <th className="text-left pb-2 font-medium text-slate-600">Label</th>
                       <th className="text-left pb-2 font-medium text-slate-600">Key Hash</th>
+                      <th className="text-left pb-2 font-medium text-slate-600">Tier</th>
+                      <th className="text-left pb-2 font-medium text-slate-600">Usage</th>
                       <th className="text-left pb-2 font-medium text-slate-600">Status</th>
                       <th className="text-left pb-2 font-medium text-slate-600">Created</th>
                       <th className="text-left pb-2 font-medium text-slate-600">Last Used</th>
@@ -3805,6 +4104,8 @@ function CommandCenter() {
                       <tr key={k.id} className="border-b border-gray-50 hover:bg-slate-50">
                         <td className="py-2 text-slate-700">{k.label}</td>
                         <td className="py-2 text-xs text-slate-400 font-mono">{k.keyHash.slice(0, 16)}...</td>
+                        <td className="py-2 text-xs"><span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-purple-50 text-purple-700">{k.tier || "dev"}</span></td>
+                        <td className="py-2 text-xs text-slate-400">{k.usageCount ?? 0}/{k.monthlyLimit ?? 100}</td>
                         <td className="py-2">
                           <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${k.active ? "bg-emerald-50 text-emerald-600" : "bg-slate-100 text-slate-500"}`}>
                             {k.active ? "Active" : "Inactive"}
