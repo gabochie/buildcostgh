@@ -9,6 +9,7 @@ import { ChatWidget } from "@/components/shared/ChatWidget"
 import { CookieConsent } from "@/components/shared/CookieConsent"
 import { WhatsAppButton } from "@/components/shared/WhatsAppButton"
 import { ExitIntentPopup } from "@/components/shared/ExitIntentPopup"
+import { ServerInit } from "@/components/ServerInit"
 import { organizationLd } from "./ld"
 
 const inter = Inter({
@@ -48,6 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
+        <ServerInit />
         <Providers>
           <Header />
           <main className="flex-1">{children}</main>

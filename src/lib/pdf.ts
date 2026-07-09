@@ -8,7 +8,7 @@ export async function generatePdf(html: string, options?: { landscape?: boolean;
 
   try {
     const page = await browser.newPage()
-    await page.setContent(html, { waitUntil: "networkidle0" })
+    await page.setContent(html, { waitUntil: "load" })
     await page.emulateMediaType("screen")
 
     const pdf = await page.pdf({

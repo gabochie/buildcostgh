@@ -12,7 +12,7 @@ import { formatCurrency } from "@/lib/utils"
 import {
   Loader2, TrendingUp, ShoppingBag, MessageSquare, Users, Mail,
   FileText, ExternalLink, Eye, Shield, CheckCircle, Clock,
-  AlertCircle, ArrowRight, Plus, Search, Download, Presentation, Printer, Crosshair, Zap, Target, Globe, Award, Lightbulb,
+  AlertCircle, ArrowRight, Plus, Search, Download, Presentation, Printer, Crosshair, Zap, Target, Globe, Award, Lightbulb, Cpu, Activity, CheckSquare, Sliders, RefreshCw, Pause, Play, Trash2,
 } from "lucide-react"
 
 type Stats = {
@@ -3383,6 +3383,357 @@ function CompetitiveAnalysisView() {
                   <p className="text-xs text-emerald-100/80">{m.desc}</p>
                 </div>
               ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+/* ── Command Center ── */
+function CommandCenter() {
+  const [subTab, setSubTab] = useState("dashboard")
+  const [agents, setAgents] = useState<any[]>([])
+  const [logs, setLogs] = useState<any[]>([])
+  const [queueStats, setQueueStats] = useState({ pending: 0, processing: 0, completed: 0, failed: 0 })
+  const [loading, setLoading] = useState(true)
+  const [agentsPaused, setAgentsPaused] = useState(false)
+
+  const fetchData = async () => {
+    setLoading(true)
+    try {
+      const [hRes, lRes] = await Promise.all([
+        fetch("/api/health").then(r => r.json()).catch(() => ({})),
+        fetch("/api/agent-logs?limit=30").then(r => r.json()).catch(() => ({ logs: [] })),
+      ])
+      if (hRes.queue) setQueueStats(hRes.queue)
+      setLogs(lRes.logs || [])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => { fetchData(); const i = setInterval(fetchData, 15000); return () => clearInterval(i) }, [])
+
+  const subTabs = [
+    { id: "dashboard", label: "Executive Dashboard", icon: Activity },
+    { id: "feed", label: "Activity Feed", icon: Clock },
+    { id: "queue", label: "Job Queue", icon: CheckSquare },
+    { id: "agents", label: "Agent Control", icon: Cpu },
+    { id: "rules", label: "Business Rules", icon: Sliders },
+  ]
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-wrap gap-1.5">
+        {subTabs.map((st) => (
+          <button
+            key={st.id}
+            onClick={() => setSubTab(st.id)}
+            className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${
+              subTab === st.id
+                ? "bg-emerald-100 text-emerald-800 shadow-sm"
+                : "text-slate-500 hover:text-slate-700 hover:bg-slate-100"
+            }`}
+          >
+            <st.icon className="h-4 w-4" /> {st.label}
+          </button>
+        ))}
+      </div>
+
+      {loading && (
+        <div className="flex justify-center py-12">
+          <Loader2 className="h-6 w-6 animate-spin text-emerald-600" />
+        </div>
+      )}
+
+      {!loading && subTab === "dashboard" && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { label: "Pending Jobs", value: queueStats.pending, icon: Clock, bg: "bg-gradient-to-br from-amber-500 to-amber-600" },
+              { label: "Processing", value: queueStats.processing, icon: RefreshCw, bg: "bg-gradient-to-br from-blue-500 to-blue-600" },
+              { label: "Completed", value: queueStats.completed, icon: CheckCircle, bg: "bg-gradient-to-br from-emerald-500 to-emerald-600" },
+              { label: "Failed", value: queueStats.failed, icon: AlertCircle, bg: "bg-gradient-to-br from-red-500 to-red-600" },
+            ].map((card) => (
+              <div key={card.label} className={`${card.bg} rounded-xl p-4 text-white shadow-lg`}>
+                <div className="flex items-center justify-between mb-2">
+                  <card.icon className="h-5 w-5 opacity-80" />
+                </div>
+                <div className="text-2xl font-bold">{card.value}</div>
+                <div className="text-xs opacity-80 mt-1">{card.label}</div>
+              </div>
+            ))}
+          </div>
+
+          <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+            <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
+              <Cpu className="h-4 w-4 text-emerald-600" /> System Status
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+              {[
+                { label: "Job Queue", status: queueStats.failed > 0 ? "warning" : queueStats.pending > 0 ? "active" : "idle" },
+                { label: "Payment Bot", status: "active" },
+                { label: "Report Bot", status: "active" },
+                { label: "Lead Bot", status: queueStats.pending > 0 ? "active" : "idle" },
+                { label: "MCP Server", status: "active" },
+                { label: "Agents", status: agentsPaused ? "paused" : "running" },
+              ].map((item) => (
+                <div key={item.label} className="flex items-center gap-2 p-2 rounded-lg bg-slate-50">
+                  <div className={`w-2 h-2 rounded-full ${
+                    item.status === "active" ? "bg-emerald-500" :
+                    item.status === "warning" ? "bg-amber-500" :
+                    item.status === "paused" ? "bg-slate-400" :
+                    "bg-slate-300"
+                  }`} />
+                  <span>{item.label}</span>
+                  <span className="text-xs text-slate-400 ml-auto capitalize">{item.status}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+            <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
+              <Activity className="h-4 w-4 text-emerald-600" /> Recent Agent Activity
+            </h3>
+            {logs.length === 0 ? (
+              <p className="text-sm text-slate-400">No activity yet. Agent actions will appear here.</p>
+            ) : (
+              <div className="space-y-2 max-h-64 overflow-y-auto">
+                {logs.slice(0, 10).map((log: any) => (
+                  <div key={log.id} className="flex items-start gap-3 text-sm p-2 rounded-lg hover:bg-slate-50">
+                    <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${
+                      log.level === "error" ? "bg-red-500" :
+                      log.level === "warning" ? "bg-amber-500" :
+                      log.level === "success" ? "bg-emerald-500" :
+                      "bg-blue-500"
+                    }`} />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-slate-700">{log.agent}</span>
+                        <span className="text-slate-400">/</span>
+                        <span className="text-slate-600">{log.action}</span>
+                      </div>
+                      <p className="text-xs text-slate-400 mt-0.5">
+                        {new Date(log.createdAt).toLocaleString("en-GH")}
+                        {log.entityType && ` — ${log.entityType}: ${log.entityId || ""}`}
+                      </p>
+                    </div>
+                    <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded capitalize ${
+                      log.level === "error" ? "bg-red-50 text-red-600" :
+                      log.level === "warning" ? "bg-amber-50 text-amber-600" :
+                      log.level === "success" ? "bg-emerald-50 text-emerald-600" :
+                      "bg-blue-50 text-blue-600"
+                    }`}>{log.level}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {!loading && subTab === "feed" && (
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+          <div className="p-5 border-b border-gray-100">
+            <h3 className="font-semibold text-slate-900">Agent Activity Feed</h3>
+            <p className="text-sm text-slate-400 mt-1">Real-time log of all autonomous actions</p>
+          </div>
+          <div className="p-5">
+            {logs.length === 0 ? (
+              <p className="text-sm text-slate-400 text-center py-8">No activity recorded yet.</p>
+            ) : (
+              <div className="space-y-1">
+                {logs.map((log: any) => (
+                  <div key={log.id} className="flex items-start gap-3 py-2.5 px-2 rounded-lg hover:bg-slate-50 text-sm border-l-2 transition-colors"
+                    style={{ borderLeftColor: log.level === "error" ? "#ef4444" : log.level === "warning" ? "#f59e0b" : log.level === "success" ? "#10b981" : "#3b82f6" }}>
+                    <span className="text-xs text-slate-400 font-mono w-16 flex-shrink-0">
+                      {new Date(log.createdAt).toLocaleTimeString("en-GH", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+                    </span>
+                    <span className="font-medium text-slate-700 w-24 flex-shrink-0">{log.agent}</span>
+                    <span className="text-slate-600 flex-1">{log.action}</span>
+                    {log.entityType && (
+                      <span className="text-xs text-slate-400 flex-shrink-0">{log.entityType}: {log.entityId ? log.entityId.slice(0, 12) + "..." : "—"}</span>
+                    )}
+                    <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded capitalize flex-shrink-0 ${
+                      log.level === "error" ? "bg-red-50 text-red-600" :
+                      log.level === "warning" ? "bg-amber-50 text-amber-600" :
+                      log.level === "success" ? "bg-emerald-50 text-emerald-600" :
+                      "bg-blue-50 text-blue-600"
+                    }`}>{log.level}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {!loading && subTab === "queue" && (
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+          <div className="p-5 border-b border-gray-100 flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold text-slate-900">Job Queue Management</h3>
+              <p className="text-sm text-slate-400 mt-1">{queueStats.pending} pending, {queueStats.failed} failed</p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={async () => {
+                  const res = await fetch("/api/jobs/enqueue", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "process_queue" }) })
+                  if (res.ok) fetchData()
+                }}
+                className="px-3 py-1.5 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors"
+              >
+                Process Queue
+              </button>
+            </div>
+          </div>
+          <div className="p-5">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+              {[
+                { label: "Pending", value: queueStats.pending, color: "text-amber-600" },
+                { label: "Processing", value: queueStats.processing, color: "text-blue-600" },
+                { label: "Completed", value: queueStats.completed, color: "text-emerald-600" },
+                { label: "Failed", value: queueStats.failed, color: "text-red-600" },
+              ].map((s) => (
+                <div key={s.label} className="text-center p-3 rounded-lg bg-slate-50">
+                  <div className={`text-3xl font-bold ${s.color}`}>{s.value}</div>
+                  <div className="text-xs text-slate-500 mt-1">{s.label}</div>
+                </div>
+              ))}
+            </div>
+            {queueStats.failed > 0 && (
+              <button
+                onClick={async () => {
+                  await fetch("/api/jobs/retry-failed", { method: "POST" })
+                  fetchData()
+                }}
+                className="px-3 py-1.5 bg-amber-100 text-amber-700 text-sm font-medium rounded-lg hover:bg-amber-200 transition-colors flex items-center gap-1.5"
+              >
+                <RefreshCw className="h-3.5 w-3.5" /> Retry All Failed ({queueStats.failed})
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {!loading && subTab === "agents" && (
+        <div className="space-y-4">
+          <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+            <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
+              <Cpu className="h-4 w-4 text-emerald-600" /> Agent Controls
+            </h3>
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={() => setAgentsPaused(!agentsPaused)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+                  agentsPaused ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200" : "bg-amber-100 text-amber-700 hover:bg-amber-200"
+                }`}
+              >
+                {agentsPaused ? <><Play className="h-4 w-4" /> Resume All Agents</> : <><Pause className="h-4 w-4" /> Pause All Agents</>}
+              </button>
+              <button
+                onClick={async () => {
+                  await fetch("/api/jobs/clear", { method: "POST" })
+                  fetchData()
+                }}
+                className="px-4 py-2 bg-red-50 text-red-600 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors flex items-center gap-1.5"
+              >
+                <Trash2 className="h-4 w-4" /> Clear All Jobs
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[
+              { name: "PaymentBot", desc: "Webhook → PDF → Receipt", status: "active", actions: 0 },
+              { name: "ReportBot", desc: "Auto-generate PDF reports", status: "active", actions: 0 },
+              { name: "LeadBot", desc: "Capture → Score → Nurture", status: queueStats.pending > 0 ? "active" : "idle", actions: 0 },
+              { name: "PriceBot", desc: "Market data → Seasonal updates", status: "idle", actions: 0 },
+              { name: "SupportBot", desc: "AI-powered customer support", status: "active", actions: 0 },
+              { name: "MCP Server", desc: "Agent protocol endpoint", status: "active", actions: 0 },
+            ].map((agent) => (
+              <div key={agent.name} className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <div className={`w-2 h-2 rounded-full ${
+                      agent.status === "active" ? "bg-emerald-500" : "bg-slate-300"
+                    }`} />
+                    <h4 className="font-semibold text-sm text-slate-900">{agent.name}</h4>
+                  </div>
+                  <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded capitalize ${
+                    agent.status === "active" ? "bg-emerald-50 text-emerald-600" : "bg-slate-100 text-slate-500"
+                  }`}>{agent.status}</span>
+                </div>
+                <p className="text-xs text-slate-500">{agent.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {!loading && subTab === "rules" && (
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+          <div className="p-5 border-b border-gray-100">
+            <h3 className="font-semibold text-slate-900">Business Rules Configuration</h3>
+            <p className="text-sm text-slate-400 mt-1">Configure thresholds and rules for autonomous behavior</p>
+          </div>
+          <div className="p-5 space-y-6">
+            <div>
+              <h4 className="text-sm font-semibold text-slate-700 mb-3">Agent Thresholds</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-slate-600">Max Auto Price Change (%)</label>
+                  <div className="flex items-center gap-2">
+                    <input type="range" min="1" max="20" defaultValue="5" className="flex-1 accent-emerald-600" />
+                    <span className="text-sm font-mono text-slate-700 w-8">5%</span>
+                  </div>
+                  <p className="text-[10px] text-slate-400">Above this threshold, human approval required</p>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-slate-600">Lead Score HITL Threshold</label>
+                  <div className="flex items-center gap-2">
+                    <input type="range" min="0" max="100" defaultValue="80" className="flex-1 accent-emerald-600" />
+                    <span className="text-sm font-mono text-slate-700 w-8">80</span>
+                  </div>
+                  <p className="text-[10px] text-slate-400">Leads above this score trigger manual follow-up</p>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-slate-600">Max Unattended Order Value (GHS)</label>
+                  <div className="flex items-center gap-2">
+                    <input type="range" min="100" max="5000" step="100" defaultValue="1000" className="flex-1 accent-emerald-600" />
+                    <span className="text-sm font-mono text-slate-700 w-12">1,000</span>
+                  </div>
+                  <p className="text-[10px] text-slate-400">Orders above this require manual review</p>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-slate-600">Auto Refund Max (GHS)</label>
+                  <div className="flex items-center gap-2">
+                    <input type="range" min="0" max="500" step="10" defaultValue="50" className="flex-1 accent-emerald-600" />
+                    <span className="text-sm font-mono text-slate-700 w-12">50</span>
+                  </div>
+                  <p className="text-[10px] text-slate-400">Refunds below this processed automatically</p>
+                </div>
+              </div>
+            </div>
+            <div className="pt-4 border-t border-gray-100">
+              <h4 className="text-sm font-semibold text-slate-700 mb-3">Alert Configuration</h4>
+              <div className="space-y-2">
+                {[
+                  { label: "Error spike (>5 errors in 10 min)", defaultChecked: true },
+                  { label: "Payment failure notification", defaultChecked: true },
+                  { label: "Queue backlog (>50 pending jobs)", defaultChecked: true },
+                  { label: "Pricing drift (>10% from market)", defaultChecked: false },
+                  { label: "High-value lead alert (score > 80)", defaultChecked: true },
+                ].map((alert) => (
+                  <label key={alert.label} className="flex items-center gap-2 text-sm text-slate-700">
+                    <input type="checkbox" defaultChecked={alert.defaultChecked} className="rounded accent-emerald-600" />
+                    {alert.label}
+                  </label>
+                ))}
+              </div>
             </div>
           </div>
         </div>
