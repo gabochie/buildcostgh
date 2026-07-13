@@ -54,7 +54,7 @@ const packages = [
   {
     id: "basic",
     name: "Basic",
-    price: 99,
+    price: 29,
     description: "Perfect for quick estimates",
     color: "emerald",
     features: [
@@ -68,7 +68,7 @@ const packages = [
   {
     id: "detailed",
     name: "Detailed",
-    price: 249,
+    price: 79,
     description: "Complete project planning",
     popular: true,
     color: "gold",
@@ -85,7 +85,7 @@ const packages = [
   {
     id: "premium",
     name: "Premium",
-    price: 499,
+    price: 199,
     description: "Full project support",
     color: "emerald",
     features: [
@@ -226,15 +226,15 @@ export default function PricingPage() {
   }, [])
 
   const rate = rates.GHS || 15.5
-  const fmtPrice = (ghs: number) => {
-    if (currency === "GHS") return `GHS ${ghs.toLocaleString()}`
-    const usd = Math.round((ghs / rate) * 100) / 100
-    return `$${usd.toLocaleString("en-US", { minimumFractionDigits: usd < 10 ? 2 : 0, maximumFractionDigits: 0 })}`
+  const fmtPrice = (usd: number) => {
+    if (currency === "USD") return `$${usd.toLocaleString()}`
+    const ghs = Math.round(usd * rate)
+    return `GHS ${ghs.toLocaleString()}`
   }
-  const fmtBtnLabel = (ghs: number) => {
-    if (currency === "GHS") return `GHS ${ghs.toLocaleString()}`
-    const usd = Math.round(ghs / rate)
-    return `$${usd}`
+  const fmtBtnLabel = (usd: number) => {
+    if (currency === "USD") return `$${usd}`
+    const ghs = Math.round(usd * rate)
+    return `GHS ${ghs.toLocaleString()}`
   }
 
   const [selected, setSelected] = useState<string | null>(null)
@@ -267,7 +267,7 @@ export default function PricingPage() {
           email: form.email,
           phone: form.phone,
           packageName: selectedPackage!.name,
-          amount: selectedPackage!.price,
+          amount: Math.round(selectedPackage!.price * rate),
           metadata: { notes: form.notes },
         }),
       })

@@ -42,6 +42,13 @@ export const metadata: Metadata = {
     description: "Get accurate construction cost estimates in seconds. Built for Ghanaians and the global African diaspora planning to build in Ghana.",
     type: "website",
     locale: "en_GH",
+    images: [{ url: "/assets/og-image.jpg", width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "BuildCost GH - Construction Cost Calculator for Ghanaians & the Diaspora",
+    description: "Get accurate construction cost estimates in seconds. Built for Ghanaians and the global African diaspora planning to build in Ghana.",
+    images: ["/assets/og-image.jpg"],
   },
 }
 
