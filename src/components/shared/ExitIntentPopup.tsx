@@ -20,16 +20,35 @@ export function ExitIntentPopup() {
       if (!mounted) return
       setDismissed(false)
 
-      const handleMouseLeave = (e: MouseEvent) => {
-        if (e.clientY > 0) return
+      const show = () => {
         if (!mounted) return
         setVisible(true)
         sessionStorage.setItem(STORAGE_KEY, "1")
       }
 
+      const handleMouseLeave = (e: MouseEvent) => {
+        if (e.clientY > 0) return
+        show()
+      }
+
+      let scrollFired = false
+      const handleScroll = () => {
+        if (scrollFired) return
+        const scrollPercent = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)
+        if (scrollPercent > 0.7) {
+          scrollFired = true
+          setTimeout(show, 2000)
+        }
+      }
+
       document.addEventListener("mouseleave", handleMouseLeave)
+      document.addEventListener("touchstart", handleScroll, { once: true })
+      window.addEventListener("scroll", handleScroll, { passive: true })
+
       return () => {
         document.removeEventListener("mouseleave", handleMouseLeave)
+        document.removeEventListener("touchstart", handleScroll)
+        window.removeEventListener("scroll", handleScroll)
       }
     }, MIN_VISIT_MS)
 

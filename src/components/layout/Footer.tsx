@@ -178,7 +178,7 @@ export function Footer() {
 
         <div className="mt-8 pt-8 border-t border-gray-800 text-center text-sm">
           <p>&copy; {new Date().getFullYear()} BuildCost GH. All rights reserved.</p>
-          <div className="flex justify-center gap-4 mt-2">
+          <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-2">
             <Link href="/privacy" className="hover:text-emerald-400">Privacy Policy</Link>
             <Link href="/terms" className="hover:text-emerald-400">Terms of Service</Link>
             <Link href="/cookies" className="hover:text-emerald-400">Cookie Policy</Link>

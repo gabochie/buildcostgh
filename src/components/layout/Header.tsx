@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Menu, X, Hammer, Phone } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -16,6 +16,18 @@ const navLinks = [
 
 export function Header() {
   const [open, setOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    const handler = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", handler)
+    return () => document.removeEventListener("mousedown", handler)
+  }, [open])
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/20 glass">
@@ -53,30 +65,39 @@ export function Header() {
           </Link>
         </div>
 
-        <button className="md:hidden text-charcoal" onClick={() => setOpen(!open)}>
+        <button
+          className="md:hidden text-charcoal p-2"
+          onClick={() => setOpen(!open)}
+          aria-label={open ? "Close navigation menu" : "Open navigation menu"}
+          aria-expanded={open}
+        >
           {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
       </div>
 
-      {open && (
-        <div className="md:hidden border-t border-gray-100 bg-white px-4 py-4">
-          <nav className="flex flex-col gap-3">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setOpen(false)}
-                className="text-sm font-medium text-gray-600 hover:text-emerald-700 py-2"
-              >
-                {link.label}
-              </Link>
-            ))}
-            <Link href="/calculator" onClick={() => setOpen(false)}>
-              <Button className="w-full bg-gradient-primary text-white border-0">Start Calculating</Button>
+      <div
+        ref={menuRef}
+        className={cn(
+          "md:hidden border-t border-gray-100 bg-white overflow-hidden transition-all duration-200 ease-in-out",
+          open ? "max-h-80 opacity-100" : "max-h-0 opacity-0"
+        )}
+      >
+        <nav className="flex flex-col gap-3 px-4 py-4">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={() => setOpen(false)}
+              className="text-sm font-medium text-gray-600 hover:text-emerald-700 py-2"
+            >
+              {link.label}
             </Link>
-          </nav>
-        </div>
-      )}
+          ))}
+          <Link href="/calculator" onClick={() => setOpen(false)}>
+            <Button className="w-full bg-gradient-primary text-white border-0">Start Calculating</Button>
+          </Link>
+        </nav>
+      </div>
     </header>
   )
 }

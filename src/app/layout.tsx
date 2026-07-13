@@ -1,4 +1,4 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Inter, Playfair_Display, Geist_Mono } from "next/font/google"
 import "./globals.css"
 import { Header } from "@/components/layout/Header"
@@ -60,6 +60,12 @@ export const metadata: Metadata = {
     description: "Get accurate construction cost estimates in seconds. Built for Ghanaians and the global African diaspora planning to build in Ghana.",
     images: ["/assets/og-image.jpg"],
   },
+}
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#059669",
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
