@@ -29,13 +29,19 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 })
 
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://buildcostgh.com"
+
 export const metadata: Metadata = {
+  metadataBase: new URL(baseUrl),
   title: "BuildCost GH - Ghana Construction Cost Calculator for Ghanaians & the African Diaspora",
   description:
     "Get accurate construction cost estimates in seconds. Built for Ghanaians and the global African diaspora planning to build or invest in real estate in Ghana.",
   keywords: ["construction cost", "Ghana", "African diaspora", "building estimate", "house cost", "diaspora investment", "BuildCost GH"],
   icons: {
     icon: "/icon.svg",
+  },
+  alternates: {
+    canonical: "/",
   },
   other: {
     "google-adsense-account": "ca-pub-1299715274212521",
@@ -45,6 +51,7 @@ export const metadata: Metadata = {
     description: "Get accurate construction cost estimates in seconds. Built for Ghanaians and the global African diaspora planning to build in Ghana.",
     type: "website",
     locale: "en_GH",
+    siteName: "BuildCost GH",
     images: [{ url: "/assets/og-image.jpg", width: 1200, height: 630 }],
   },
   twitter: {
