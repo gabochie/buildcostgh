@@ -37,6 +37,9 @@ export const metadata: Metadata = {
   icons: {
     icon: "/icon.svg",
   },
+  other: {
+    "google-adsense-account": "ca-pub-1299715274212521",
+  },
   openGraph: {
     title: "BuildCost GH - Construction Cost Calculator for Ghanaians & the Diaspora",
     description: "Get accurate construction cost estimates in seconds. Built for Ghanaians and the global African diaspora planning to build in Ghana.",

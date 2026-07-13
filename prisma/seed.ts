@@ -29,6 +29,7 @@ async function main() {
       category: "cost-guides",
       tags: JSON.stringify(["cost-guide", "2026", "house-cost", "ghana"]),
       createdAt: new Date("2025-03-10"),
+      imageUrl: "/assets/blog/img-house-cost.jpg",
     },
     {
       title: "2-Bedroom House Cost in Ghana 2026: Complete Budget Breakdown",
@@ -40,6 +41,7 @@ async function main() {
       category: "cost-guides",
       tags: JSON.stringify(["2-bedroom", "budget", "cost-breakdown", "ghana"]),
       createdAt: new Date("2025-03-15"),
+      imageUrl: "/assets/blog/img-2bedroom.jpg",
     },
     {
       title: "5-Bedroom House Cost in Ghana 2026: Luxury Build Budget Guide",
@@ -51,9 +53,10 @@ async function main() {
       category: "cost-guides",
       tags: JSON.stringify(["5-bedroom", "luxury", "premium", "cost-guide"]),
       createdAt: new Date("2025-03-20"),
+      imageUrl: "/assets/blog/img-luxury-house.jpg",
     },
     {
-      title: "Bungalow Cost in Ghana (2025)",
+      title: "Bungalow Cost in Ghana 2026: Complete Pricing Guide",
       slug: "bungalow-cost-ghana",
       excerpt: "The bungalow remains Ghana's most popular residential building choice. Learn about costs, design options, and regional variations for single-story living.",
       content: `<p>The bungalow is Ghana's favourite house type. Single-story living, easy accessibility, and lower construction costs make it the default choice for most families.</p><h2>Bungalow Cost Breakdown</h2><p>A standard 3-bedroom bungalow costs between GHS 350,000 and GHS 700,000 depending on location and finish level.</p><p><strong>Foundation:</strong> GHS 60,000–100,000. Bungalows require less structural reinforcement than multi-story buildings, saving 15-20% on foundation costs.</p><p><strong>Roofing:</strong> GHS 40,000–80,000. The roof area is larger relative to floor area compared to multi-story houses, so roofing costs are a bigger percentage of total budget.</p><p><strong>Finishing:</strong> GHS 80,000–200,000 depending on material choices.</p><h2>Why Choose a Bungalow?</h2><p>Lower construction cost per square meter, easier maintenance, no staircase (better for elderly residents), faster build time (6-10 months), and easier future expansion.</p><p>Use our calculator to get an accurate bungalow cost estimate for your specific plot and preferences.</p>`,
@@ -62,9 +65,10 @@ async function main() {
       category: "cost-guides",
       tags: JSON.stringify(["bungalow", "single-story", "cost-guide", "ghana"]),
       createdAt: new Date("2025-01-10"),
+      imageUrl: "/assets/blog/img-bungalow.jpg",
     },
     {
-      title: "Duplex Cost in Ghana (2025)",
+      title: "Duplex Cost in Ghana 2026: Build vs Buy Guide",
       slug: "duplex-cost-ghana",
       excerpt: "A duplex offers more living space on less land. Learn about duplex costs, design options, and rental income potential in Ghana.",
       content: `<p>A duplex gives you two living units on a single plot. Smart investors use duplex designs to maximize rental income while keeping land costs the same.</p><h2>Duplex Cost Summary</h2><p>Building a duplex in Ghana costs between GHS 600,000 and GHS 1,500,000 depending on size, location, and finish quality.</p><p><strong>Two 2-bedroom units:</strong> GHS 500,000–900,000</p><p><strong>Two 3-bedroom units:</strong> GHS 800,000–1,500,000</p><h2>Rental Income Potential</h2><p>A well-located duplex generates GHS 24,000–60,000 per year in rental income. At the lower end of build costs, that is a 5-8 year payback period. Duplexes in Accra's high-demand areas often achieve 8-12% annual returns.</p><h2>Design Considerations</h2><p>Side-by-side layouts are cheaper to build than stacked (upstairs-downstairs) designs. Stacked designs require stronger foundations and more structural reinforcement but use less land.</p><p>Calculate your duplex build cost and potential ROI with our free estimator.</p>`,
@@ -73,9 +77,10 @@ async function main() {
       category: "cost-guides",
       tags: JSON.stringify(["duplex", "rental", "investment", "multi-unit"]),
       createdAt: new Date("2025-01-15"),
+      imageUrl: "/assets/blog/img-duplex.jpg",
     },
     {
-      title: "4-Bedroom House Cost in Ghana (2025)",
+      title: "4-Bedroom House Cost in Ghana 2026: Complete Budget Breakdown",
       slug: "4-bedroom-house-cost-ghana",
       excerpt: "Thinking about building a 4-bedroom house? Get accurate Ghana-specific pricing for different finishing grades and locations.",
       content: `<p>A 4-bedroom house hits the sweet spot for growing families who need space without jumping to 5-bedroom budgets. Here is exactly what it costs in Ghana right now.</p><h2>Cost by Finish Level</h2><p><strong>Basic:</strong> GHS 600,000–900,000. Functional tiles, standard doors, basic sanitary ware, simple paint finish.</p><p><strong>Standard:</strong> GHS 900,000–1,400,000. Quality tiles, modern kitchen, good sanitary ware, feature ceilings.</p><p><strong>Premium:</strong> GHS 1,400,000–2,500,000. Imported tiles, custom kitchen, designer fixtures, smart home prep.</p><h2>Location Multipliers</h2><p>Kasoa/Dodowa: 0.8x of base cost | Tema/Spintex: 1.0x | Accra Central: 1.2x | East Legon/Cantonments: 1.6x</p><h2>Typical Build Timeline</h2><p>A 4-bedroom house takes 8-14 months to complete, depending on funding availability and contractor efficiency. Phased building is common.</p><p>Get your personalized 4-bedroom estimate with our free calculator.</p>`,
@@ -84,9 +89,10 @@ async function main() {
       category: "cost-guides",
       tags: JSON.stringify(["4-bedroom", "family-home", "cost-guide", "ghana"]),
       createdAt: new Date("2025-02-05"),
+      imageUrl: "/assets/blog/img-4bedroom.jpg",
     },
     {
-      title: "Regional Cost Comparison Across Ghana",
+      title: "Regional Cost Comparison Across Ghana 2026: Where to Build for Less",
       slug: "regional-cost-comparison-ghana",
       excerpt: "Where you build in Ghana can add or save you tens of thousands of cedis. Discover how construction costs vary by region.",
       content: `<p>Building the exact same house in different parts of Ghana produces wildly different price tags. Here is the data that can save you hundreds of thousands of cedis.</p><h2>Cost Multiplier by Region</h2><p><strong>Greater Accra:</strong> 1.0x (baseline) | <strong>Ashanti:</strong> 0.85x | <strong>Western:</strong> 0.80x | <strong>Central:</strong> 0.78x | <strong>Volta:</strong> 0.75x | <strong>Eastern:</strong> 0.73x | <strong>Northern:</strong> 0.70x | <strong>Upper East/West:</strong> 0.68x</p><h2>Why the Difference?</h2><p>Labour rates vary by as much as 40% between regions. Material transport costs add 10-25% in remote areas. Permit fees differ by municipality. Artisan availability affects pricing.</p><p>A 3-bedroom house costing GHS 700,000 in Accra might cost GHS 490,000–560,000 in the Northern Region and GHS 595,000 in Kumasi.</p><p>Use our calculator to get region-specific pricing for your project.</p>`,
@@ -95,6 +101,7 @@ async function main() {
       category: "regional-guides",
       tags: JSON.stringify(["regional", "comparison", "cost-analysis", "ghana"]),
       createdAt: new Date("2025-01-20"),
+      imageUrl: "/assets/blog/img-region.jpg",
     },
     {
       title: "Accra vs Kumasi vs Takoradi: Building Cost Comparison 2026",
@@ -106,6 +113,7 @@ async function main() {
       category: "regional-guides",
       tags: JSON.stringify(["accra", "kumasi", "takoradi", "city-comparison"]),
       createdAt: new Date("2025-04-05"),
+      imageUrl: "/assets/blog/img-house-cost.jpg",
     },
     {
       title: "Building Materials Prices in Ghana 2026: The Complete Price List",
@@ -117,6 +125,7 @@ async function main() {
       category: "material-costs",
       tags: JSON.stringify(["materials", "prices", "supplies", "2026"]),
       createdAt: new Date("2025-03-05"),
+      imageUrl: "/assets/blog/img-foundation.jpg",
     },
     {
       title: "Land Prices in Ghana 2026: What a Plot Really Costs by Location",
@@ -128,6 +137,7 @@ async function main() {
       category: "material-costs",
       tags: JSON.stringify(["land", "plot-prices", "real-estate", "ghana"]),
       createdAt: new Date("2025-04-10"),
+      imageUrl: "/assets/blog/img-permits.jpg",
     },
     {
       title: "Hidden Costs of Building a House in Ghana 2026: What Nobody Tells You",
@@ -139,20 +149,22 @@ async function main() {
       category: "tips-advice",
       tags: JSON.stringify(["hidden-costs", "budgeting", "contingency", "ghana"]),
       createdAt: new Date("2025-04-15"),
+      imageUrl: "/assets/blog/img-budget.jpg",
     },
     {
-      title: "Top 10 Budget Tips for Building in Ghana",
+      title: "Top 10 Budget Tips for Building in Ghana 2026: Save Money on Construction",
       slug: "top-10-budget-tips-building-ghana",
-      excerpt: "Building a house in Ghana can be expensive. Discover 10 proven tips that can save you GHS 20,000 to GHS 100,000+.",
+      excerpt: "Building a house in Ghana can be expensive. Discover 10 proven tips that can save you GHS 20,000 to GHS 100,000+ on your construction project.",
       content: `<p>Smart builders save hundreds of thousands of cedis. Here are 10 proven strategies to cut your construction costs without cutting quality.</p><h2>1. Buy Materials in Bulk Before Prices Rise</h2><p>Cement prices fluctuate. Buy 3-6 months of supply when prices dip. Store in a dry, secure location.</p><h2>2. Choose a Simple Rectangular Design</h2><p>Complex shapes mean more wall area, more foundation work, and more roofing cuts. A simple rectangle saves 10-15% on construction costs.</p><h2>3. Build in an Emerging Area</h2><p>Kasoa, Dodowa, and Oyibi offer significantly lower land and labour costs than established areas.</p><h2>4. Use a Fixed-Price Contract</h2><p>Cost-plus contracts give contractors no incentive to save. Fixed-price contracts protect your budget.</p><h2>5. Build in Phases</h2><p>Get to roof level first, then finish rooms as funds allow. This prevents half-built structures from deteriorating.</p><h2>6. Hire a Project Manager</h2><p>Material theft and waste add 10-20% to costs. A good PM pays for themselves.</p><h2>7. Buy Seconds and Overruns</h2><p>Tiles, windows, and doors from completed projects are often sold at 30-50% discount.</p><h2>8. Use Local Materials Where Possible</h2><p>Imported materials cost 40-200% more. Local alternatives often work just as well.</p><h2>9. Monitor Material Usage</h2><p>Track every bag of cement and every iron rod that goes into your foundation.</p><h2>10. Get Multiple Quotes</h2><p>Always get at least 3 contractor quotes. The difference between the highest and lowest can be 40%.</p><p>Use our calculator to plan and track your budget effectively.</p>`,
       author: "BuildCost GH Team",
       published: true,
       category: "tips-advice",
       tags: JSON.stringify(["budget-tips", "savings", "money-saving", "ghana"]),
       createdAt: new Date("2025-01-25"),
+      imageUrl: "/assets/blog/img-budget.jpg",
     },
     {
-      title: "Foundation and Roofing Costs in Ghana",
+      title: "Foundation and Roofing Costs in Ghana 2026: Complete Guide",
       slug: "foundation-roofing-costs-ghana",
       excerpt: "Foundation and roofing are the two most critical components. Learn about costs, materials, and how to avoid costly mistakes.",
       content: `<p>Foundation and roofing account for 30-35% of your total build cost. Getting them right is non-negotiable. Here is what you need to know.</p><h2>Foundation Costs</h2><p>A standard strip foundation for a 3-bedroom house costs GHS 80,000–120,000. This includes excavation, blinding, reinforcement, block work, and damp proofing.</p><p><strong>Factors affecting foundation cost:</strong> Soil type (rocky soil costs more to excavate), house size, number of floors, groundwater level (dewatering adds GHS 5,000–20,000).</p><h2>Roofing Costs</h2><p>Roofing costs range from GHS 50,000 to GHS 150,000 depending on material and roof complexity.</p><p><strong>Aluminium roofing sheets:</strong> GHS 45–55/SQM. Lightweight, affordable, lasts 15-20 years.</p><p><strong>Metac/stone-coated tiles:</strong> GHS 55–70/SQM. Durable, good insulation, lasts 25-30 years.</p><p><strong>Concrete tiles:</strong> GHS 70–90/SQM. Heavy, durable, lasts 50+ years but requires stronger roof structure.</p><p>Get your foundation and roofing cost estimate with our free calculator.</p>`,
@@ -161,6 +173,7 @@ async function main() {
       category: "foundation",
       tags: JSON.stringify(["foundation", "roofing", "construction", "ghana"]),
       createdAt: new Date("2025-01-30"),
+      imageUrl: "/assets/blog/img-foundation.jpg",
     },
     {
       title: "Roofing Types in Ghana 2026: Cost Comparison and Best Choices",
@@ -172,9 +185,10 @@ async function main() {
       category: "roofing",
       tags: JSON.stringify(["roofing", "materials", "comparison", "2026"]),
       createdAt: new Date("2025-05-05"),
+      imageUrl: "/assets/blog/img-house-cost.jpg",
     },
     {
-      title: "House Finishing Costs in Ghana (2025)",
+      title: "House Finishing Costs in Ghana 2026: Flooring, Painting, Fixtures Guide",
       slug: "house-finishing-costs-ghana",
       excerpt: "Finishing is where your vision becomes reality. Learn about flooring, wall finishes, fixtures, and controlling costs.",
       content: `<p>Finishing is where most budgets get blown. It is also where the biggest cost differences between basic and premium houses lie. Here is how to finish smart.</p><h2>Flooring Costs</h2><p><strong>Ceramic tiles:</strong> GHS 25–50/SQM installed. <strong>Porcelain tiles:</strong> GHS 50–120/SQM installed. <strong>Marble/granite:</strong> GHS 150–400/SQM installed. <strong>Vinyl flooring:</strong> GHS 30–60/SQM installed.</p><h2>Wall Finishes</h2><p><strong>Emulsion paint:</strong> GHS 8–15/SQM. <strong>Textured paint:</strong> GHS 15–30/SQM. <strong>Wallpaper:</strong> GHS 20–50/SQM. <strong>Tiled walls (bathrooms):</strong> GHS 40–80/SQM.</p><h2>Ceiling Finishes</h2><p><strong>PVC ceiling:</strong> GHS 25–40/SQM. <strong>Plasterboard (Gypsum):</strong> GHS 30–50/SQM. <strong>Wood ceiling:</strong> GHS 60–120/SQM.</p><h2>Kitchen and Bathroom Fixtures</h2><p>Basic kitchen: GHS 5,000–15,000. Standard kitchen: GHS 15,000–40,000. Premium kitchen: GHS 40,000–100,000+. Basic sanitary ware: GHS 3,000–8,000. Premium sanitary ware: GHS 15,000–40,000.</p><p>Get a detailed finishing cost breakdown for your house with our free calculator.</p>`,
@@ -183,6 +197,7 @@ async function main() {
       category: "finishing",
       tags: JSON.stringify(["finishing", "flooring", "interiors", "ghana"]),
       createdAt: new Date("2025-03-25"),
+      imageUrl: "/assets/blog/img-finishing.jpg",
     },
     {
       title: "Plumbing and Electrical Costs Ghana 2026: Complete Installation Guide",
@@ -194,6 +209,7 @@ async function main() {
       category: "material-costs",
       tags: JSON.stringify(["plumbing", "electrical", "installation", "utilities"]),
       createdAt: new Date("2025-05-10"),
+      imageUrl: "/assets/blog/img-finishing.jpg",
     },
     {
       title: "Building Permits in Ghana 2026: Complete Step-by-Step Application Guide",
@@ -205,28 +221,31 @@ async function main() {
       category: "tips-advice",
       tags: JSON.stringify(["permits", "legal", "paperwork", "ghana"]),
       createdAt: new Date("2025-02-10"),
+      imageUrl: "/assets/blog/img-permits.jpg",
     },
     {
-      title: "Contractor vs DIY: Which is Right for You?",
+      title: "Contractor vs DIY in Ghana: Which is Right for Your Build?",
       slug: "contractor-vs-diy-ghana",
-      excerpt: "Should you hire a contractor or build it yourself? This complete guide breaks down the costs, pros and cons of each approach.",
+      excerpt: "Should you hire a contractor or build it yourself? This complete guide breaks down the costs, pros and cons of each approach in Ghana.",
       content: `<p>Every Ghanaian builder faces this question: hire a contractor and pay for convenience, or manage the project yourself and save money. Here is the honest answer.</p><h2>Hiring a Contractor</h2><p><strong>Cost:</strong> Add 15-25% for contractor fees. <strong>Pros:</strong> Professional management, established supplier relationships, faster completion, warranty on work. <strong>Cons:</strong> Higher cost, less control over material choices, risk of dishonest contractors.</p><h2>DIY (Self-Build) Approach</h2><p><strong>Cost:</strong> Save 15-25% on contractor fees. <strong>Pros:</strong> Full control over materials and quality, direct supplier relationships, every cedi goes into the house. <strong>Cons:</strong> Requires time commitment (full-time for 6-12 months), stress, potential for costly mistakes, material theft risk.</p><h2>Hybrid Approach (Recommended)</h2><p>Hire a contractor for foundation and roofing (critical structural work), then manage finishing yourself. This balances quality and cost control.</p><p>Use our calculator to compare contractor vs DIY costs for your project.</p>`,
       author: "BuildCost GH Team",
       published: true,
       category: "tips-advice",
       tags: JSON.stringify(["contractor", "diy", "self-build", "management"]),
       createdAt: new Date("2025-01-05"),
+      imageUrl: "/assets/blog/img-contractor.jpg",
     },
     {
-      title: "How to Choose the Right Contractor",
+      title: "How to Choose the Right Contractor in Ghana",
       slug: "choose-right-contractor-ghana",
-      excerpt: "Choosing the right contractor can make or break your building project. Learn how to find, evaluate, and hire the best.",
+      excerpt: "Choosing the right contractor can make or break your building project. Learn how to find, evaluate, and hire the best in Ghana.",
       content: `<p>A bad contractor will cost you more than a good one ever will. Here is how to find and hire a contractor you can trust with your biggest investment.</p><h2>Step 1: Get Referrals</h2><p>Ask friends, family, and colleagues who have built recently. Visit completed projects and talk to the owners about their experience.</p><h2>Step 2: Check Credentials</h2><p>Verify their registration with the Ghana Real Estate Developers Association (GREDA) or Association of Building and Civil Engineering Contractors (ABCEC). Ask for proof of completed projects.</p><h2>Step 3: Get Multiple Quotes</h2><p>Request itemized quotes from at least 3 contractors. The lowest quote is not always the best. Compare material quality and scope carefully.</p><h2>Step 4: Check References</h2><p>Call previous clients. Ask: Did they finish on time? Were there hidden costs? Would you hire them again?</p><h2>Step 5: Sign a Contract</h2><p>Never start work without a signed contract. Include payment milestones, completion timeline, material specifications, and dispute resolution terms.</p><p>Use our calculator to get a detailed cost estimate before you approach contractors.</p>`,
       author: "BuildCost GH Team",
       published: true,
       category: "tips-advice",
       tags: JSON.stringify(["contractor", "hiring", "vetting", "ghana"]),
       createdAt: new Date("2025-03-01"),
+      imageUrl: "/assets/blog/img-contractor.jpg",
     },
     {
       title: "Architect vs Building Technologist Ghana 2026: Who Should Design Your House?",
@@ -238,6 +257,7 @@ async function main() {
       category: "tips-advice",
       tags: JSON.stringify(["architect", "building-technologist", "design", "ghana"]),
       createdAt: new Date("2025-04-20"),
+      imageUrl: "/assets/blog/img-permits.jpg",
     },
     {
       title: "Common Building Mistakes in Ghana 2026: 10 Errors That Cost Thousands",
@@ -249,6 +269,7 @@ async function main() {
       category: "tips-advice",
       tags: JSON.stringify(["mistakes", "errors", "avoid", "ghana"]),
       createdAt: new Date("2025-04-25"),
+      imageUrl: "/assets/blog/img-budget.jpg",
     },
     {
       title: "Ghana Construction Timeline 2026: How Long Does It Really Take to Build?",
@@ -260,6 +281,7 @@ async function main() {
       category: "tips-advice",
       tags: JSON.stringify(["timeline", "duration", "delays", "planning"]),
       createdAt: new Date("2025-05-01"),
+      imageUrl: "/assets/blog/img-stepguide.jpg",
     },
     {
       title: "Phased House Building Ghana 2026: Build Now, Finish Later Strategy",
@@ -271,17 +293,19 @@ async function main() {
       category: "tips-advice",
       tags: JSON.stringify(["phased-building", "budget", "strategy", "ghana"]),
       createdAt: new Date("2025-05-15"),
+      imageUrl: "/assets/blog/img-house-cost.jpg",
     },
     {
-      title: "Step-by-Step Guide to Building in Ghana",
+      title: "Step-by-Step Guide to Building in Ghana 2026",
       slug: "step-by-step-guide-building-ghana",
-      excerpt: "A comprehensive guide walking you through the entire building process from planning to handover. Perfect for first-time builders.",
+      excerpt: "A comprehensive guide walking you through the entire building process from planning to handover. Perfect for first-time builders in Ghana.",
       content: `<p>Building a house is the biggest financial decision most Ghanaians will ever make. Here is the complete step-by-step process from start to finish.</p><h2>Step 1: Planning and Budgeting</h2><p>Define your requirements, set a budget, choose a location. Use our calculator to get a realistic cost estimate.</p><h2>Step 2: Land Acquisition</h2><p>Find a plot, verify ownership at Lands Commission, complete the purchase with a lawyer.</p><h2>Step 3: Design and Approvals</h2><p>Hire an architect or building technologist. Get drawings prepared. Apply for building permit.</p><h2>Step 4: Contractor Selection</h2><p>Get quotes from 3+ contractors. Check references. Sign a detailed contract with payment milestones.</p><h2>Step 5: Construction</h2><p>Foundation → Structure → Roofing → Rough-in → Finishing. Monitor progress and payments against milestones.</p><h2>Step 6: Handover</h2><p>Final inspection, snag list, handover. Register the completed property.</p><p>Get a cost estimate for every stage with our free calculator.</p>`,
       author: "BuildCost GH Team",
       published: true,
       category: "tips-advice",
       tags: JSON.stringify(["guide", "step-by-step", "new-builder", "ghana"]),
       createdAt: new Date("2025-02-15"),
+      imageUrl: "/assets/blog/img-stepguide.jpg",
     },
     {
       title: "Diaspora Building Guide: Build from Abroad",
@@ -293,6 +317,7 @@ async function main() {
       category: "tips-advice",
       tags: JSON.stringify(["diaspora", "abroad", "remote", "ghana"]),
       createdAt: new Date("2025-02-20"),
+      imageUrl: "/assets/blog/img-diaspora.jpg",
     },
     {
       title: "Solar Power for Houses in Ghana 2026: Cost, Benefits, and Installation Guide",
@@ -304,6 +329,7 @@ async function main() {
       category: "material-costs",
       tags: JSON.stringify(["solar", "energy", "renewable", "electricity"]),
       createdAt: new Date("2025-04-01"),
+      imageUrl: "/assets/blog/img-house-cost.jpg",
     },
     {
       title: "Ghana House Floor Plans 2026: Best Layouts for Every Budget",
@@ -315,6 +341,7 @@ async function main() {
       category: "tips-advice",
       tags: JSON.stringify(["floor-plans", "design", "layouts", "efficiency"]),
       createdAt: new Date("2025-05-20"),
+      imageUrl: "/assets/blog/img-house-cost.jpg",
     },
     {
       title: "Rental Property Investment Ghana 2026: Build to Rent ROI Guide",
@@ -326,6 +353,7 @@ async function main() {
       category: "tips-advice",
       tags: JSON.stringify(["rental", "investment", "roi", "ghana"]),
       createdAt: new Date("2025-05-25"),
+      imageUrl: "/assets/blog/img-duplex.jpg",
     },
     {
       title: "Ghana Housing Market Trends 2026: What Buyers and Builders Need to Know",
@@ -337,6 +365,7 @@ async function main() {
       category: "news-updates",
       tags: JSON.stringify(["market-trends", "housing", "forecast", "2026"]),
       createdAt: new Date("2025-06-05"),
+      imageUrl: "/assets/blog/img-house-cost.jpg",
     },
     {
       title: "Bill of Quantities Ghana 2026: How to Read and Use Your BoQ",
@@ -348,6 +377,7 @@ async function main() {
       category: "tips-advice",
       tags: JSON.stringify(["boq", "bill-of-quantities", "estimation", "ghana"]),
       createdAt: new Date("2025-06-10"),
+      imageUrl: "/assets/blog/img-permits.jpg",
     },
     {
       title: "Ghana Floods June 2026: Devastation Across Accra and Beyond",
@@ -615,7 +645,7 @@ async function main() {
     }
   }
 
-  console.log(`Database seeded successfully with ${posts.length} blog posts (4 flood-related, 5 diaspora)!`)
+  console.log(`Database seeded successfully with ${posts.length} blog posts (4 flood-related, 5 diaspora) — all with hero images, 2026 dates, and SEO-optimized excerpts!`)
 }
 
 main()

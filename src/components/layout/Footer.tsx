@@ -4,6 +4,7 @@ import { NewsletterForm } from "@/components/shared/NewsletterForm"
 
 const companyLinks = [
   { href: "/about", label: "About Us" },
+  { href: "/authors", label: "Authors" },
   { href: "/careers", label: "Careers" },
   { href: "/csr", label: "CSR & Flood Relief" },
   { href: "/investors", label: "Investors" },

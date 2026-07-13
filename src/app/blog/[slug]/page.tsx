@@ -60,6 +60,30 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         </Link>
 
         <article>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "Article",
+                headline: post.title,
+                description: post.excerpt,
+                image: post.imageUrl ? `${baseUrl}${post.imageUrl}` : undefined,
+                datePublished: post.createdAt.toISOString(),
+                dateModified: post.updatedAt?.toISOString(),
+                author: {
+                  "@type": "Organization",
+                  name: "BuildCost GH",
+                  url: `${baseUrl}/authors`,
+                },
+                publisher: {
+                  "@type": "Organization",
+                  name: "BuildCost GH",
+                  logo: { "@type": "ImageObject", url: `${baseUrl}/icon.svg` },
+                },
+              }),
+            }}
+          />
           {post.imageUrl && (
             <div className="aspect-video rounded-xl overflow-hidden mb-8">
               <img src={post.imageUrl} alt={post.title} className="w-full h-full object-cover" />
@@ -107,17 +131,35 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
           <div className="mt-10 p-5 rounded-xl bg-gray-50 border border-gray-200">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-gradient-primary flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+              <Link href="/authors" className="w-12 h-12 rounded-full bg-gradient-primary flex items-center justify-center text-white font-bold text-lg flex-shrink-0 hover:opacity-90 transition-opacity">
                 {post.author.split(" ").map(n => n[0]).join("").slice(0, 2)}
-              </div>
+              </Link>
               <div className="flex-1">
-                <p className="font-semibold text-gray-900 text-sm">Written by {post.author}</p>
-                <p className="text-xs text-gray-500">Construction cost expert at BuildCost GH</p>
+                <Link href="/authors" className="font-semibold text-gray-900 text-sm hover:text-emerald-600">{post.author}</Link>
+                <p className="text-xs text-gray-500">Construction cost analysts helping Ghanaians and the diaspora build smarter. <Link href="/authors" className="text-emerald-600 hover:underline">Meet the team →</Link></p>
               </div>
               <div className="flex items-center gap-3 text-[11px] text-gray-500">
                 <span className="flex items-center gap-1"><CheckCircle className="h-3 w-3 text-emerald-600" /> Fact-checked</span>
                 <span className="flex items-center gap-1"><Shield className="h-3 w-3 text-emerald-600" /> Trusted info</span>
               </div>
+            </div>
+          </div>
+
+          <div className="mt-8 p-5 rounded-xl bg-white border border-gray-200 text-center">
+            <p className="text-sm font-medium text-gray-700 mb-3">Was this article helpful?</p>
+            <div className="flex items-center justify-center gap-3">
+              <button
+                onClick={(e) => { const t = e.currentTarget; t.innerHTML = "✓ Thanks!"; t.disabled = true; t.classList.add("opacity-50"); }}
+                className="px-4 py-2 bg-emerald-50 text-emerald-700 rounded-lg text-sm font-medium hover:bg-emerald-100 transition-colors"
+              >
+                Yes, very helpful
+              </button>
+              <button
+                onClick={(e) => { const t = e.currentTarget; t.innerHTML = "✓ Noted"; t.disabled = true; t.classList.add("opacity-50"); }}
+                className="px-4 py-2 bg-gray-50 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
+              >
+                Needs improvement
+              </button>
             </div>
           </div>
         </article>
