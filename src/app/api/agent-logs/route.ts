@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import type { Prisma } from "@prisma/client"
 import { auth } from "@/lib/auth"
+import { isAdmin } from "@/lib/api-auth"
 
 export const dynamic = "force-dynamic"
 
 export async function GET(req: NextRequest) {
   const session = await auth()
-  if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!isAdmin(session?.user)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   }
 
   const url = new URL(req.url)
@@ -16,7 +18,7 @@ export async function GET(req: NextRequest) {
   const agent = url.searchParams.get("agent")
   const level = url.searchParams.get("level")
 
-  const where: any = {}
+  const where: Prisma.AgentLogWhereInput = {}
   if (agent) where.agent = agent
   if (level) where.level = level
 

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { verifyPayment } from "@/lib/paystack"
 import { prisma } from "@/lib/prisma"
-import { sendReportReceipt } from "@/lib/email"
+import { generateReportForOrder, sendReceiptForOrder } from "@/lib/jobs"
+import { logAgentAction } from "@/lib/agent-log"
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,15 +14,45 @@ export async function GET(request: NextRequest) {
     const response = await verifyPayment(reference)
 
     if (response.status && response.data.status === "success") {
-      const order = await prisma.order.update({
-        where: { reference },
+      const order = await prisma.order.findUnique({ where: { reference } })
+      if (!order) {
+        return NextResponse.json({ error: "Order not found" }, { status: 404 })
+      }
+
+      if (order.amount !== response.data.amount / 100) {
+        await logAgentAction({
+          agent: "PaymentBot",
+          action: "verify_amount_mismatch",
+          entityType: "order",
+          entityId: order.id,
+          level: "error",
+          details: { reference, expected: order.amount, received: response.data.amount / 100 },
+        })
+        return NextResponse.json({ error: "Amount mismatch" }, { status: 400 })
+      }
+
+      await prisma.order.update({
+        where: { id: order.id },
         data: { status: "completed" },
       })
 
       try {
-        await sendReportReceipt(order.email, order.fullName, order.package, order.reference)
-      } catch (emailError) {
-        console.error("Failed to send receipt email:", emailError)
+        await generateReportForOrder(order.id)
+      } catch (reportError) {
+        await logAgentAction({
+          agent: "ReportBot",
+          action: "report_generation_failed",
+          entityType: "order",
+          entityId: order.id,
+          level: "error",
+          details: { reference, error: reportError instanceof Error ? reportError.message : String(reportError) },
+        })
+      }
+
+      try {
+        await sendReceiptForOrder(order.id)
+      } catch {
+        // receipt will be retried via the webhook queue
       }
 
       return NextResponse.json({ status: "success", data: response.data })

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { initializePayment } from "@/lib/paystack"
 import { generateReference } from "@/lib/utils"
 import { prisma } from "@/lib/prisma"
+import { validatePackageAmount } from "@/lib/pricing"
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,6 +13,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
+    const serverAmount = await validatePackageAmount(String(packageName), Number(amount))
+    if (serverAmount === null) {
+      return NextResponse.json({ error: "Invalid package or amount" }, { status: 400 })
+    }
+
     const reference = generateReference()
 
     await prisma.order.create({
@@ -20,7 +26,7 @@ export async function POST(request: NextRequest) {
         email,
         phone,
         package: packageName,
-        amount,
+        amount: serverAmount,
         reference,
         metadata: metadata || {},
         status: "pending",
@@ -29,7 +35,7 @@ export async function POST(request: NextRequest) {
 
     const response = await initializePayment({
       email,
-      amount,
+      amount: serverAmount,
       reference,
       metadata: { fullName, phone, package: packageName, ...(metadata || {}) },
     })

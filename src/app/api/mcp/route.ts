@@ -35,11 +35,11 @@ export async function POST(req: NextRequest) {
       result: result.content,
       isError: result.isError,
     })
-  } catch (err: any) {
+  } catch (err) {
     return NextResponse.json({
       jsonrpc: "2.0",
       id: null,
-      error: { code: -32603, message: err?.message || "Internal error" },
+      error: { code: -32603, message: err instanceof Error ? err.message : String(err) },
     }, { status: 500 })
   }
 }

@@ -1,13 +1,35 @@
 import { prisma } from "@/lib/prisma"
-import { enqueueJob } from "@/lib/queue"
 import { logAgentAction } from "@/lib/agent-log"
-import { toolDefinitions } from "./tools"
+import { generateReportForOrder } from "@/lib/jobs"
+import type { Prisma } from "@prisma/client"
 
 const BASE_PRICES: Record<number, number> = { 1: 80000, 2: 120000, 3: 180000, 4: 250000, 5: 400000 }
 const GRADE_MULTIPLIERS: Record<string, number> = { C: 1.0, B: 1.5, A: 2.5 }
 const ADDON_COSTS: Record<string, number> = { pool: 50000, garden: 15000, security: 8000, solar: 25000 }
 
 type ToolResult = { content: Array<{ type: string; text: string }>; isError?: boolean }
+type ToolArgs = {
+  bedrooms?: number
+  location?: string
+  floorArea?: number
+  floors?: number
+  grade?: string
+  addons?: string[]
+  email?: string
+  fullName?: string
+  phone?: string
+  packageName?: string
+  amount?: number
+  reference?: string
+  orderReference?: string
+  currency?: string
+  month?: number
+  region?: string
+  question?: string
+  status?: string
+  category?: string
+  limit?: number
+}
 
 function estimateLocationMultiplier(location: string): number {
   const loc = location.toLowerCase()
@@ -18,7 +40,7 @@ function estimateLocationMultiplier(location: string): number {
   return 0.85
 }
 
-export async function executeTool(name: string, args: Record<string, any>): Promise<ToolResult> {
+export async function executeTool(name: string, args: ToolArgs): Promise<ToolResult> {
   await logAgentAction({
     agent: "MCP",
     action: `tool_${name}`,
@@ -27,7 +49,7 @@ export async function executeTool(name: string, args: Record<string, any>): Prom
   })
 
   try {
-    let result: any
+    let result: unknown
 
     switch (name) {
       case "get_cost_estimate": {
@@ -70,11 +92,11 @@ export async function executeTool(name: string, args: Record<string, any>): Prom
         const reference = `BCG-MCP-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`
         const order = await prisma.order.create({
           data: {
-            email: args.email,
-            fullName: args.fullName,
+            email: args.email ?? "",
+            fullName: args.fullName ?? "",
             phone: args.phone || "",
-            package: args.packageName,
-            amount: args.amount,
+            package: args.packageName ?? "",
+            amount: args.amount ?? 0,
             reference,
             status: "pending",
           },
@@ -119,7 +141,7 @@ export async function executeTool(name: string, args: Record<string, any>): Prom
 
       case "get_seasonal_factors": {
         const month = args.month || new Date().getMonth() + 1
-        const where: any = { active: true, month }
+        const where: Prisma.SeasonalFactorWhereInput = { active: true, month }
         if (args.region) where.region = args.region
 
         const factors = await prisma.seasonalFactor.findMany({ where })
@@ -145,7 +167,7 @@ export async function executeTool(name: string, args: Record<string, any>): Prom
           "diaspora": "We offer diaspora-specific features including USD pricing, remote project management tips, and vetted contractor contacts. Our platform is built specifically for Ghanaians abroad.",
           "permit": "You need building permits from the local district assembly. Costs vary by region. We recommend engaging a local architect or quantity surveyor to handle permits.",
         }
-        const question = args.question.toLowerCase()
+        const question = (args.question ?? "").toLowerCase()
         const answer = Object.entries(faqs).find(([key]) => question.includes(key))?.[1]
           || "I can help with construction costs in Ghana. Try asking about costs, building timelines, diaspora building, or permits. For a precise estimate, use our calculator at buildcostgh.com/calculator."
         result = { answer, source: "knowledge-base" }
@@ -185,8 +207,8 @@ export async function executeTool(name: string, args: Record<string, any>): Prom
       }
 
       case "list_orders": {
-        const where: any = {}
-        if (args.status) where.status = args.status
+        const where: Prisma.OrderWhereInput = {}
+        if (args.status) where.status = args.status as string
         const orders = await prisma.order.findMany({
           where,
           orderBy: { createdAt: "desc" },
@@ -201,8 +223,8 @@ export async function executeTool(name: string, args: Record<string, any>): Prom
       }
 
       case "list_blog_posts": {
-        const where: any = { published: true }
-        if (args.category) where.category = args.category
+        const where: Prisma.BlogPostWhereInput = { published: true }
+        if (args.category) where.category = args.category as string
         const posts = await prisma.blogPost.findMany({
           where,
           orderBy: { createdAt: "desc" },
@@ -221,8 +243,8 @@ export async function executeTool(name: string, args: Record<string, any>): Prom
         if (order.status !== "completed") {
           return { content: [{ type: "text", text: `Order status is "${order.status}", must be "completed"` }], isError: true }
         }
-        await enqueueJob("generate_report", { orderId: order.id })
-        result = { message: "Report generation queued", orderReference: order.reference }
+        const reportUrl = await generateReportForOrder(order.id)
+        result = { message: "Report generated", orderReference: order.reference, reportUrl }
         break
       }
 
@@ -231,13 +253,13 @@ export async function executeTool(name: string, args: Record<string, any>): Prom
     }
 
     return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] }
-  } catch (err: any) {
+  } catch (err) {
     await logAgentAction({
       agent: "MCP",
       action: `tool_error_${name}`,
       level: "error",
-      details: { args, error: err?.message },
+      details: { args, error: err instanceof Error ? err.message : String(err) },
     })
-    return { content: [{ type: "text", text: `Error executing ${name}: ${err?.message}` }], isError: true }
+    return { content: [{ type: "text", text: `Error executing ${name}: ${err instanceof Error ? err.message : String(err)}` }], isError: true }
   }
 }

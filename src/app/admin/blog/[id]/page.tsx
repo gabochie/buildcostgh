@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState } from "react"
 import { useRouter, useParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -82,7 +82,7 @@ export default function EditBlogPost() {
     }
   }
 
-  const handleImageUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
     const fd = new FormData()
@@ -97,7 +97,7 @@ export default function EditBlogPost() {
     } catch {
       toast.error("Upload failed")
     }
-  }, [])
+  }
 
   if (loading) {
     return <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-emerald-600" /></div>

@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
+import { isAdmin } from "@/lib/api-auth"
 
 export const dynamic = "force-dynamic"
 
 export async function GET() {
   const session = await auth()
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!isAdmin(session?.user)) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 
   const keys = await prisma.apiKey.findMany({
     orderBy: { createdAt: "desc" },
@@ -17,7 +18,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const session = await auth()
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!isAdmin(session?.user)) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 
   const { label } = await req.json()
   if (!label || typeof label !== "string") {

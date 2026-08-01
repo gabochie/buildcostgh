@@ -1,6 +1,7 @@
 import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import { checkRateLimit, recordAttempt } from "./rate-limit"
+import { ADMIN_EMAIL } from "./api-auth"
 
 function getIp(request?: Request): string | null {
   if (!request) return null
@@ -26,11 +27,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const rateCheck = await checkRateLimit(ip)
         if (!rateCheck.allowed) return null
 
-        const valid = email === "gabochie@gmail.com" && password === process.env.ADMIN_PASSWORD
+        const valid = email === ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD
         await recordAttempt(ip, email, valid)
 
         if (!valid) return null
-        return { id: "1", name: "Admin", email: "gabochie@gmail.com" }
+        return { id: "1", name: "Admin", email: ADMIN_EMAIL }
       },
     }),
   ],

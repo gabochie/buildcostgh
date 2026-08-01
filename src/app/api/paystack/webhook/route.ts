@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { logAgentAction } from "@/lib/agent-log"
 import { enqueueJob } from "@/lib/queue"
+import { generateReportForOrder, sendReceiptForOrder } from "@/lib/jobs"
 
 const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY || ""
 
@@ -51,6 +52,18 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ message: "Already processed" })
       }
 
+      if (order.amount !== amount) {
+        await logAgentAction({
+          agent: "PaymentBot",
+          action: "webhook_amount_mismatch",
+          entityType: "order",
+          entityId: order.id,
+          level: "error",
+          details: { reference, expected: order.amount, received: amount, status },
+        })
+        return NextResponse.json({ error: "Amount mismatch" }, { status: 400 })
+      }
+
       await prisma.order.update({
         where: { id: order.id },
         data: { status: "completed" },
@@ -65,8 +78,25 @@ export async function POST(req: NextRequest) {
         details: { reference, amount, package: order.package },
       })
 
-      await enqueueJob("generate_report", { orderId: order.id })
-      await enqueueJob("send_receipt", { orderId: order.id, email: order.email })
+      try {
+        await generateReportForOrder(order.id)
+      } catch (reportError) {
+        await logAgentAction({
+          agent: "ReportBot",
+          action: "report_generation_failed",
+          entityType: "order",
+          entityId: order.id,
+          level: "error",
+          details: { reference, error: reportError instanceof Error ? reportError.message : String(reportError) },
+        })
+        await enqueueJob("generate_report", { orderId: order.id })
+      }
+
+      try {
+        await sendReceiptForOrder(order.id)
+      } catch {
+        await enqueueJob("send_receipt", { orderId: order.id })
+      }
     }
 
     if (event.event === "charge.failed") {
@@ -86,12 +116,12 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ received: true })
-  } catch (err: any) {
+  } catch (err) {
     await logAgentAction({
       agent: "PaymentBot",
       action: "webhook_error",
       level: "error",
-      details: { error: err?.message },
+      details: { error: err instanceof Error ? err.message : String(err) },
     })
     return NextResponse.json({ error: "Internal error" }, { status: 500 })
   }

@@ -94,7 +94,7 @@ export default function CSRPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <div className="bg-red-50 rounded-xl border border-red-200 p-5 text-center">
               <div className="text-2xl font-bold text-red-700">US$200M</div>
-              <div className="text-sm text-red-600">Annual flood losses to Ghana's economy</div>
+              <div className="text-sm text-red-600">Annual flood losses to Ghana&apos;s economy</div>
             </div>
             <div className="bg-red-50 rounded-xl border border-red-200 p-5 text-center">
               <div className="text-2xl font-bold text-red-700">110,813</div>

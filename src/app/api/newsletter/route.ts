@@ -1,9 +1,17 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
+import { isAdmin } from "@/lib/api-auth"
+import { checkRateLimit } from "@/lib/rate-limit"
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    const ip = request.headers.get("x-forwarded-for") || "unknown"
+    const limit = await checkRateLimit(ip, { maxAttempts: 10, windowMs: 60000, useDb: false })
+    if (!limit.allowed) {
+      return NextResponse.json({ error: limit.message || "Too many requests" }, { status: 429 })
+    }
+
     const { email } = await request.json()
 
     if (!email || !email.includes("@")) {
@@ -24,8 +32,8 @@ export async function POST(request: Request) {
 
 export async function GET() {
   const session = await auth()
-  if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!isAdmin(session?.user)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   }
 
   const subscribers = await prisma.newsletterSubscriber.findMany({
@@ -37,8 +45,8 @@ export async function GET() {
 
 export async function DELETE(request: Request) {
   const session = await auth()
-  if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!isAdmin(session?.user)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   }
 
   const { email } = await request.json()
