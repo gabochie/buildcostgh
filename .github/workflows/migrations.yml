@@ -2,7 +2,7 @@ name: Database Migrations
 
 on:
   push:
-    branches: [main, staging]
+    branches: [master, staging]
 
 concurrency:
   group: migrations-${{ github.ref }}
@@ -29,7 +29,7 @@ jobs:
 
   migrate-prod:
     name: Migrate Production DB
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     environment: production
     steps:
