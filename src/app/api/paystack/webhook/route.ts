@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { logAgentAction } from "@/lib/agent-log"
 import { enqueueJob } from "@/lib/queue"
 import { generateReportForOrder, sendReceiptForOrder } from "@/lib/jobs"
+import { verifyHmacSignature } from "@/lib/secure-compare"
 
 const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY || ""
 
@@ -13,17 +14,7 @@ export async function POST(req: NextRequest) {
     const body = await req.text()
     const signature = req.headers.get("x-paystack-signature")
 
-    if (!signature) {
-      return NextResponse.json({ error: "Missing signature" }, { status: 401 })
-    }
-
-    const crypto = await import("node:crypto")
-    const expectedSignature = crypto
-      .createHmac("sha512", PAYSTACK_SECRET)
-      .update(body)
-      .digest("hex")
-
-    if (signature !== expectedSignature) {
+    if (!verifyHmacSignature(PAYSTACK_SECRET, body, signature)) {
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 })
     }
 
