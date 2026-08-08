@@ -44,3 +44,6 @@ prisma/dev.db
 next-env.d.ts
 
 .vercel
+
+# agent harness state (not part of the app)
+.omo/
