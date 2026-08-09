@@ -147,3 +147,14 @@ Error: Error: invalid type: unit value, expected usize
 [BuildCost GH] MCP Server: buildcostgh-mcp v1.0.0
  GET /pricing 200 in 5.3s (next.js: 81ms, proxy.ts: 5.0s, application-code: 216ms)
  GET /api/auth/session 200 in 9.9s (next.js: 2.9s, proxy.ts: 7.0s, application-code: 27ms)
+ GET /api/maintenance-status 200 in 5.0s (next.js: 7ms, proxy.ts: 9ms, application-code: 5.0s)
+ GET /api/auth/session 200 in 5.2s (next.js: 20ms, proxy.ts: 5.1s, application-code: 9ms)
+ GET /api/maintenance-status 200 in 5.0s (next.js: 6ms, proxy.ts: 11ms, application-code: 5.0s)
+[BuildCost GH] Agents initialized: PaymentBot, ReportBot, LeadBot, PriceBot, SupportBot
+[BuildCost GH] MCP Server: buildcostgh-mcp v1.0.0
+ GET /pricing 200 in 5.8s (next.js: 82ms, proxy.ts: 5.1s, application-code: 702ms)
+ GET /api/maintenance-status 200 in 5.0s (next.js: 7ms, proxy.ts: 19ms, application-code: 5.0s)
+ GET /api/maintenance-status 200 in 4.9s (next.js: 7ms, proxy.ts: 13ms, application-code: 4.9s)
+ GET /api/auth/session 200 in 5.0s (next.js: 20ms, proxy.ts: 4.9s, application-code: 9ms)
+ GET /api/maintenance-status 200 in 5.0s (next.js: 2ms, proxy.ts: 6ms, application-code: 5.0s)
+ GET /api/auth/session 200 in 5.1s (next.js: 16ms, proxy.ts: 5.0s, application-code: 5ms)
