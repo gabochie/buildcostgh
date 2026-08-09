@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Roadmap } from "@/components/admin/Roadmap"
+import { CofounderTab } from "@/components/admin/CofounderTab"
 import { formatCurrency } from "@/lib/utils"
 import {
   Loader2, TrendingUp, ShoppingBag, MessageSquare, Users, Mail,
@@ -220,6 +221,8 @@ export default function AdminPage() {
     <ContractorManager />
   ) : tab === "commandcenter" ? (
     <CommandCenter />
+  ) : tab === "cofounder" ? (
+    <CofounderTab />
   ) : null}
     </div>
   )

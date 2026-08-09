@@ -1,0 +1,30 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "buildcostgh-voice-agent",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true
+  },
+  "ai": {
+    "binding": "AI"
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "BuildCostVoiceAgent",
+        "class_name": "BuildCostVoiceAgent"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["BuildCostVoiceAgent"]
+    }
+  ],
+  "vars": {
+    "OPENAI_MODEL": "gpt-4o-mini"
+  }
+}
