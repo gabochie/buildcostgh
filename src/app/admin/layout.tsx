@@ -34,8 +34,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname()
   const router = useRouter()
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const searchParams = useSyncExternalStore(emptySubscribe, () =>
-    typeof window !== "undefined" ? window.location.search : ""
+  const searchParams = useSyncExternalStore(
+    emptySubscribe,
+    () => (typeof window !== "undefined" ? window.location.search : ""),
+    () => ""
   )
 
   useEffect(() => {
