@@ -523,7 +523,7 @@ export default function PricingPage() {
                         <>
                           <span className="text-sm text-gray-400 align-top mr-0.5">{currency === "GHS" ? "GHS" : "$"}</span>
                           <span className={`text-5xl font-bold ${isPopular ? "text-gradient-gold" : "text-emerald-600"}`}>
-                            {currency === "GHS" ? pkg.price : Math.round(pkg.price / rate)}
+                            {currency === "GHS" ? Math.round(pkg.price * rate) : pkg.price}
                           </span>
                         </>
                       )}
