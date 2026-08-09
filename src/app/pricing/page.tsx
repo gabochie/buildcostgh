@@ -174,10 +174,7 @@ const subscriptionPlans = [
   {
     id: "monthly",
     name: "Monthly Unlimited",
-    priceMonthly: 1900,
-    priceMonthlyUsd: 19,
-    priceAnnual: 9900,
-    priceAnnualUsd: 99,
+    priceUsd: 19,
     description: "Unlimited basic estimates every month for individual builders",
     popular: false,
     features: [
@@ -191,10 +188,7 @@ const subscriptionPlans = [
   {
     id: "annual",
     name: "Annual Unlimited",
-    priceMonthly: 0,
-    priceMonthlyUsd: 0,
-    priceAnnual: 9900,
-    priceAnnualUsd: 99,
+    priceUsd: 99,
     description: "Best value — unlimited reports all year, save 56% vs monthly",
     popular: true,
     features: [
@@ -404,7 +398,7 @@ export default function PricingPage() {
                           <div>
                             <span className="text-sm text-gray-400 align-top mr-0.5">{currency === "GHS" ? "GHS" : "$"}</span>
                             <span className="text-5xl font-bold text-gradient-gold">
-                              {currency === "GHS" ? plan.priceAnnual : plan.priceAnnualUsd}
+                              {currency === "GHS" ? Math.round(plan.priceUsd * rate) : plan.priceUsd}
                             </span>
                           </div>
                           <div className="text-xs text-gray-400 mt-1">per year</div>
@@ -417,7 +411,7 @@ export default function PricingPage() {
                           <div>
                             <span className="text-sm text-gray-400 align-top mr-0.5">{currency === "GHS" ? "GHS" : "$"}</span>
                             <span className="text-5xl font-bold text-emerald-600">
-                              {currency === "GHS" ? plan.priceMonthly : plan.priceMonthlyUsd}
+                              {currency === "GHS" ? Math.round(plan.priceUsd * rate) : plan.priceUsd}
                             </span>
                           </div>
                           <div className="text-xs text-gray-400 mt-1">per month</div>
