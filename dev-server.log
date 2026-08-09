@@ -1,0 +1,104 @@
+
+> buildcostgh@0.1.0 dev
+> next dev --webpack
+
+▲ Next.js 16.2.10 (webpack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.173.88:3000
+- Environments: .env.local, .env
+✓ Ready in 850ms
+⚠ Attempted to load @next/swc-win32-x64-msvc, but an error occurred: \\?\C:\Users\user\Documents\GitHub\buildcostgh\node_modules\@next\swc-win32-x64-msvc\next-swc.win32-x64-msvc.node is not a valid Win32 application.
+\\?\C:\Users\user\Documents\GitHub\buildcostgh\node_modules\@next\swc-win32-x64-msvc\next-swc.win32-x64-msvc.node
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of C:\Users\user\package-lock.json as the root directory.
+ To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.
+ Detected additional lockfiles: 
+   * C:\Users\user\Documents\GitHub\buildcostgh\package-lock.json
+
+  Skipping creating a lockfile at C:\Users\user\Documents\GitHub\buildcostgh\.next\dev\lock because we're using WASM bindings
+
+○ Compiling /api/maintenance-status ...
+ GET /api/maintenance-status 200 in 9.4s (next.js: 4.3s, proxy.ts: 18ms, application-code: 5.1s)
+○ Compiling /calculator ...
+Request timed out after 3000ms
+
+Retrying 1/3...
+Request timed out after 3000ms
+
+Retrying 1/3...
+Request timed out after 3000ms
+
+Retrying 1/3...
+Request timed out after 3000ms
+
+Retrying 1/3...
+[BuildCost GH] Agents initialized: PaymentBot, ReportBot, LeadBot, PriceBot, SupportBot
+[BuildCost GH] MCP Server: buildcostgh-mcp v1.0.0
+ GET /calculator 200 in 28.6s (next.js: 17.1s, proxy.ts: 9.7s, application-code: 1764ms)
+ GET /api/maintenance-status 200 in 5.1s (next.js: 19ms, proxy.ts: 21ms, application-code: 5.0s)
+ GET /api/maintenance-status 200 in 5.0s (next.js: 5ms, proxy.ts: 14ms, application-code: 5.0s)
+ GET /api/auth/session 200 in 8.4s (next.js: 3.3s, proxy.ts: 5.1s, application-code: 21ms)
+ GET /api/maintenance-status 200 in 5.3s (next.js: 7ms, proxy.ts: 10ms, application-code: 5.3s)
+[BuildCost GH] Agents initialized: PaymentBot, ReportBot, LeadBot, PriceBot, SupportBot
+[BuildCost GH] MCP Server: buildcostgh-mcp v1.0.0
+ GET /calculator 200 in 5.6s (next.js: 69ms, proxy.ts: 5.4s, application-code: 101ms)
+ GET /api/maintenance-status 200 in 8.3s (next.js: 2ms, proxy.ts: 8ms, application-code: 8.3s)
+ GET /api/auth/session 200 in 8.3s (next.js: 19ms, proxy.ts: 8.3s, application-code: 6ms)
+ GET /api/maintenance-status 200 in 1022ms (next.js: 5ms, proxy.ts: 14ms, application-code: 1003ms)
+ GET /calculator 200 in 1450ms (next.js: 4ms, proxy.ts: 1048ms, application-code: 398ms)
+ GET /api/maintenance-status 200 in 1067ms (next.js: 3ms, proxy.ts: 7ms, application-code: 1057ms)
+ GET /calculator 200 in 1220ms (next.js: 3ms, proxy.ts: 1100ms, application-code: 117ms)
+ GET /api/maintenance-status 200 in 650ms (next.js: 6ms, proxy.ts: 12ms, application-code: 633ms)
+ GET /api/maintenance-status 200 in 5.0s (next.js: 4ms, proxy.ts: 17ms, application-code: 5.0s)
+ GET /api/auth/session 200 in 5.1s (next.js: 18ms, proxy.ts: 5.1s, application-code: 6ms)
+ GET /api/maintenance-status 200 in 1131ms (next.js: 4ms, proxy.ts: 5ms, application-code: 1121ms)
+ GET /api/auth/session 200 in 1168ms (next.js: 18ms, proxy.ts: 1143ms, application-code: 7ms)
+ GET /api/maintenance-status 200 in 769ms (next.js: 2ms, proxy.ts: 12ms, application-code: 755ms)
+ GET /api/auth/session 200 in 791ms (next.js: 5ms, proxy.ts: 782ms, application-code: 4ms)
+ GET /api/maintenance-status 200 in 477ms (next.js: 2ms, proxy.ts: 6ms, application-code: 468ms)
+ GET /api/auth/session 200 in 521ms (next.js: 19ms, proxy.ts: 496ms, application-code: 6ms)
+ GET /api/maintenance-status 200 in 863ms (next.js: 2ms, proxy.ts: 7ms, application-code: 853ms)
+ GET /api/auth/session 200 in 900ms (next.js: 8ms, proxy.ts: 887ms, application-code: 4ms)
+ GET /api/maintenance-status 200 in 966ms (next.js: 2ms, proxy.ts: 6ms, application-code: 959ms)
+ GET /api/auth/session 200 in 1008ms (next.js: 23ms, proxy.ts: 978ms, application-code: 6ms)
+ GET /api/maintenance-status 200 in 5.0s (next.js: 4ms, proxy.ts: 5ms, application-code: 5.0s)
+ GET /calculator 200 in 5.2s (next.js: 5ms, proxy.ts: 5.0s, application-code: 116ms)
+ GET /api/maintenance-status 200 in 3.1s (next.js: 10ms, proxy.ts: 16ms, application-code: 3.0s)
+ GET /api/auth/session 200 in 3.1s (next.js: 18ms, proxy.ts: 3.1s, application-code: 10ms)
+ GET /api/maintenance-status 200 in 274ms (next.js: 2ms, proxy.ts: 5ms, application-code: 266ms)
+ GET /api/auth/session 200 in 301ms (next.js: 8ms, proxy.ts: 287ms, application-code: 6ms)
+ GET /api/maintenance-status 200 in 3.1s (next.js: 1671µs, proxy.ts: 5ms, application-code: 3.1s)
+ POST /api/calculator/save-lead 200 in 4.9s (next.js: 1199ms, proxy.ts: 3.1s, application-code: 585ms)
+ GET /api/maintenance-status 200 in 2.4s (next.js: 12ms, proxy.ts: 12ms, application-code: 2.3s)
+[BuildCost GH] Agents initialized: PaymentBot, ReportBot, LeadBot, PriceBot, SupportBot
+[BuildCost GH] MCP Server: buildcostgh-mcp v1.0.0
+ GET /calculator 200 in 2.6s (next.js: 75ms, proxy.ts: 2.4s, application-code: 124ms)
+ GET /api/maintenance-status 200 in 285ms (next.js: 6ms, proxy.ts: 12ms, application-code: 267ms)
+ GET /calculator 200 in 347ms (next.js: 3ms, proxy.ts: 302ms, application-code: 42ms)
+ GET /api/maintenance-status 200 in 449ms (next.js: 2ms, proxy.ts: 7ms, application-code: 439ms)
+ POST /api/calculator/save-lead 200 in 956ms (next.js: 3ms, proxy.ts: 464ms, application-code: 490ms)
+ GET /api/maintenance-status 200 in 5.8s (next.js: 722ms, proxy.ts: 10ms, application-code: 5.0s)
+[BuildCost GH] Agents initialized: PaymentBot, ReportBot, LeadBot, PriceBot, SupportBot
+[BuildCost GH] MCP Server: buildcostgh-mcp v1.0.0
+ GET /calculator 200 in 6.2s (next.js: 77ms, proxy.ts: 6.0s, application-code: 95ms)
+ GET /api/maintenance-status 200 in 5.0s (next.js: 3ms, proxy.ts: 9ms, application-code: 5.0s)
+ POST /api/calculator/save-lead 500 in 11.9s (next.js: 1115ms, proxy.ts: 5.1s, application-code: 5.7s)
+Error: Error: invalid type: unit value, expected usize
+    at ignore-listed frames
+⨯ unhandledRejection: Error: Error: invalid type: unit value, expected usize
+    at ignore-listed frames
+⨯ unhandledRejection:  Error: Error: invalid type: unit value, expected usize
+    at ignore-listed frames
+ GET /api/maintenance-status 200 in 3.9s (next.js: 13ms, proxy.ts: 11ms, application-code: 3.9s)
+ GET /api/maintenance-status 200 in 3.9s (next.js: 6ms, proxy.ts: 11ms, application-code: 3.9s)
+ POST /api/calculator 200 in 5.1s (next.js: 1000ms, proxy.ts: 4.1s, application-code: 23ms)
+ POST /api/calculator 200 in 5.1s (next.js: 1003ms, proxy.ts: 4.1s, application-code: 24ms)
+ GET /api/maintenance-status 200 in 284ms (next.js: 10ms, proxy.ts: 9ms, application-code: 265ms)
+[BuildCost GH] Agents initialized: PaymentBot, ReportBot, LeadBot, PriceBot, SupportBot
+[BuildCost GH] MCP Server: buildcostgh-mcp v1.0.0
+ GET /calculator 200 in 619ms (next.js: 83ms, proxy.ts: 414ms, application-code: 122ms)
+ GET /api/maintenance-status 200 in 5.0s (next.js: 3ms, proxy.ts: 6ms, application-code: 5.0s)
+[BuildCost GH] Agents initialized: PaymentBot, ReportBot, LeadBot, PriceBot, SupportBot
+[BuildCost GH] MCP Server: buildcostgh-mcp v1.0.0
+ GET /pricing 200 in 7.2s (next.js: 2.1s, proxy.ts: 5.0s, application-code: 97ms)

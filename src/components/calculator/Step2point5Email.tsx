@@ -37,17 +37,17 @@ export function Step2point5Email() {
       if (res.ok) {
         setEmail(localEmail)
         setHasEmail(true)
-        setStep(3)
+        setStep(4)
       } else {
         // Still let them proceed even if save fails
         setEmail(localEmail)
         setHasEmail(true)
-        setStep(3)
+        setStep(4)
       }
     } catch {
       setEmail(localEmail)
       setHasEmail(true)
-      setStep(3)
+      setStep(4)
     } finally {
       setLoading(false)
     }
