@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { CheckCircle, Loader2, Shield, Star, ChevronRight, Smartphone, CreditCard, Zap, FileText, BarChart3, MapPin, Table2, Calendar, Users, PhoneCall, RefreshCw, Mail, MessageSquare, Hammer, Cpu, Repeat } from "lucide-react"
 import { toast } from "sonner"
 import { GradientButton } from "@/components/shared"
+import { getClientGhsRate } from "@/lib/currency"
 import Link from "next/link"
 import {
   Accordion,
@@ -214,13 +215,10 @@ export default function PricingPage() {
   const [rateDate, setRateDate] = useState("")
 
   useEffect(() => {
-    fetch("https://api.frankfurter.app/latest?from=USD&to=GHS")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data?.rates?.GHS) {
-          setRates({ GHS: data.rates.GHS })
-          setRateDate(data.date || "")
-        }
+    getClientGhsRate()
+      .then(({ rate, date }) => {
+        if (rate > 0) setRates({ GHS: rate })
+        if (date) setRateDate(date)
       })
       .catch(() => {})
   }, [])

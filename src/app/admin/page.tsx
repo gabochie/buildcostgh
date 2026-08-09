@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Roadmap } from "@/components/admin/Roadmap"
 import { CofounderTab } from "@/components/admin/CofounderTab"
 import { formatCurrency } from "@/lib/utils"
+import { getClientGhsRate } from "@/lib/currency"
 import {
   Loader2, TrendingUp, ShoppingBag, MessageSquare, Users, Mail,
   FileText, ExternalLink, Eye, Shield, CheckCircle, Clock,
@@ -1926,12 +1927,11 @@ function PricingAuditView() {
   const [rateDate, setRateDate] = useState("")
 
   useEffect(() => {
-    fetch("https://api.frankfurter.app/latest?from=USD&to=GHS")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data?.rates?.GHS) {
-          setRates({ GHS: data.rates.GHS })
-          setRateDate(data.date || "")
+    getClientGhsRate()
+      .then(({ rate, date }) => {
+        if (rate > 0) {
+          setRates({ GHS: rate })
+          setRateDate(date || "")
         }
       })
       .catch(() => {})

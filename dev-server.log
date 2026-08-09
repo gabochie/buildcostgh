@@ -102,3 +102,20 @@ Error: Error: invalid type: unit value, expected usize
 [BuildCost GH] Agents initialized: PaymentBot, ReportBot, LeadBot, PriceBot, SupportBot
 [BuildCost GH] MCP Server: buildcostgh-mcp v1.0.0
  GET /pricing 200 in 7.2s (next.js: 2.1s, proxy.ts: 5.0s, application-code: 97ms)
+ GET /api/maintenance-status 200 in 6.0s (next.js: 983ms, proxy.ts: 7ms, application-code: 5.0s)
+[BuildCost GH] Agents initialized: PaymentBot, ReportBot, LeadBot, PriceBot, SupportBot
+[BuildCost GH] MCP Server: buildcostgh-mcp v1.0.0
+ GET /pricing 200 in 7.1s (next.js: 547ms, proxy.ts: 6.0s, application-code: 481ms)
+ GET /api/maintenance-status 200 in 3.9s (next.js: 15ms, proxy.ts: 13ms, application-code: 3.9s)
+ GET /api/auth/session 200 in 5.2s (next.js: 1231ms, proxy.ts: 3.9s, application-code: 20ms)
+ GET /api/maintenance-status 200 in 284ms (next.js: 5ms, proxy.ts: 6ms, application-code: 273ms)
+ GET /api/auth/session 200 in 322ms (next.js: 8ms, proxy.ts: 307ms, application-code: 6ms)
+ GET /api/maintenance-status 200 in 4.9s (next.js: 3ms, proxy.ts: 5ms, application-code: 4.9s)
+[BuildCost GH] Agents initialized: PaymentBot, ReportBot, LeadBot, PriceBot, SupportBot
+[BuildCost GH] MCP Server: buildcostgh-mcp v1.0.0
+ GET /pricing 200 in 5.5s (next.js: 63ms, proxy.ts: 4.9s, application-code: 462ms)
+ GET /api/maintenance-status 200 in 2.8s (next.js: 12ms, proxy.ts: 15ms, application-code: 2.7s)
+ GET /api/maintenance-status 200 in 5.0s (next.js: 4ms, proxy.ts: 11ms, application-code: 5.0s)
+ GET /api/auth/session 200 in 5.1s (next.js: 29ms, proxy.ts: 5.1s, application-code: 6ms)
+ GET /api/maintenance-status 200 in 399ms (next.js: 4ms, proxy.ts: 10ms, application-code: 385ms)
+ GET /api/auth/session 200 in 433ms (next.js: 6ms, proxy.ts: 420ms, application-code: 7ms)
