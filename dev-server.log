@@ -119,3 +119,31 @@ Error: Error: invalid type: unit value, expected usize
  GET /api/auth/session 200 in 5.1s (next.js: 29ms, proxy.ts: 5.1s, application-code: 6ms)
  GET /api/maintenance-status 200 in 399ms (next.js: 4ms, proxy.ts: 10ms, application-code: 385ms)
  GET /api/auth/session 200 in 433ms (next.js: 6ms, proxy.ts: 420ms, application-code: 7ms)
+⚠ Found a change in next.config.ts. Restarting the server to apply the changes...
+▲ Next.js 16.2.10 (webpack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.173.88:3000
+- Environments: .env.local, .env
+✓ Ready in 767ms
+⚠ Attempted to load @next/swc-win32-x64-msvc, but an error occurred: \\?\C:\Users\user\Documents\GitHub\buildcostgh\node_modules\@next\swc-win32-x64-msvc\next-swc.win32-x64-msvc.node is not a valid Win32 application.
+\\?\C:\Users\user\Documents\GitHub\buildcostgh\node_modules\@next\swc-win32-x64-msvc\next-swc.win32-x64-msvc.node
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of C:\Users\user\package-lock.json as the root directory.
+ To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.
+ Detected additional lockfiles: 
+   * C:\Users\user\Documents\GitHub\buildcostgh\package-lock.json
+
+  Skipping creating a lockfile at C:\Users\user\Documents\GitHub\buildcostgh\.next\dev\lock because we're using WASM bindings
+
+○ Compiling /pricing ...
+[BuildCost GH] Agents initialized: PaymentBot, ReportBot, LeadBot, PriceBot, SupportBot
+[BuildCost GH] MCP Server: buildcostgh-mcp v1.0.0
+ GET /pricing 200 in 16.6s (next.js: 4.4s, proxy.ts: 10.9s, application-code: 1310ms)
+ GET /api/maintenance-status 200 in 6.9s (next.js: 1884ms, proxy.ts: 22ms, application-code: 5.0s)
+ GET /api/maintenance-status 200 in 5.2s (next.js: 5ms, proxy.ts: 208ms, application-code: 5.0s)
+ GET /api/maintenance-status 200 in 5.0s (next.js: 3ms, proxy.ts: 6ms, application-code: 5.0s)
+[BuildCost GH] Agents initialized: PaymentBot, ReportBot, LeadBot, PriceBot, SupportBot
+[BuildCost GH] MCP Server: buildcostgh-mcp v1.0.0
+ GET /pricing 200 in 5.3s (next.js: 81ms, proxy.ts: 5.0s, application-code: 216ms)
+ GET /api/auth/session 200 in 9.9s (next.js: 2.9s, proxy.ts: 7.0s, application-code: 27ms)
