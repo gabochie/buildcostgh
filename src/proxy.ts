@@ -27,13 +27,22 @@ export default async function proxy(req: NextRequest) {
 
   // Auth protection — only /dashboard needs proxy protection
   // /admin handles auth itself (shows sign-in button client-side)
-  const token = await getToken({ req })
   const isProtected = pathname === "/dashboard" || pathname.startsWith("/dashboard/")
 
-  if (isProtected && !token) {
-    const signInUrl = new URL("/admin", req.nextUrl)
-    signInUrl.searchParams.set("callbackUrl", pathname)
-    return NextResponse.redirect(signInUrl)
+  if (isProtected) {
+    // getToken() parses Authorization: Bearer as a JWT and throws on non-JWT
+    // tokens (Vercel Cron sends CRON_SECRET) - gate it so API routes never crash.
+    let token: Awaited<ReturnType<typeof getToken>> = null
+    try {
+      token = await getToken({ req })
+    } catch {
+      token = null
+    }
+    if (!token) {
+      const signInUrl = new URL("/admin", req.nextUrl)
+      signInUrl.searchParams.set("callbackUrl", pathname)
+      return NextResponse.redirect(signInUrl)
+    }
   }
 
   return NextResponse.next()
