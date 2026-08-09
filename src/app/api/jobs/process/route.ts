@@ -26,13 +26,25 @@ export async function GET(req: NextRequest) {
 
   // Cap per-invocation work so the function stays within platform limits;
   // remaining jobs are picked up on the next tick.
-  const processed = await processJobQueue(5)
-  const stats = await getQueueStats()
+  try {
+    const processed = await processJobQueue(5)
+    const stats = await getQueueStats()
 
-  return NextResponse.json({
-    ok: true,
-    processed,
-    queue: stats,
-    ts: new Date().toISOString(),
-  })
+    return NextResponse.json({
+      ok: true,
+      processed,
+      queue: stats,
+      ts: new Date().toISOString(),
+    })
+  } catch (err) {
+    return NextResponse.json(
+      {
+        error: err instanceof Error ? err.message : String(err),
+        code: (err as { code?: string })?.code ?? null,
+        meta: (err as { meta?: unknown })?.meta ?? null,
+        stack: err instanceof Error ? err.stack : null,
+      },
+      { status: 500 }
+    )
+  }
 }
