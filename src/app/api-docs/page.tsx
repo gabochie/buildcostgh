@@ -81,15 +81,15 @@ export default function ApiDocsPage() {
               <div className="bg-gray-50 rounded-xl p-4 text-sm space-y-2 mb-4">
                 <div className="flex items-start gap-4">
                   <code className="text-emerald-700 font-mono w-28 shrink-0">bedrooms *</code>
-                  <span className="text-gray-600">Number of bedrooms (1, 2, 3, 4, 5, or "6+")</span>
+                  <span className="text-gray-600">Number of bedrooms (1, 2, 3, 4, 5, or &quot;6+&quot;)</span>
                 </div>
                 <div className="flex items-start gap-4">
                   <code className="text-emerald-700 font-mono w-28 shrink-0">location *</code>
-                  <span className="text-gray-600">City name (e.g., "Accra", "Kumasi", "Tamale")</span>
+                  <span className="text-gray-600">City name (e.g., &quot;Accra&quot;, &quot;Kumasi&quot;, &quot;Tamale&quot;)</span>
                 </div>
                 <div className="flex items-start gap-4">
                   <code className="text-emerald-700 font-mono w-28 shrink-0">finishGrade</code>
-                  <span className="text-gray-600">"basic", "standard" (default), or "premium"</span>
+                  <span className="text-gray-600">&quot;basic&quot;, &quot;standard&quot; (default), or &quot;premium&quot;</span>
                 </div>
               </div>
 

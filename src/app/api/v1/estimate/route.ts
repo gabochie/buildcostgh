@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: auth.error }, { status: auth.status })
   }
 
-  let body: any
+  let body: { bedrooms?: string | number; location?: string; finishGrade?: string }
   try { body = await req.json() } catch {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
   }

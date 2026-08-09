@@ -66,7 +66,7 @@ export default function AuthorsPage() {
             Our <span className="text-gradient-gold">Authors</span>
           </h1>
           <p className="text-emerald-100/70 max-w-xl mx-auto">
-            The people behind BuildCost GH's research and content
+            The people behind BuildCost GH&apos;s research and content
           </p>
         </div>
       </section>

@@ -14,6 +14,7 @@ import {
   FileText, ExternalLink, Eye, Shield, CheckCircle, Clock,
   AlertCircle, ArrowRight, Plus, Search, Download, Presentation, Printer, Crosshair, Zap, Target, Globe, Award, Lightbulb, Cpu, Activity, CheckSquare, Sliders, RefreshCw, Pause, Play, Trash2, Building2, Star, BadgeCheck, Briefcase, MapPin, Edit,
 } from "lucide-react"
+import type { LucideIcon } from "lucide-react"
 
 type Stats = {
   totalOrders: number; completedOrders: number; pendingOrders: number
@@ -45,13 +46,44 @@ type NewsletterSubscriber = {
   id: string; email: string; name: string | null; subscribed: boolean; createdAt: string
 }
 
+type EcosystemStage = {
+  phase: string; emoji: string; color: string; pain: string
+  products: string[]; revenue: string; link: string
+}
+
+type AdminContractor = {
+  id: string; name: string; title: string | null; phone: string; email: string | null
+  website: string | null; description: string; specialties: string[]
+  yearsOfExperience: number; verified: boolean; rating: number
+}
+
+type AgentLogItem = {
+  id: string; agent: string; action: string; entityType: string | null; entityId: string | null
+  level: string; createdAt: string
+}
+
+type AgentStat = {
+  name: string; status: string; totalActions: number; errors: number
+  lastAction: string | null; lastSeen: string | null; minutesSinceLastSeen: number | null
+}
+
+type AdminApiKey = {
+  id: string; label: string; keyHash: string; tier: string; usageCount: number
+  monthlyLimit: number; active: boolean; createdAt: string; lastUsedAt: string | null
+}
+
+type AdminSeasonalFactor = {
+  id: string; region: string | null; month: number; material: string | null
+  multiplier: number; reason: string | null; active: boolean; monthLabel: string | number
+}
+
 const statusStyles: Record<string, string> = {
   completed: "bg-emerald-50 text-emerald-700 border-emerald-200",
   pending: "bg-amber-50 text-amber-700 border-amber-200",
   failed: "bg-red-50 text-red-700 border-red-200",
 }
 
-const statusIcons: Record<string, any> = {
+const statusIcons: Record<string, LucideIcon> = {
   completed: CheckCircle,
   pending: Clock,
   failed: AlertCircle,
@@ -60,7 +92,7 @@ const statusIcons: Record<string, any> = {
 export default function AdminPage() {
   const { data: session, status } = useSession()
   const searchParams = useSearchParams()
-  const [tab, setTab] = useState<string>("overview")
+  const tab = searchParams.get("tab") || "overview"
   const [maintenanceMode, setMaintenanceMode] = useState(false)
   const [toggling, setToggling] = useState(false)
   const [stats, setStats] = useState<Stats | null>(null)
@@ -72,37 +104,36 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const t = searchParams.get("tab")
-    if (t) setTab(t)
-  }, [searchParams])
-
-  const loadData = React.useCallback(async (showLoader = false) => {
     if (!session) return
-    if (showLoader) setLoading(true)
-    Promise.all([
-      fetch("/api/admin/stats").then(r => r.json()),
-      fetch("/api/orders").then(r => r.json()),
-      fetch("/api/contact").then(r => r.json()),
-      fetch("/api/blog").then(r => r.json()),
-      fetch("/api/calculator/save-lead").then(r => r.json()).catch(() => []),
-      fetch("/api/newsletter").then(r => r.json()).catch(() => []),
-      fetch("/api/admin/maintenance").then(r => r.json()).catch(() => ({ enabled: false })),
-    ])
-      .then(([s, o, m, b, l, n, mt]) => {
+    let ignore = false
+
+    async function loadData() {
+      try {
+        const [s, o, m, b, l, n, mt] = await Promise.all([
+          fetch("/api/admin/stats").then(r => r.json()),
+          fetch("/api/orders").then(r => r.json()),
+          fetch("/api/contact").then(r => r.json()),
+          fetch("/api/blog").then(r => r.json()),
+          fetch("/api/calculator/save-lead").then(r => r.json()).catch(() => []),
+          fetch("/api/newsletter").then(r => r.json()).catch(() => []),
+          fetch("/api/admin/maintenance").then(r => r.json()).catch(() => ({ enabled: false })),
+        ])
+        if (ignore) return
         setStats(s); setOrders(o); setMessages(m)
         setBlogPosts(b); setLeads(l); setSubscribers(n)
         setMaintenanceMode(mt.enabled)
-      })
-      .finally(() => { if (showLoader) setLoading(false) })
+      } finally {
+        if (!ignore) setLoading(false)
+      }
+    }
+
+    loadData()
+    const interval = setInterval(loadData, 30000)
+    return () => {
+      ignore = true
+      clearInterval(interval)
+    }
   }, [session])
-
-  useEffect(() => { loadData(true) }, [loadData])
-
-  useEffect(() => {
-    if (!session) return
-    const interval = setInterval(() => loadData(false), 30000)
-    return () => clearInterval(interval)
-  }, [loadData])
 
   if (status === "loading") {
     return (
@@ -542,7 +573,7 @@ function BlogTab({ posts }: { posts: BlogPostItem[] }) {
 }
 
 /* ── Settings ── */
-function SettingsTab({ session }: { session: any }) {
+function SettingsTab({ session }: { session: { user?: { name?: string | null; email?: string | null; id?: string } } }) {
   return (
     <div className="max-w-2xl space-y-6">
       <div className="rounded-2xl border bg-white p-6">
@@ -1188,7 +1219,7 @@ function StrategyTab() {
 function EcosystemTab() {
   const [subTab, setSubTab] = useState("valuechain")
 
-  const stages = [
+  const stages: EcosystemStage[] = [
     {
       phase: "1. Dream & Discovery", emoji: "💭", color: "from-sky-400 to-sky-600",
       pain: "I want to build in Ghana but have no idea where to start, what it costs, or if it's even feasible.",
@@ -1390,8 +1421,8 @@ function EcosystemTab() {
 }
 
 /* ── Value Chain (sub-view) ── */
-function ValueChainView({ stages }: { stages: typeof import("react").useState extends (...a: any[]) => any ? any[] : any[] }) {
-  const totalRevenue = stages.reduce((sum, s: any) => {
+function ValueChainView({ stages }: { stages: EcosystemStage[] }) {
+  const totalRevenue = stages.reduce((sum, s: EcosystemStage) => {
     const nums = s.revenue.match(/\d+/g)
     return sum + (nums ? nums.reduce((a: number, b: string) => a + parseInt(b), 0) : 0)
   }, 0)
@@ -1429,7 +1460,7 @@ function ValueChainView({ stages }: { stages: typeof import("react").useState ex
       <div className="relative">
         <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-emerald-200 hidden md:block" />
         <div className="space-y-6">
-          {stages.map((stage: any, i: number) => (
+          {stages.map((stage: EcosystemStage, i: number) => (
             <div key={stage.phase} className="relative md:pl-16">
               <div className={`absolute left-4 top-6 w-4 h-4 rounded-full border-2 border-white shadow-md bg-gradient-to-br ${stage.color} hidden md:block`} />
               {i < stages.length - 1 && (
@@ -1448,7 +1479,7 @@ function ValueChainView({ stages }: { stages: typeof import("react").useState ex
                 <div className="p-4">
                   <div className="mb-3">
                     <div className="text-xs font-semibold text-rose-500 uppercase tracking-wide mb-1">Pain Point</div>
-                    <p className="text-sm text-slate-600 italic">"{stage.pain}"</p>
+                    <p className="text-sm text-slate-600 italic">&ldquo;{stage.pain}&rdquo;</p>
                   </div>
                   <div>
                     <div className="text-xs font-semibold text-emerald-600 uppercase tracking-wide mb-2">Our Products</div>
@@ -1474,7 +1505,7 @@ function ValueChainView({ stages }: { stages: typeof import("react").useState ex
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="p-4 rounded-xl bg-slate-50">
             <div className="text-lg font-bold text-emerald-600 mb-1">Data Moat</div>
-            <p className="text-sm text-slate-600">Each stage generates proprietary data: real material prices, contractor performance scores, actual project costs. This data makes our estimates more accurate and our marketplace more valuable — competitors can't replicate it.</p>
+            <p className="text-sm text-slate-600">Each stage generates proprietary data: real material prices, contractor performance scores, actual project costs. This data makes our estimates more accurate and our marketplace more valuable — competitors can&apos;t replicate it.</p>
           </div>
           <div className="p-4 rounded-xl bg-slate-50">
             <div className="text-lg font-bold text-emerald-600 mb-1">Network Effects</div>
@@ -3262,7 +3293,7 @@ function CompetitiveAnalysisView() {
               <div className="bg-red-50 rounded-xl border border-red-200 p-4">
                 <h4 className="font-bold text-red-800 text-sm mb-2">High Threat</h4>
                 <p className="text-xs text-red-700">GhanaHousePlanner, CostmyBuild, DiasporaBuild</p>
-                <p className="text-xs text-red-600 mt-1">Strong overlap with BuildCost GH's target market and feature set. These platforms have funding, research backing, or diaspora traction.</p>
+                <p className="text-xs text-red-600 mt-1">Strong overlap with BuildCost GH&apos;s target market and feature set. These platforms have funding, research backing, or diaspora traction.</p>
               </div>
               <div className="bg-amber-50 rounded-xl border border-amber-200 p-4">
                 <h4 className="font-bold text-amber-800 text-sm mb-2">Medium Threat</h4>
@@ -3627,10 +3658,10 @@ function CompetitiveAnalysisView() {
 
 /* ── Contractor Manager ── */
 function ContractorManager() {
-  const [contractors, setContractors] = useState<any[]>([])
+  const [contractors, setContractors] = useState<AdminContractor[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
-  const [editing, setEditing] = useState<any | null>(null)
+  const [editing, setEditing] = useState<AdminContractor | null>(null)
   const [form, setForm] = useState({ name: "", title: "", phone: "", email: "", description: "", specialties: "", yearsOfExperience: 0, verified: false, website: "" })
   const [saving, setSaving] = useState(false)
 
@@ -3642,11 +3673,22 @@ function ContractorManager() {
     } catch {} finally { setLoading(false) }
   }
 
-  useEffect(() => { fetchAll() }, [])
+  useEffect(() => {
+    let ignore = false
+    const load = async () => {
+      try {
+        const res = await fetch("/api/admin/contractors")
+        const data = await res.json()
+        if (!ignore) setContractors(data)
+      } catch {} finally { if (!ignore) setLoading(false) }
+    }
+    load()
+    return () => { ignore = true }
+  }, [])
 
   const openNew = () => { setEditing(null); setForm({ name: "", title: "", phone: "", email: "", description: "", specialties: "", yearsOfExperience: 0, verified: false, website: "" }); setShowForm(true) }
 
-  const openEdit = (c: any) => {
+  const openEdit = (c: AdminContractor) => {
     setEditing(c)
     setForm({
       name: c.name, title: c.title || "", phone: c.phone, email: c.email || "",
@@ -3664,13 +3706,16 @@ function ContractorManager() {
       const url = "/api/admin/contractors"
       const method = editing ? "PUT" : "POST"
       await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
-      setShowForm(false); setEditing(null); fetchAll()
+      setShowForm(false); setEditing(null)
+      setLoading(true)
+      fetchAll()
     } catch {} finally { setSaving(false) }
   }
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this contractor?")) return
     await fetch(`/api/admin/contractors?id=${id}`, { method: "DELETE" })
+    setLoading(true)
     fetchAll()
   }
 
@@ -3752,7 +3797,7 @@ function ContractorManager() {
                 <tr><td colSpan={6} className="text-center py-8 text-gray-400">Loading...</td></tr>
               ) : contractors.length === 0 ? (
                 <tr><td colSpan={6} className="text-center py-8 text-gray-400">No contractors yet</td></tr>
-              ) : contractors.map((c: any) => (
+              ) : contractors.map((c: AdminContractor) => (
                 <tr key={c.id} className="border-b border-gray-100 hover:bg-slate-50">
                   <td className="py-3 px-4 font-medium text-gray-900">{c.name}</td>
                   <td className="py-3 px-4 text-gray-600">{c.phone}</td>
@@ -3778,17 +3823,16 @@ function ContractorManager() {
 /* ── Command Center ── */
 function CommandCenter() {
   const [subTab, setSubTab] = useState("dashboard")
-  const [logs, setLogs] = useState<any[]>([])
+  const [logs, setLogs] = useState<AgentLogItem[]>([])
   const [queueStats, setQueueStats] = useState({ pending: 0, processing: 0, completed: 0, failed: 0 })
   const [loading, setLoading] = useState(true)
-  const [agentStats, setAgentStats] = useState<any[]>([])
-  const [keys, setKeys] = useState<any[]>([])
-  const [factors, setFactors] = useState<any[]>([])
+  const [agentStats, setAgentStats] = useState<AgentStat[]>([])
+  const [keys, setKeys] = useState<AdminApiKey[]>([])
+  const [factors, setFactors] = useState<AdminSeasonalFactor[]>([])
   const [rules, setRules] = useState<Record<string, string>>({})
   const [savingRules, setSavingRules] = useState(false)
 
   const fetchData = async () => {
-    setLoading(true)
     try {
       const [hRes, lRes, aRes] = await Promise.all([
         fetch("/api/health").then(r => r.json()).catch(() => ({})),
@@ -3814,7 +3858,32 @@ function CommandCenter() {
     setFactors(fRes)
   }
 
-  useEffect(() => { fetchData(); fetchConfig(); const i = setInterval(fetchData, 15000); return () => clearInterval(i) }, [])
+  useEffect(() => {
+    let ignore = false
+    const load = async () => {
+      const [hRes, lRes, aRes] = await Promise.all([
+        fetch("/api/health").then(r => r.json()).catch(() => ({})),
+        fetch("/api/agent-logs?limit=50").then(r => r.json()).catch(() => ({ logs: [] })),
+        fetch("/api/admin/agent-stats").then(r => r.json()).catch(() => []),
+      ])
+      const [rRes, kRes, fRes] = await Promise.all([
+        fetch("/api/admin/rules").then(r => r.json()).catch(() => ({})),
+        fetch("/api/admin/api-keys").then(r => r.json()).catch(() => []),
+        fetch("/api/admin/seasonal-factors").then(r => r.json()).catch(() => []),
+      ])
+      if (ignore) return
+      if (hRes.queue) setQueueStats(hRes.queue)
+      setLogs(lRes.logs || [])
+      setAgentStats(aRes)
+      setRules(rRes)
+      setKeys(kRes)
+      setFactors(fRes)
+      setLoading(false)
+    }
+    load()
+    const i = setInterval(fetchData, 15000)
+    return () => { ignore = true; clearInterval(i) }
+  }, [])
 
   const saveRules = async () => {
     setSavingRules(true)
@@ -3872,7 +3941,7 @@ function CommandCenter() {
                 <Cpu className="h-4 w-4 text-emerald-600" /> Agent Health
               </h3>
               <div className="space-y-2">
-                {agentStats.map((a: any) => (
+                {agentStats.map((a: AgentStat) => (
                   <div key={a.name} className="flex items-center gap-3 p-2 rounded-lg bg-slate-50">
                     <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
                       a.status === "active" ? "bg-emerald-500" : a.status === "error" ? "bg-red-500" : "bg-slate-300"
@@ -3901,7 +3970,7 @@ function CommandCenter() {
                 <Activity className="h-4 w-4 text-emerald-600" /> Recent Activity
               </h3>
               <div className="space-y-2 max-h-72 overflow-y-auto">
-                {logs.slice(0, 12).map((log: any) => (
+                {logs.slice(0, 12).map((log: AgentLogItem) => (
                   <div key={log.id} className="flex items-start gap-2 text-sm p-1.5 rounded hover:bg-slate-50">
                     <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${
                       log.level === "error" ? "bg-red-500" : log.level === "warning" ? "bg-amber-500" :
@@ -3936,7 +4005,7 @@ function CommandCenter() {
               <p className="text-sm text-slate-400 text-center py-8">No activity recorded yet.</p>
             ) : (
               <div className="space-y-0.5">
-                {logs.map((log: any) => (
+                {logs.map((log: AgentLogItem) => (
                   <div key={log.id} className="flex items-start gap-3 py-2 px-2 rounded-lg hover:bg-slate-50 text-sm border-l-2 transition-colors"
                     style={{ borderLeftColor: log.level === "error" ? "#ef4444" : log.level === "warning" ? "#f59e0b" : log.level === "success" ? "#10b981" : "#3b82f6" }}>
                     <span className="text-[11px] text-slate-400 font-mono w-14 flex-shrink-0">
@@ -4008,7 +4077,7 @@ function CommandCenter() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {agentStats.map((a: any) => (
+            {agentStats.map((a: AgentStat) => (
               <div key={a.name} className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
@@ -4143,7 +4212,7 @@ function CommandCenter() {
                     </tr>
                   </thead>
                   <tbody>
-                    {keys.map((k: any) => (
+                    {keys.map((k: AdminApiKey) => (
                       <tr key={k.id} className="border-b border-gray-50 hover:bg-slate-50">
                         <td className="py-2 text-slate-700">{k.label}</td>
                         <td className="py-2 text-xs text-slate-400 font-mono">{k.keyHash.slice(0, 16)}...</td>
@@ -4208,7 +4277,7 @@ function CommandCenter() {
                     </tr>
                   </thead>
                   <tbody>
-                    {factors.map((f: any) => (
+                    {factors.map((f: AdminSeasonalFactor) => (
                       <tr key={f.id} className="border-b border-gray-50 hover:bg-slate-50">
                         <td className="py-2 text-slate-700">{f.monthLabel || monthLabels[f.month - 1]}</td>
                         <td className="py-2 text-xs text-slate-400">{f.region || "All"}</td>

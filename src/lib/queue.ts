@@ -1,7 +1,7 @@
 import { prisma } from "./prisma"
-import { revalidatePath } from "next/cache"
+import type { Prisma } from "@prisma/client"
 
-type JobHandler = (payload: any) => Promise<void>
+type JobHandler = (payload: Prisma.JsonValue) => Promise<void>
 
 const handlers = new Map<string, JobHandler>()
 
@@ -9,7 +9,7 @@ export function registerJobHandler(type: string, handler: JobHandler) {
   handlers.set(type, handler)
 }
 
-export async function enqueueJob(type: string, payload?: any, scheduledAt?: Date) {
+export async function enqueueJob(type: string, payload?: Prisma.JsonValue, scheduledAt?: Date) {
   const job = await prisma.job.create({
     data: {
       type,
@@ -56,12 +56,12 @@ export async function processNextJob(): Promise<boolean> {
       where: { id: job.id },
       data: { status: "completed", completedAt: new Date() },
     })
-  } catch (err: any) {
+  } catch (err) {
     const attempts = job.attempts + 1
-    const update: any = {
+    const update: Prisma.JobUncheckedUpdateInput = {
       status: attempts >= job.maxAttempts ? "failed" : "pending",
       attempts,
-      lastError: err?.message || String(err),
+      lastError: err instanceof Error ? err.message : String(err),
     }
     if (update.status === "pending") {
       update.scheduledAt = new Date(Date.now() + Math.pow(2, attempts) * 1000)

@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { checkRateLimit } from "@/lib/rate-limit"
 
 const faq: Record<string, string> = {
   "how much does it cost to build a house in ghana":
@@ -80,8 +81,14 @@ function findBestAnswer(query: string): { answer: string; source?: string } | nu
   return null
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    const ip = request.headers.get("x-forwarded-for") || "unknown"
+    const limit = await checkRateLimit(ip, { maxAttempts: 20, windowMs: 60000, useDb: false })
+    if (!limit.allowed) {
+      return NextResponse.json({ error: limit.message || "Too many requests" }, { status: 429 })
+    }
+
     const { message } = await request.json()
     if (!message || typeof message !== "string") {
       return NextResponse.json({ answer: "Please ask a question about construction costs in Ghana." })

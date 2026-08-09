@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { Droplets, MapPin, Shield, TrendingUp, Download, Mail, AlertTriangle, CheckCircle, Loader2, ChevronDown, Search, ArrowRight } from "lucide-react"
+import { Droplets, MapPin, Shield, TrendingUp, Download, Mail, AlertTriangle, CheckCircle, Loader2, ChevronDown, Search, ArrowRight, type LucideIcon } from "lucide-react"
 
 type FloodRisk = "critical" | "high" | "medium" | "low" | "safe"
 
@@ -27,7 +27,7 @@ type RegionData = {
   locations: Location[]
 }
 
-const riskConfig: Record<FloodRisk, { label: string; color: string; bg: string; badge: string; icon: any; pulse: string }> = {
+const riskConfig: Record<FloodRisk, { label: string; color: string; bg: string; badge: string; icon: LucideIcon; pulse: string }> = {
   critical: { label: "Critical", color: "text-red-600", bg: "bg-red-50 border-red-300", badge: "bg-red-600 text-white", icon: AlertTriangle, pulse: "bg-red-400 animate-ping" },
   high: { label: "High Risk", color: "text-orange-600", bg: "bg-orange-50 border-orange-300", badge: "bg-orange-500 text-white", icon: Droplets, pulse: "bg-orange-400 animate-ping" },
   medium: { label: "Medium Risk", color: "text-amber-600", bg: "bg-amber-50 border-amber-300", badge: "bg-amber-500 text-white", icon: Droplets, pulse: "bg-amber-400 animate-ping" },
@@ -438,7 +438,7 @@ export default function FloodSafeLandPage() {
           {status === "success" ? (
             <div className="bg-emerald-700/30 border border-emerald-600/30 rounded-xl p-6">
               <CheckCircle className="h-10 w-10 text-emerald-400 mx-auto mb-2" />
-              <p className="text-white font-bold text-lg">You're in! Your report is ready.</p>
+              <p className="text-white font-bold text-lg">You&apos;re in! Your report is ready.</p>
               <p className="text-emerald-200/80 text-sm mt-1 mb-5">Click below to view your complete flood risk intelligence report.</p>
               <a
                 href="/reports/flood-risk"
