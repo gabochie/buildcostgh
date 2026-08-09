@@ -3,6 +3,14 @@ import { prisma } from "./prisma"
 
 const sha256 = (input: string) => crypto.createHash("sha256").update(input).digest("hex")
 
+export const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "gabochie@gmail.com"
+
+export type SessionUser = { id?: string | null; name?: string | null; email?: string | null } | undefined
+
+export function isAdmin(user: SessionUser): boolean {
+  return !!user?.email && user.email === ADMIN_EMAIL
+}
+
 export type ApiAuthResult = { ok: true; key: { id: string; tier: string; label: string } } | { ok: false; error: string; status: number }
 
 export async function authenticateApiKey(req: Request): Promise<ApiAuthResult> {

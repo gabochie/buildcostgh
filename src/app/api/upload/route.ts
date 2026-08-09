@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { writeFile, mkdir } from "fs/promises"
 import path from "path"
 import { auth } from "@/lib/auth"
+import { isAdmin } from "@/lib/api-auth"
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp", "image/svg+xml"]
 const MAX_SIZE = 5 * 1024 * 1024
@@ -9,8 +10,8 @@ const MAX_SIZE = 5 * 1024 * 1024
 export async function POST(request: Request) {
   try {
     const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    if (!isAdmin(session?.user)) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 })
     }
 
     const formData = await request.formData()

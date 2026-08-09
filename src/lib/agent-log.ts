@@ -1,4 +1,5 @@
 import { prisma } from "./prisma"
+import type { Prisma } from "@prisma/client"
 
 type LogLevel = "info" | "success" | "warning" | "error"
 
@@ -7,7 +8,7 @@ export async function logAgentAction(params: {
   action: string
   entityType?: string
   entityId?: string
-  details?: Record<string, any>
+  details?: Prisma.InputJsonObject
   level?: LogLevel
 }) {
   try {
@@ -32,7 +33,7 @@ export async function getAgentLogs(options?: {
   limit?: number
   offset?: number
 }) {
-  const where: any = {}
+  const where: Prisma.AgentLogWhereInput = {}
   if (options?.agent) where.agent = options.agent
   if (options?.level) where.level = options.level
 

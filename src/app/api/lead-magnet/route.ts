@@ -1,8 +1,15 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { checkRateLimit } from "@/lib/rate-limit"
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    const ip = request.headers.get("x-forwarded-for") || "unknown"
+    const limit = await checkRateLimit(ip, { maxAttempts: 5, windowMs: 60000, useDb: false })
+    if (!limit.allowed) {
+      return NextResponse.json({ error: limit.message || "Too many requests" }, { status: 429 })
+    }
+
     const { name, email, phone } = await request.json()
 
     if (!name || !email || !email.includes("@") || !phone) {

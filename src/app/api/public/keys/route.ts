@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: limit.message || "Too many requests" }, { status: 429 })
   }
 
-  let body: any
+  let body: { email?: string }
   try { body = await req.json() } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 })
   }

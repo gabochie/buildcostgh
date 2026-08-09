@@ -22,11 +22,11 @@ export async function GET() {
       queue: { pending: pendingJobs, failed: failedJobs },
       uptime: process.uptime(),
     })
-  } catch (err: any) {
+  } catch (err) {
     return NextResponse.json({
       status: "unhealthy",
       timestamp: new Date().toISOString(),
-      db: { connected: false, error: err?.message },
+      db: { connected: false, error: err instanceof Error ? err.message : String(err) },
     }, { status: 503 })
   }
 }

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
+import { isAdmin } from "@/lib/api-auth"
 
 export async function GET() {
   const posts = await prisma.blogPost.findMany({
@@ -12,8 +13,8 @@ export async function GET() {
 
 export async function POST(request: Request) {
   const session = await auth()
-  if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!isAdmin(session?.user)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   }
 
   const { title, slug, excerpt, content, imageUrl, published, tags, category } = await request.json()
@@ -29,7 +30,7 @@ export async function POST(request: Request) {
       excerpt: excerpt || null,
       content,
       imageUrl: imageUrl || null,
-      author: session.user.name || "Admin",
+      author: session?.user?.name || "Admin",
       published: published || false,
       category: category || "uncategorized",
       tags: JSON.stringify(tags || []),

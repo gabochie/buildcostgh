@@ -41,32 +41,36 @@ export default function ContractorsPage() {
   const [verifiedOnly, setVerifiedOnly] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
 
-  const fetchContractors = async () => {
-    setLoading(true)
-    const params = new URLSearchParams()
-    if (search) params.set("search", search)
-    if (regionFilter) params.set("region", regionFilter)
-    if (verifiedOnly) params.set("verified", "true")
-    params.set("limit", "50")
-
-    try {
-      const res = await fetch(`/api/contractors?${params}`)
-      const data = await res.json()
-      setContractors(data.contractors || [])
-      setTotal(data.total || 0)
-    } catch {
-      setContractors([])
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => { fetchContractors() }, [regionFilter, verifiedOnly])
-
   useEffect(() => {
-    const timer = setTimeout(fetchContractors, 300)
-    return () => clearTimeout(timer)
-  }, [search])
+    let ignore = false
+    async function fetchContractors() {
+      setLoading(true)
+      const params = new URLSearchParams()
+      if (search) params.set("search", search)
+      if (regionFilter) params.set("region", regionFilter)
+      if (verifiedOnly) params.set("verified", "true")
+      params.set("limit", "50")
+
+      try {
+        const res = await fetch(`/api/contractors?${params}`)
+        const data = await res.json()
+        if (!ignore) {
+          setContractors(data.contractors || [])
+          setTotal(data.total || 0)
+        }
+      } catch {
+        if (!ignore) setContractors([])
+      } finally {
+        if (!ignore) setLoading(false)
+      }
+    }
+
+    const timer = setTimeout(fetchContractors, search ? 300 : 0)
+    return () => {
+      ignore = true
+      clearTimeout(timer)
+    }
+  }, [regionFilter, verifiedOnly, search])
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">

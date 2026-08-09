@@ -10,7 +10,7 @@ function OrderSuccessContent() {
   const searchParams = useSearchParams()
   const reference = searchParams.get("reference")
   const [verified, setVerified] = useState(false)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(!reference)
 
   useEffect(() => {
     if (reference) {
@@ -20,8 +20,6 @@ function OrderSuccessContent() {
           if (data.status === "success") setVerified(true)
         })
         .finally(() => setLoading(false))
-    } else {
-      setLoading(false)
     }
   }, [reference])
 

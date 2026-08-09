@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import type { Prisma } from "@prisma/client"
 
 export const dynamic = "force-dynamic"
 
@@ -12,7 +13,7 @@ export async function GET(req: NextRequest) {
   const limit = Math.min(Number(searchParams.get("limit")) || 50, 100)
   const offset = Number(searchParams.get("offset")) || 0
 
-  const where: any = { status: "active" }
+  const where: Prisma.ContractorWhereInput = { status: "active" }
 
   if (verified === "true") where.verified = true
 

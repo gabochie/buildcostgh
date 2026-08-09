@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react"
 import { usePathname, useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useSyncExternalStore } from "react"
 import Link from "next/link"
 import {
   LayoutDashboard, ShoppingBag, MessageSquare, Users, Mail,
@@ -27,14 +27,16 @@ const navItems = [
   { href: "/admin?tab=settings", label: "Settings", icon: Settings },
 ]
 
+const emptySubscribe = () => () => {}
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession()
   const pathname = usePathname()
   const router = useRouter()
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [searchParams, setSearchParams] = useState("")
-
-  useEffect(() => { setSearchParams(window.location.search) }, [])
+  const searchParams = useSyncExternalStore(emptySubscribe, () =>
+    typeof window !== "undefined" ? window.location.search : ""
+  )
 
   useEffect(() => {
     if (status === "unauthenticated" && pathname !== "/admin") {

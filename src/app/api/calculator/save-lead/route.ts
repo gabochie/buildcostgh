@@ -1,11 +1,13 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
+import { isAdmin } from "@/lib/api-auth"
+import { checkRateLimit } from "@/lib/rate-limit"
 
 export async function GET() {
   const session = await auth()
-  if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!isAdmin(session?.user)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   }
 
   const leads = await prisma.calculatorLead.findMany({
@@ -16,8 +18,14 @@ export async function GET() {
   return NextResponse.json(leads)
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    const ip = request.headers.get("x-forwarded-for") || "unknown"
+    const limit = await checkRateLimit(ip, { maxAttempts: 5, windowMs: 60000, useDb: false })
+    if (!limit.allowed) {
+      return NextResponse.json({ error: limit.message || "Too many requests" }, { status: 429 })
+    }
+
     const { email, bedrooms, location, floorArea, floors } = await request.json()
 
     if (!email) {

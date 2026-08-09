@@ -246,7 +246,7 @@ export default function PricingPage() {
 
   const handleBuyNow = (pkgId: string) => {
     if (pkgId === "free") {
-      window.location.href = "/calculator"
+      window.location.assign("/calculator")
       return
     }
     setSelected(pkgId)
