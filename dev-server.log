@@ -526,3 +526,4 @@ Error: Error: invalid type: unit value, expected usize
  GET /api/auth/session 200 in 8.2s (next.js: 15ms, proxy.ts: 8.2s, application-code: 4ms)
  GET /api/maintenance-status 200 in 627ms (next.js: 1594µs, proxy.ts: 4ms, application-code: 621ms)
  GET /api/auth/session 200 in 659ms (next.js: 5ms, proxy.ts: 651ms, application-code: 3ms)
+[?25h
