@@ -6,11 +6,12 @@ import { useEffect, useState, useSyncExternalStore } from "react"
 import Link from "next/link"
 import {
   LayoutDashboard, ShoppingBag, MessageSquare, Users, Mail,
-  FileText, ListChecks, Settings, LogOut, Menu, X, Loader2, Hammer, Lightbulb, Network, ClipboardCheck, Presentation, Crosshair, Cpu, Building2,
+  FileText, ListChecks, Settings, LogOut, Menu, X, Loader2, Hammer, Lightbulb, Network, ClipboardCheck, Presentation, Crosshair, Cpu, Building2, Bot,
 } from "lucide-react"
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { href: "/admin?tab=cofounder", label: "Cofounder", icon: Bot },
   { href: "/admin?tab=orders", label: "Orders", icon: ShoppingBag },
   { href: "/admin?tab=messages", label: "Messages", icon: MessageSquare },
   { href: "/admin?tab=leads", label: "Leads", icon: Users },
