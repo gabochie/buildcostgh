@@ -36,3 +36,26 @@ export async function validatePackageAmount(packageName: string, clientAmount: n
 
   return expected
 }
+
+const SUBSCRIPTION_PRICES_USD: Record<string, number> = {
+  "monthly-unlimited": 19,
+  "annual-unlimited": 99,
+}
+
+export function getSubscriptionPriceUsd(planSlug: string): number {
+  return SUBSCRIPTION_PRICES_USD[planSlug] ?? 0
+}
+
+export async function validateSubscriptionAmount(planSlug: string, clientAmount: number): Promise<number | null> {
+  const usd = getSubscriptionPriceUsd(planSlug)
+  if (usd <= 0) return null
+
+  const { rate } = await fetchGhsRate()
+  const expected = Math.round(usd * rate)
+  if (expected <= 0) return null
+
+  const diff = Math.abs(clientAmount - expected) / expected
+  if (diff > RATE_TOLERANCE) return null
+
+  return expected
+}

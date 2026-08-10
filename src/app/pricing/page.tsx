@@ -217,6 +217,17 @@ export default function PricingPage() {
       .catch(() => {})
   }, [])
 
+  useEffect(() => {
+    const status = new URLSearchParams(window.location.search).get("payment")
+    if (!status) return
+    if (status === "success") toast.success("Payment successful — your subscription is now active!")
+    else if (status === "failed") toast.error("Payment failed. Please try again.")
+    else if (status === "pending") toast.info("Payment is being processed. We'll activate your subscription once confirmed.")
+    else if (status === "amount_mismatch") toast.error("Payment amount did not match. Please contact support.")
+    else toast.error("Payment could not be verified. Please try again.")
+    window.history.replaceState({}, "", "/pricing")
+  }, [])
+
   const rate = rates.GHS || 15.5
   const fmtPrice = (usd: number) => {
     if (currency === "USD") return `$${usd.toLocaleString()}`
@@ -234,6 +245,10 @@ export default function PricingPage() {
   const [loading, setLoading] = useState(false)
   const [formVisible, setFormVisible] = useState<string | null>(null)
 
+  const [subForm, setSubForm] = useState({ fullName: "", email: "", phone: "" })
+  const [subFormVisible, setSubFormVisible] = useState<string | null>(null)
+  const [subLoading, setSubLoading] = useState(false)
+
   const selectedPackage = packages.find((p) => p.id === (formVisible || selected))
 
   const handleBuyNow = (pkgId: string) => {
@@ -243,6 +258,40 @@ export default function PricingPage() {
     }
     setSelected(pkgId)
     setFormVisible(pkgId)
+  }
+
+  const planSlugFor = (id: string) => (id === "annual" ? "annual-unlimited" : "monthly-unlimited")
+
+  const handleSubscribe = async (e: React.FormEvent, plan: (typeof subscriptionPlans)[number]) => {
+    e.preventDefault()
+    if (!subForm.fullName || !subForm.email) return
+
+    setSubLoading(true)
+    try {
+      const res = await fetch("/api/subscriptions/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName: subForm.fullName,
+          email: subForm.email,
+          phone: subForm.phone,
+          planSlug: planSlugFor(plan.id),
+          amount: Math.round(plan.priceUsd * rate),
+        }),
+      })
+
+      const data = await res.json()
+
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl
+      } else {
+        toast.error(data.error || "Failed to initialize payment. Please try again.")
+      }
+    } catch {
+      toast.error("Something went wrong. Please try again.")
+    } finally {
+      setSubLoading(false)
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -437,21 +486,82 @@ export default function PricingPage() {
                     </div>
 
                     <div className="mt-6">
-                      <button
-                        onClick={() => {
-                          toast.info("Subscription payments coming soon — Paystack integration in progress")
-                        }}
-                        className={`group relative w-full overflow-hidden rounded-xl px-5 py-3 text-sm font-bold text-white transition-all ${
-                          plan.popular
-                            ? "bg-gradient-gold hover:shadow-lg hover:shadow-gold/25"
-                            : "bg-emerald-600 hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-200"
-                        }`}
-                      >
-                        <span className="relative z-10 flex items-center justify-center gap-1.5">
-                          Subscribe{isAnnual ? " Annual" : " Monthly"}
-                          <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                        </span>
-                      </button>
+                      {subFormVisible === plan.id ? (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          className="pt-1 border-t border-gray-100"
+                        >
+                          <form onSubmit={(e) => handleSubscribe(e, plan)} className="space-y-3">
+                            <div className="space-y-1.5">
+                              <Label htmlFor={`sub-name-${plan.id}`} className="text-xs">Full Name *</Label>
+                              <Input
+                                id={`sub-name-${plan.id}`}
+                                value={subForm.fullName}
+                                onChange={(e) => setSubForm({ ...subForm, fullName: e.target.value })}
+                                required
+                                placeholder="Your name"
+                                className="h-9 text-sm"
+                              />
+                            </div>
+                            <div className="space-y-1.5">
+                              <Label htmlFor={`sub-email-${plan.id}`} className="text-xs">Email *</Label>
+                              <Input
+                                id={`sub-email-${plan.id}`}
+                                type="email"
+                                value={subForm.email}
+                                onChange={(e) => setSubForm({ ...subForm, email: e.target.value })}
+                                required
+                                placeholder="your@email.com"
+                                className="h-9 text-sm"
+                              />
+                            </div>
+                            <div className="space-y-1.5">
+                              <Label htmlFor={`sub-phone-${plan.id}`} className="text-xs">Phone</Label>
+                              <Input
+                                id={`sub-phone-${plan.id}`}
+                                type="tel"
+                                value={subForm.phone}
+                                onChange={(e) => setSubForm({ ...subForm, phone: e.target.value })}
+                                placeholder="+233 XX XXX XXXX"
+                                className="h-9 text-sm"
+                              />
+                            </div>
+                            <Button
+                              type="submit"
+                              disabled={subLoading || !subForm.fullName || !subForm.email}
+                              className={`w-full text-white border-0 hover:opacity-90 h-10 text-sm ${
+                                plan.popular ? "bg-gradient-gold" : "bg-emerald-600 hover:bg-emerald-700"
+                              }`}
+                            >
+                              {subLoading ? (
+                                <>
+                                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing...
+                                </>
+                              ) : (
+                                <>
+                                  <Smartphone className="h-4 w-4" />
+                                  Pay {fmtBtnLabel(plan.priceUsd)} — Card &amp; Mobile Money
+                                </>
+                              )}
+                            </Button>
+                          </form>
+                        </motion.div>
+                      ) : (
+                        <button
+                          onClick={() => setSubFormVisible(plan.id)}
+                          className={`group relative w-full overflow-hidden rounded-xl px-5 py-3 text-sm font-bold text-white transition-all ${
+                            plan.popular
+                              ? "bg-gradient-gold hover:shadow-lg hover:shadow-gold/25"
+                              : "bg-emerald-600 hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-200"
+                          }`}
+                        >
+                          <span className="relative z-10 flex items-center justify-center gap-1.5">
+                            Subscribe{isAnnual ? " Annual" : " Monthly"}
+                            <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                          </span>
+                        </button>
+                      )}
                     </div>
 
                     <div className="mt-3 flex items-center justify-center gap-3 text-[10px] text-gray-400">

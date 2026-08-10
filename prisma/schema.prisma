@@ -251,9 +251,12 @@ model Plan {
 model Subscription {
   id                    String   @id @default(cuid())
   email                 String
+  fullName              String?
+  phone                 String?
   userId                String?
   planId                String
   status                String   @default("active")
+  amount                Int?
   reference             String   @unique
   currentPeriodStart    DateTime @default(now())
   currentPeriodEnd      DateTime
