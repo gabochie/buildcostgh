@@ -6,7 +6,7 @@
 - Local:         http://localhost:3000
 - Network:       http://192.168.173.88:3000
 - Environments: .env.local, .env
-✓ Ready in 890ms
+✓ Ready in 789ms
 ⚠ Attempted to load @next/swc-win32-x64-msvc, but an error occurred: \\?\C:\Users\user\Documents\GitHub\buildcostgh\node_modules\@next\swc-win32-x64-msvc\next-swc.win32-x64-msvc.node is not a valid Win32 application.
 \\?\C:\Users\user\Documents\GitHub\buildcostgh\node_modules\@next\swc-win32-x64-msvc\next-swc.win32-x64-msvc.node
 ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
@@ -18,11 +18,23 @@
 
   Skipping creating a lockfile at C:\Users\user\Documents\GitHub\buildcostgh\.next\dev\lock because we're using WASM bindings
 
- GET /api/maintenance-status 200 in 3.9s (next.js: 1168ms, proxy.ts: 312ms, application-code: 2.4s)
- GET /api/maintenance-status 200 in 527ms (next.js: 5ms, proxy.ts: 17ms, application-code: 505ms)
- GET /api/maintenance-status 200 in 17ms (next.js: 4ms, proxy.ts: 7ms, application-code: 5ms)
- GET /api/maintenance-status 200 in 18ms (next.js: 3ms, proxy.ts: 8ms, application-code: 7ms)
-○ Compiling / ...
+ GET /api/maintenance-status 200 in 2.5s (next.js: 1049ms, proxy.ts: 10ms, application-code: 1416ms)
+○ Compiling /calculator ...
 [BuildCost GH] Agents initialized: PaymentBot, ReportBot, LeadBot, PriceBot, SupportBot
 [BuildCost GH] MCP Server: buildcostgh-mcp v1.0.0
- GET / 200 in 13.1s (next.js: 12.2s, proxy.ts: 44ms, application-code: 861ms)
+ GET /calculator 200 in 9.7s (next.js: 6.4s, proxy.ts: 2.3s, application-code: 910ms)
+ GET /api/maintenance-status 200 in 266ms (next.js: 12ms, proxy.ts: 6ms, application-code: 247ms)
+ GET /api/maintenance-status 200 in 273ms (next.js: 8ms, proxy.ts: 13ms, application-code: 252ms)
+[BuildCost GH] Agents initialized: PaymentBot, ReportBot, LeadBot, PriceBot, SupportBot
+[BuildCost GH] MCP Server: buildcostgh-mcp v1.0.0
+ GET /calculator 200 in 1190ms (next.js: 83ms, proxy.ts: 406ms, application-code: 702ms)
+ GET /api/auth/session 200 in 2.9s (next.js: 2.5s, proxy.ts: 415ms, application-code: 37ms)
+ GET /api/maintenance-status 200 in 37ms (next.js: 6ms, proxy.ts: 22ms, application-code: 9ms)
+ GET /api/auth/session 200 in 102ms (next.js: 25ms, proxy.ts: 65ms, application-code: 11ms)
+ GET /api/maintenance-status 200 in 573ms (next.js: 4ms, proxy.ts: 9ms, application-code: 560ms)
+ GET /calculator 200 in 993ms (next.js: 9ms, proxy.ts: 597ms, application-code: 387ms)
+ GET /api/maintenance-status 200 in 18ms (next.js: 6ms, proxy.ts: 8ms, application-code: 5ms)
+ GET /api/maintenance-status 200 in 20ms (next.js: 4ms, proxy.ts: 8ms, application-code: 8ms)
+ GET /api/auth/session 200 in 88ms (next.js: 30ms, proxy.ts: 47ms, application-code: 10ms)
+ GET /api/maintenance-status 200 in 13ms (next.js: 2ms, proxy.ts: 5ms, application-code: 5ms)
+ GET /api/auth/session 200 in 51ms (next.js: 12ms, proxy.ts: 30ms, application-code: 9ms)

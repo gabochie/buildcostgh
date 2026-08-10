@@ -11,6 +11,7 @@ import { Roadmap } from "@/components/admin/Roadmap"
 import { CofounderTab } from "@/components/admin/CofounderTab"
 import { formatCurrency } from "@/lib/utils"
 import { getClientGhsRate } from "@/lib/currency"
+import { toast } from "sonner"
 import {
   Loader2, TrendingUp, ShoppingBag, MessageSquare, Users, Mail,
   FileText, ExternalLink, Eye, Shield, CheckCircle, Clock,
@@ -27,6 +28,7 @@ type Stats = {
 type Order = {
   id: string; fullName: string; email: string; package: string
   amount: number; status: string; reference: string; reportUrl: string | null; createdAt: string
+  phone: string | null; metadata: Record<string, unknown> | null
 }
 
 type ContactMessage = {
@@ -137,6 +139,11 @@ export default function AdminPage() {
     }
   }, [session])
 
+  const refreshOrders = async () => {
+    const o = await fetch("/api/orders").then(r => r.json()).catch(() => null)
+    if (o) setOrders(o)
+  }
+
   if (status === "loading") {
     return (
       <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
@@ -195,7 +202,7 @@ export default function AdminPage() {
           }}
         />
       ) : tab === "orders" ? (
-        <OrdersTab orders={orders} />
+        <OrdersTab orders={orders} onRefresh={refreshOrders} />
       ) : tab === "messages" ? (
         <MessagesTab messages={messages} />
       ) : tab === "leads" ? (

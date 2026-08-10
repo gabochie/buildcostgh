@@ -244,6 +244,10 @@ export default function PricingPage() {
   const [form, setForm] = useState({ fullName: "", email: "", phone: "", notes: "" })
   const [loading, setLoading] = useState(false)
   const [formVisible, setFormVisible] = useState<string | null>(null)
+  const [payMethod, setPayMethod] = useState<"online" | "momo">("online")
+  const [manualForm, setManualForm] = useState({ transactionRef: "", payerPhone: "", notes: "" })
+  const [manualLoading, setManualLoading] = useState(false)
+  const [manualSubmitted, setManualSubmitted] = useState<{ reference: string; amount: number } | null>(null)
 
   const [subForm, setSubForm] = useState({ fullName: "", email: "", phone: "" })
   const [subFormVisible, setSubFormVisible] = useState<string | null>(null)
@@ -258,6 +262,9 @@ export default function PricingPage() {
     }
     setSelected(pkgId)
     setFormVisible(pkgId)
+    setPayMethod("online")
+    setManualSubmitted(null)
+    setManualForm({ transactionRef: "", payerPhone: "", notes: "" })
   }
 
   const planSlugFor = (id: string) => (id === "annual" ? "annual-unlimited" : "monthly-unlimited")
@@ -324,6 +331,42 @@ export default function PricingPage() {
       toast.error("Something went wrong. Please try again.")
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleManualSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!formVisible || !form.fullName || !form.email || !selectedPackage) return
+
+    setManualLoading(true)
+    try {
+      const res = await fetch("/api/orders/manual", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName: form.fullName,
+          email: form.email,
+          phone: form.phone,
+          packageName: selectedPackage.name,
+          amount: Math.round(selectedPackage.price * rate),
+          transactionRef: manualForm.transactionRef,
+          payerPhone: manualForm.payerPhone,
+          notes: manualForm.notes,
+        }),
+      })
+
+      const data = await res.json()
+
+      if (data.reference) {
+        setManualSubmitted({ reference: data.reference, amount: data.amount })
+        toast.success("Proof submitted — we'll confirm your payment shortly.")
+      } else {
+        toast.error(data.error || "Failed to submit payment proof. Please try again.")
+      }
+    } catch {
+      toast.error("Something went wrong. Please try again.")
+    } finally {
+      setManualLoading(false)
     }
   }
 
@@ -739,22 +782,121 @@ export default function PricingPage() {
                             className="h-9 text-sm"
                           />
                         </div>
-                        <Button
-                          type="submit"
-                          disabled={loading || !form.fullName || !form.email}
-                          className="w-full bg-gradient-primary text-white border-0 hover:opacity-90 h-10 text-sm"
-                        >
-                          {loading ? (
-                            <>
-                              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing...
-                            </>
-                          ) : (
-                            <>
-                              <Smartphone className="h-4 w-4" />
-                              Pay {fmtBtnLabel(pkg.price)} — Card &amp; Mobile Money
-                            </>
-                          )}
-                        </Button>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setPayMethod("online")}
+                            className={`inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-semibold transition-all ${
+                              payMethod === "online"
+                                ? "border-emerald-500 bg-emerald-50 text-emerald-700"
+                                : "border-gray-200 bg-white text-gray-500 hover:border-gray-300"
+                            }`}
+                          >
+                            <CreditCard className="h-3.5 w-3.5" /> Pay Online
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setPayMethod("momo")}
+                            className={`inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-semibold transition-all ${
+                              payMethod === "momo"
+                                ? "border-emerald-500 bg-emerald-50 text-emerald-700"
+                                : "border-gray-200 bg-white text-gray-500 hover:border-gray-300"
+                            }`}
+                          >
+                            <Smartphone className="h-3.5 w-3.5" /> Pay Manually (MoMo)
+                          </button>
+                        </div>
+
+                        {payMethod === "online" ? (
+                          <Button
+                            type="submit"
+                            disabled={loading || !form.fullName || !form.email}
+                            className="w-full bg-gradient-primary text-white border-0 hover:opacity-90 h-10 text-sm"
+                          >
+                            {loading ? (
+                              <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing...
+                              </>
+                            ) : (
+                              <>
+                                <Smartphone className="h-4 w-4" />
+                                Pay {fmtBtnLabel(pkg.price)} — Card &amp; Mobile Money
+                              </>
+                            )}
+                          </Button>
+                        ) : manualSubmitted ? (
+                          <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-center space-y-1.5">
+                            <CheckCircle className="h-8 w-8 text-emerald-600 mx-auto" />
+                            <p className="text-sm font-bold text-emerald-800">Thank you, {form.fullName}!</p>
+                            <p className="text-xs text-emerald-700 leading-relaxed">
+                              We've received your proof of payment for the {selectedPackage!.name} report.
+                              Your order reference is <span className="font-semibold">{manualSubmitted.reference}</span>.
+                              We'll confirm your payment and deliver your report by email within 24 hours.
+                            </p>
+                            <p className="text-xs text-emerald-600">Questions? Call +233 53 936 4716</p>
+                          </div>
+                        ) : (
+                          <div className="space-y-3">
+                            <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3.5 space-y-1">
+                              <p className="text-xs font-semibold text-emerald-800">
+                                Send exactly <span className="font-bold">{fmtBtnLabel(pkg.price)}</span> via Mobile Money to:
+                              </p>
+                              <p className="text-lg font-bold text-emerald-700 tracking-wide">+233 24 326 2019</p>
+                              <p className="text-[10px] text-emerald-600">Need help? Call +233 53 936 4716</p>
+                            </div>
+                            <div className="space-y-1.5">
+                              <Label htmlFor={`momo-ref-${pkg.id}`} className="text-xs">MoMo Transaction Reference *</Label>
+                              <Input
+                                id={`momo-ref-${pkg.id}`}
+                                value={manualForm.transactionRef}
+                                onChange={(e) => setManualForm({ ...manualForm, transactionRef: e.target.value })}
+                                required
+                                placeholder="e.g. 6P9X2Q3A1B"
+                                className="h-9 text-sm"
+                              />
+                            </div>
+                            <div className="space-y-1.5">
+                              <Label htmlFor={`momo-phone-${pkg.id}`} className="text-xs">Your MoMo Number *</Label>
+                              <Input
+                                id={`momo-phone-${pkg.id}`}
+                                type="tel"
+                                value={manualForm.payerPhone}
+                                onChange={(e) => setManualForm({ ...manualForm, payerPhone: e.target.value })}
+                                required
+                                placeholder="+233 XX XXX XXXX"
+                                className="h-9 text-sm"
+                              />
+                            </div>
+                            <div className="space-y-1.5">
+                              <Label htmlFor={`momo-notes-${pkg.id}`} className="text-xs">Notes (optional)</Label>
+                              <Input
+                                id={`momo-notes-${pkg.id}`}
+                                value={manualForm.notes}
+                                onChange={(e) => setManualForm({ ...manualForm, notes: e.target.value })}
+                                placeholder="Anything we should know"
+                                className="h-9 text-sm"
+                              />
+                            </div>
+                            <Button
+                              type="button"
+                              onClick={handleManualSubmit}
+                              disabled={manualLoading || !manualForm.transactionRef || !manualForm.payerPhone}
+                              className="w-full bg-gradient-primary text-white border-0 hover:opacity-90 h-10 text-sm"
+                            >
+                              {manualLoading ? (
+                                <>
+                                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...
+                                </>
+                              ) : (
+                                <>
+                                  <CheckCircle className="h-4 w-4" />
+                                  I've Sent Payment — Submit Proof
+                                </>
+                              )}
+                            </Button>
+                          </div>
+                        )}
                       </form>
                     </motion.div>
                   )}
