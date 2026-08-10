@@ -14,6 +14,8 @@ export default async function proxy(req: NextRequest) {
   try {
     const res = await fetch(new URL("/api/maintenance-status", req.url), {
       headers: { "Cache-Control": "no-cache" },
+      // Never let the maintenance check hang a request (cold DB, etc.)
+      signal: AbortSignal.timeout(2000),
     })
     const { enabled } = await res.json()
 

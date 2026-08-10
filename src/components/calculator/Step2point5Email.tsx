@@ -25,6 +25,8 @@ export function Step2point5Email() {
       const res = await fetch("/api/calculator/save-lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        // If the save hangs (slow DB), still advance the user — the catch below proceeds
+        signal: AbortSignal.timeout(8000),
         body: JSON.stringify({
           email: localEmail,
           bedrooms: step1.bedrooms,
