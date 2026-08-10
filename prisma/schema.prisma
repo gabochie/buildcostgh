@@ -254,8 +254,11 @@ model Subscription {
   userId                String?
   planId                String
   status                String   @default("active")
+  reference             String   @unique
   currentPeriodStart    DateTime @default(now())
   currentPeriodEnd      DateTime
+  expresspayToken       String?
+  transactionId         String?
   paystackSubscriptionCode String?
   cancelAtPeriodEnd     Boolean  @default(false)
   canceledAt            DateTime?
@@ -267,6 +270,7 @@ model Subscription {
 
   @@index([email])
   @@index([status])
+  @@index([reference])
 }
 
 model Contractor {
