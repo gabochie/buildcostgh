@@ -1,4 +1,6 @@
 import puppeteer from "puppeteer"
+import { buildTieredReportHtml, type ContractorInsight } from "./report-content"
+import type { CalculatorInput, EstimateResult } from "@/types"
 
 export async function generatePdf(html: string, options?: { landscape?: boolean; format?: "A4" | "Letter" }): Promise<Buffer> {
   const browser = await puppeteer.launch({
@@ -61,23 +63,28 @@ export function buildReportHtml(title: string, contentHtml: string, meta?: { dat
 </html>`
 }
 
-export async function generateOrderReport(order: { fullName: string; reference: string; package: string; amount: number; createdAt: Date }): Promise<Buffer> {
+export async function generateOrderReport(order: {
+  fullName: string
+  reference: string
+  package: string
+  amount: number
+  createdAt: Date
+  input?: CalculatorInput | null
+  estimate?: EstimateResult | null
+  contractors?: ContractorInsight[]
+}): Promise<Buffer> {
   const html = buildReportHtml(
     `Order Report — ${order.reference}`,
-    `
-    <h2 style="color:#059669;">Order Summary</h2>
-    <table>
-      <tr><th>Reference</th><td>${order.reference}</td></tr>
-      <tr><th>Customer</th><td>${order.fullName}</td></tr>
-      <tr><th>Package</th><td>${order.package}</td></tr>
-      <tr><th>Amount</th><td>GHS ${order.amount.toLocaleString()}</td></tr>
-      <tr><th>Date</th><td>${order.createdAt.toLocaleDateString("en-GH", { year: "numeric", month: "long", day: "numeric" })}</td></tr>
-      <tr><th>Status</th><td><span class="badge badge-emerald">Paid</span></td></tr>
-    </table>
-    <h2 style="color:#059669; margin-top:30px;">What's Included</h2>
-    <p>Your ${order.package} package includes access to detailed cost breakdowns, material quantities, and expert construction insights for your project in Ghana.</p>
-    <p>Visit <a href="https://buildcostgh.com/dashboard/orders">buildcostgh.com/dashboard/orders</a> to access your report online anytime.</p>
-    `,
+    buildTieredReportHtml({
+      fullName: order.fullName,
+      reference: order.reference,
+      packageName: order.package,
+      amount: order.amount,
+      createdAt: order.createdAt,
+      input: order.input ?? null,
+      estimate: order.estimate ?? null,
+      contractors: order.contractors ?? [],
+    }),
     { date: order.createdAt.toLocaleDateString("en-GH", { year: "numeric", month: "long", day: "numeric" }), customerName: order.fullName }
   )
   return generatePdf(html)

@@ -9,6 +9,7 @@ import { CheckCircle, Loader2, Shield, Star, ChevronRight, Smartphone, CreditCar
 import { toast } from "sonner"
 import { GradientButton } from "@/components/shared"
 import { getClientGhsRate } from "@/lib/currency"
+import { useCalculatorStore } from "@/store/calculatorStore"
 import Link from "next/link"
 import {
   Accordion,
@@ -38,7 +39,21 @@ const featureIcons: Record<string, typeof CheckCircle> = {
   "Project monitoring tools": Hammer,
 }
 
-const packages = [
+type Deliverable = { type: "PDF" | "XLSX" | "CALL"; label: string }
+
+type PricingPackage = {
+  id: string
+  name: string
+  price: number
+  description: string
+  color: string
+  features: string[]
+  popular?: boolean
+  savings?: string
+  deliverables: Deliverable[]
+}
+
+const packages: PricingPackage[] = [
   {
     id: "free",
     name: "Free Trial",
@@ -51,6 +66,7 @@ const packages = [
       "Region comparison tool",
       "Email delivery of summary",
     ],
+    deliverables: [],
   },
   {
     id: "basic",
@@ -64,6 +80,9 @@ const packages = [
       "Itemised cost breakdown",
       "Regional cost notes",
       "DIY vs contractor comparison",
+    ],
+    deliverables: [
+      { type: "PDF", label: "Cost Summary PDF — 2 pages (order summary, project overview, cost breakdown, regional notes, DIY vs contractor)" },
     ],
   },
   {
@@ -82,6 +101,10 @@ const packages = [
       "Vetted contractor contacts",
     ],
     savings: "Save 37% vs Basic",
+    deliverables: [
+      { type: "PDF", label: "Detailed Report PDF — 6-8 pages (everything in Basic plus material quantities, 12-month timeline, contractor insights)" },
+      { type: "XLSX", label: "Editable Excel workbook — 4 sheets (summary, cost breakdown, material quantities, payment timeline)" },
+    ],
   },
   {
     id: "premium",
@@ -98,6 +121,11 @@ const packages = [
       "Project monitoring tools",
     ],
     savings: "Save 50% vs Basic",
+    deliverables: [
+      { type: "PDF", label: "Premium Report PDF — 10-12 pages (everything in Detailed plus expert tips and a monitoring checklist)" },
+      { type: "XLSX", label: "Editable Excel workbook — 4 sheets (summary, cost breakdown, material quantities, payment timeline)" },
+      { type: "CALL", label: "30-minute consultation call with a cost advisor" },
+    ],
   },
 ]
 
@@ -253,6 +281,8 @@ export default function PricingPage() {
   const [subFormVisible, setSubFormVisible] = useState<string | null>(null)
   const [subLoading, setSubLoading] = useState(false)
 
+  const { step1, step2, step3, step4, result } = useCalculatorStore()
+
   const selectedPackage = packages.find((p) => p.id === (formVisible || selected))
 
   const handleBuyNow = (pkgId: string) => {
@@ -316,7 +346,11 @@ export default function PricingPage() {
           phone: form.phone,
           packageName: selectedPackage!.name,
           amount: Math.round(selectedPackage!.price * rate),
-          metadata: { notes: form.notes },
+          metadata: {
+            notes: form.notes,
+            calculatorInputs: { ...step1, ...step2, ...step3, ...step4 },
+            estimate: result,
+          },
         }),
       })
 
@@ -352,6 +386,8 @@ export default function PricingPage() {
           transactionRef: manualForm.transactionRef,
           payerPhone: manualForm.payerPhone,
           notes: manualForm.notes,
+          calculatorInputs: { ...step1, ...step2, ...step3, ...step4 },
+          estimate: result,
         }),
       })
 
@@ -701,6 +737,28 @@ export default function PricingPage() {
                       ))}
                     </ul>
                   </div>
+
+                  {pkg.deliverables.length > 0 && (
+                    <div className="mt-4 pt-4 border-t border-gray-100">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-2.5">What You Receive</p>
+                      <ul className="space-y-2">
+                        {pkg.deliverables.map((d) => (
+                          <li key={d.type + d.label} className="flex items-start gap-2.5">
+                            <span className={`px-1.5 py-0.5 rounded-md text-[9px] font-bold uppercase flex-shrink-0 mt-0.5 ${
+                              d.type === "PDF"
+                                ? "bg-red-50 text-red-600 border border-red-100"
+                                : d.type === "XLSX"
+                                  ? "bg-green-50 text-green-700 border border-green-100"
+                                  : "bg-blue-50 text-blue-700 border border-blue-100"
+                            }`}>
+                              {d.type}
+                            </span>
+                            <span className="text-xs text-gray-500 leading-snug">{d.label}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
 
                   <div className="mt-6">
                     {isFree ? (

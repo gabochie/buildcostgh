@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic"
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { fullName, email, phone, packageName, amount, transactionRef, payerPhone, notes } = body
+    const { fullName, email, phone, packageName, amount, transactionRef, payerPhone, notes, calculatorInputs, estimate } = body
 
     if (!fullName || !email || !packageName || !amount || !transactionRef) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
@@ -38,6 +38,8 @@ export async function POST(request: NextRequest) {
           transactionRef,
           payerPhone: payerPhone || null,
           notes: notes || null,
+          calculatorInputs: calculatorInputs || null,
+          estimate: estimate || null,
         },
       },
     })

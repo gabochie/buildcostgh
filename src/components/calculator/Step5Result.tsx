@@ -55,7 +55,7 @@ function AnimatedPrice({ value }: { value: number }) {
 }
 
 export function Step5Result() {
-  const { step1, step2, step3, step4, setStep, reset } = useCalculatorStore()
+  const { step1, step2, step3, step4, setStep, reset, setResult: persistResult } = useCalculatorStore()
   const [result, setResult] = useState<EstimateResult | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -71,8 +71,10 @@ export function Step5Result() {
           body: JSON.stringify({ ...step1, ...step2, ...step3, ...step4 }),
         })
         const data = await res.json()
-        if (res.ok) setResult(data)
-        else setError(data.error)
+        if (res.ok) {
+          setResult(data)
+          persistResult(data)
+        } else setError(data.error)
       } catch {
         setError("Failed to calculate estimate. Please try again.")
       } finally {
