@@ -2,11 +2,12 @@
 > buildcostgh@0.1.0 dev
 > next dev --webpack
 
+⚠ Port 3000 is in use by process 4792, using available port 3001 instead.
 ▲ Next.js 16.2.10 (webpack)
-- Local:         http://localhost:3000
-- Network:       http://192.168.173.88:3000
+- Local:         http://localhost:3001
+- Network:       http://169.254.83.107:3001
 - Environments: .env.local, .env
-✓ Ready in 789ms
+✓ Ready in 1497ms
 ⚠ Attempted to load @next/swc-win32-x64-msvc, but an error occurred: \\?\C:\Users\user\Documents\GitHub\buildcostgh\node_modules\@next\swc-win32-x64-msvc\next-swc.win32-x64-msvc.node is not a valid Win32 application.
 \\?\C:\Users\user\Documents\GitHub\buildcostgh\node_modules\@next\swc-win32-x64-msvc\next-swc.win32-x64-msvc.node
 ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
@@ -18,23 +19,45 @@
 
   Skipping creating a lockfile at C:\Users\user\Documents\GitHub\buildcostgh\.next\dev\lock because we're using WASM bindings
 
- GET /api/maintenance-status 200 in 2.5s (next.js: 1049ms, proxy.ts: 10ms, application-code: 1416ms)
+ GET /api/maintenance-status 200 in 2.0s (next.js: 1393ms, proxy.ts: 15ms, application-code: 614ms)
 ○ Compiling /calculator ...
 [BuildCost GH] Agents initialized: PaymentBot, ReportBot, LeadBot, PriceBot, SupportBot
 [BuildCost GH] MCP Server: buildcostgh-mcp v1.0.0
- GET /calculator 200 in 9.7s (next.js: 6.4s, proxy.ts: 2.3s, application-code: 910ms)
- GET /api/maintenance-status 200 in 266ms (next.js: 12ms, proxy.ts: 6ms, application-code: 247ms)
- GET /api/maintenance-status 200 in 273ms (next.js: 8ms, proxy.ts: 13ms, application-code: 252ms)
+ GET /calculator 200 in 15.6s (next.js: 11.0s, proxy.ts: 2.4s, application-code: 2.3s)
+ GET /api/maintenance-status 200 in 326ms (next.js: 21ms, proxy.ts: 19ms, application-code: 286ms)
+ GET /api/maintenance-status 200 in 1996ms (next.js: 3ms, proxy.ts: 40ms, application-code: 1953ms)
+ GET /api/maintenance-status 200 in 315ms (next.js: 12ms, proxy.ts: 17ms, application-code: 285ms)
 [BuildCost GH] Agents initialized: PaymentBot, ReportBot, LeadBot, PriceBot, SupportBot
 [BuildCost GH] MCP Server: buildcostgh-mcp v1.0.0
- GET /calculator 200 in 1190ms (next.js: 83ms, proxy.ts: 406ms, application-code: 702ms)
- GET /api/auth/session 200 in 2.9s (next.js: 2.5s, proxy.ts: 415ms, application-code: 37ms)
- GET /api/maintenance-status 200 in 37ms (next.js: 6ms, proxy.ts: 22ms, application-code: 9ms)
- GET /api/auth/session 200 in 102ms (next.js: 25ms, proxy.ts: 65ms, application-code: 11ms)
- GET /api/maintenance-status 200 in 573ms (next.js: 4ms, proxy.ts: 9ms, application-code: 560ms)
- GET /calculator 200 in 993ms (next.js: 9ms, proxy.ts: 597ms, application-code: 387ms)
- GET /api/maintenance-status 200 in 18ms (next.js: 6ms, proxy.ts: 8ms, application-code: 5ms)
- GET /api/maintenance-status 200 in 20ms (next.js: 4ms, proxy.ts: 8ms, application-code: 8ms)
- GET /api/auth/session 200 in 88ms (next.js: 30ms, proxy.ts: 47ms, application-code: 10ms)
- GET /api/maintenance-status 200 in 13ms (next.js: 2ms, proxy.ts: 5ms, application-code: 5ms)
- GET /api/auth/session 200 in 51ms (next.js: 12ms, proxy.ts: 30ms, application-code: 9ms)
+ GET /calculator 200 in 1288ms (next.js: 106ms, proxy.ts: 638ms, application-code: 543ms)
+ GET /api/auth/session 200 in 6.0s (next.js: 3.9s, proxy.ts: 2.0s, application-code: 20ms)
+ GET /api/maintenance-status 200 in 20ms (next.js: 3ms, proxy.ts: 12ms, application-code: 5ms)
+ GET /api/auth/session 200 in 67ms (next.js: 21ms, proxy.ts: 38ms, application-code: 8ms)
+ GET /api/maintenance-status 200 in 511ms (next.js: 6ms, proxy.ts: 12ms, application-code: 493ms)
+ GET /calculator 200 in 952ms (next.js: 6ms, proxy.ts: 552ms, application-code: 395ms)
+ GET /api/maintenance-status 200 in 17ms (next.js: 4ms, proxy.ts: 8ms, application-code: 6ms)
+ GET /calculator 200 in 169ms (next.js: 4ms, proxy.ts: 33ms, application-code: 132ms)
+ GET /api/maintenance-status 200 in 20ms (next.js: 4ms, proxy.ts: 9ms, application-code: 8ms)
+ GET /api/auth/session 200 in 78ms (next.js: 27ms, proxy.ts: 41ms, application-code: 10ms)
+ GET /api/maintenance-status 200 in 18ms (next.js: 7ms, proxy.ts: 7ms, application-code: 4ms)
+ GET /api/auth/session 200 in 52ms (next.js: 10ms, proxy.ts: 36ms, application-code: 6ms)
+ GET /api/maintenance-status 200 in 17ms (next.js: 3ms, proxy.ts: 8ms, application-code: 5ms)
+ GET /api/maintenance-status 200 in 22ms (next.js: 5ms, proxy.ts: 11ms, application-code: 6ms)
+ GET /api/auth/session 200 in 70ms (next.js: 9ms, proxy.ts: 47ms, application-code: 13ms)
+ GET /api/maintenance-status 200 in 12ms (next.js: 3ms, proxy.ts: 6ms, application-code: 4ms)
+ GET /api/auth/session 200 in 57ms (next.js: 23ms, proxy.ts: 27ms, application-code: 6ms)
+ GET /api/maintenance-status 200 in 17ms (next.js: 4ms, proxy.ts: 7ms, application-code: 6ms)
+ GET /api/auth/session 200 in 50ms (next.js: 11ms, proxy.ts: 32ms, application-code: 6ms)
+ GET /api/maintenance-status 200 in 624ms (next.js: 3ms, proxy.ts: 6ms, application-code: 615ms)
+ GET /calculator 200 in 758ms (next.js: 5ms, proxy.ts: 643ms, application-code: 110ms)
+ GET /api/maintenance-status 200 in 16ms (next.js: 2ms, proxy.ts: 7ms, application-code: 6ms)
+ GET /api/maintenance-status 200 in 19ms (next.js: 3ms, proxy.ts: 11ms, application-code: 6ms)
+ GET /api/auth/session 200 in 91ms (next.js: 25ms, proxy.ts: 51ms, application-code: 15ms)
+ GET /api/maintenance-status 200 in 28ms (next.js: 8ms, proxy.ts: 16ms, application-code: 3ms)
+ GET /api/maintenance-status 200 in 30ms (next.js: 14ms, proxy.ts: 13ms, application-code: 4ms)
+ POST /api/calculator 200 in 1868ms (next.js: 1780ms, proxy.ts: 58ms, application-code: 30ms)
+ POST /api/calculator 200 in 1868ms (next.js: 1769ms, proxy.ts: 69ms, application-code: 30ms)
+ GET /api/maintenance-status 200 in 1994ms (next.js: 1767ms, proxy.ts: 24ms, application-code: 202ms)
+ GET /api/auth/session 200 in 2.1s (next.js: 81ms, proxy.ts: 2.0s, application-code: 11ms)
+ GET /api/maintenance-status 200 in 14ms (next.js: 3ms, proxy.ts: 6ms, application-code: 5ms)
+ GET /api/auth/session 200 in 45ms (next.js: 6ms, proxy.ts: 32ms, application-code: 7ms)

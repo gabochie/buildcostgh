@@ -109,7 +109,9 @@ export function useHasHydrated() {
   const [hasHydrated, setHasHydrated] = useState(false)
 
   useEffect(() => {
-    useCalculatorStore.persist.rehydrate().then(() => setHasHydrated(true))
+    const unsub = useCalculatorStore.persist.onFinishHydration(() => setHasHydrated(true))
+    useCalculatorStore.persist.rehydrate()
+    return unsub
   }, [])
 
   return hasHydrated
