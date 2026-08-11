@@ -282,6 +282,7 @@ model Contractor {
   slug             String   @unique
   title            String?
   phone            String
+  whatsapp         String?
   email            String?
   website          String?
   description      String
@@ -294,13 +295,109 @@ model Contractor {
   reviewCount      Int      @default(0)
   portfolioImages  Json     @default("[]")
   logo             String?
+
+  // ── Company profile ──
+  companyType      String? // e.g. "Limited Liability", "Sole Proprietorship"
+  legalName        String?
+  yearEstablished  Int?
+  registrationStatus String? // registered | not-verified | unknown
+  contactPerson    String?
+
+  // ── Location ──
+  region           String? // Ghana admin region e.g. "Greater Accra", "Ashanti"
+  district         String?
+  city             String?
+  locality         String?
+  address          String?
+  latitude         Float?
+  longitude        Float?
+  googlePlaceId    String?
+  googleMapsUrl    String?
+
+  // ── Classification (Ministry of Works & Housing / MRH) ──
+  mwhBuildingClass   String? // D1-D4
+  mwhCivilClass      String? // K1-K4
+  mwhElectricalClass String? // E1-E3
+  mwhPlumbingClass   String? // G1-G2
+  mrhRoadClass       String? // MRH road classification
+  classificationSource String? // "Ministry of Works and Housing" | "Ministry of Roads & Highways" | null
+  classificationVerifiedAt DateTime?
+  classificationExpiry DateTime?
+  classificationNotVerified Boolean @default(false) // true when evidence is insufficient
+
+  // ── Project scale ──
+  projectScale     String? // Small | Medium | Large | Major | Enterprise
+
+  // ── Digital presence / Google ──
+  googleRating     Float?
+  googleReviewCount Int?
+  googleLastChecked DateTime?
+  socialProfiles   Json     @default("{}") // { facebook?, instagram?, linkedin?, youtube?, x? }
+
+  // ── Verification & data quality ──
+  verificationLevel Int    @default(0) // 0-5 per Master Prompt §9
+  dataConfidence   Int      @default(50) // 0-100
+  lastVerifiedAt   DateTime?
+  nextVerificationAt DateTime?
+
+  // ── Marketplace ──
+  featured         Boolean  @default(false)
+  sponsored        Boolean  @default(false)
+
   regions          ContractorRegion[]
+  sources          ContractorSource[]
+  projects         ContractorProject[]
   status           String   @default("active")
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
   @@index([status, verified])
   @@index([slug])
+  @@index([region])
+  @@index([mwhBuildingClass])
+  @@index([featured])
+}
+
+model ContractorSource {
+  id           String     @id @default(cuid())
+  contractorId String
+  contractor   Contractor @relation(fields: [contractorId], references: [id], onDelete: Cascade)
+  tier         String     @default("secondary") // official | primary | secondary | user-generated
+  label        String
+  url          String?
+  discoveredAt DateTime   @default(now())
+  lastVerifiedAt DateTime?
+  confidence   Int        @default(50) // 0-100
+
+  @@index([contractorId])
+}
+
+model ContractorProject {
+  id           String     @id @default(cuid())
+  contractorId String
+  contractor   Contractor @relation(fields: [contractorId], references: [id], onDelete: Cascade)
+  name         String
+  type         String? // Residential | Commercial | Institutional | Infrastructure | Industrial
+  location     String?
+  year         Int?
+  value        Float? // GHS
+  description  String?
+  imageUrl     String?
+  sort         Int        @default(0)
+
+  @@index([contractorId])
+}
+
+model ClassificationGrade {
+  id          String @id @default(cuid())
+  category    String // building | civil | electrical | plumbing | road
+  grade       String // D1, D2, K1, E1, G1, MRH-A, ...
+  title       String
+  description String?
+  sort        Int    @default(0)
+
+  @@unique([category, grade])
+  @@index([category])
 }
 
 model ContractorRegion {
