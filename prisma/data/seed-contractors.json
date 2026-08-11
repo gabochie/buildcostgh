@@ -217,33 +217,6 @@
     ]
   },
   {
-    "name": "Andoc Prestige Limited",
-    "slug": null,
-    "title": "General Contractor",
-    "phone": null,
-    "website": "https://andocprestige.com/",
-    "description": "Andoc Prestige Limited is a general contractor operating in Accra. Contact details verified via its Google Business Profile.",
-    "specialties": [
-      "General Contracting"
-    ],
-    "registrationStatus": "not-verified",
-    "region": "Greater Accra",
-    "city": "Accra",
-    "address": "Mpehuasem, Accra, Ghana",
-    "classificationNotVerified": true,
-    "googleRating": 4.5,
-    "googleReviewCount": null,
-    "dataConfidence": 70,
-    "sources": [
-      {
-        "tier": "primary",
-        "label": "Google Business Profile",
-        "url": "https://andocprestige.com/",
-        "confidence": 75
-      }
-    ]
-  },
-  {
     "name": "Aperto Homes",
     "slug": null,
     "title": "General Contractor",
@@ -266,33 +239,6 @@
         "tier": "primary",
         "label": "Google Business Profile",
         "url": "http://www.apertohomes.com/",
-        "confidence": 75
-      }
-    ]
-  },
-  {
-    "name": "Beaufort Properties (Head Office)",
-    "slug": null,
-    "title": "General Contractor",
-    "phone": null,
-    "website": "http://beaufortghana.com/",
-    "description": "Beaufort Properties (Head Office) is a general contractor operating in Accra. Contact details verified via its Google Business Profile.",
-    "specialties": [
-      "General Contracting"
-    ],
-    "registrationStatus": "not-verified",
-    "region": "Greater Accra",
-    "city": "Accra",
-    "address": "12 Boundary Rd, Accra, Ghana",
-    "classificationNotVerified": true,
-    "googleRating": 4.5,
-    "googleReviewCount": null,
-    "dataConfidence": 70,
-    "sources": [
-      {
-        "tier": "primary",
-        "label": "Google Business Profile",
-        "url": "http://beaufortghana.com/",
         "confidence": 75
       }
     ]
@@ -325,7 +271,7 @@
     ]
   },
   {
-    "name": "Blackrock Developers Limited (Homes | Commercial Properties | Infastructure)",
+    "name": "Blackrock Developers Limited (Homes",
     "slug": null,
     "title": "General Contractor",
     "phone": null,
@@ -347,33 +293,6 @@
         "tier": "primary",
         "label": "Google Business Profile",
         "url": "https://www.blackrockdevelopers.com.gh/",
-        "confidence": 75
-      }
-    ]
-  },
-  {
-    "name": "Blackstar Industries Ghana Limited",
-    "slug": null,
-    "title": "General Contractor",
-    "phone": null,
-    "website": "http://www.blackstarheavylift.gh.com/",
-    "description": "Blackstar Industries Ghana Limited is a general contractor operating in Tema. Contact details verified via its Google Business Profile.",
-    "specialties": [
-      "General Contracting"
-    ],
-    "registrationStatus": "not-verified",
-    "region": "Greater Accra",
-    "city": "Tema",
-    "address": "Plot # 8 Tema Heavy Industrial Area, Tema, Ghana",
-    "classificationNotVerified": true,
-    "googleRating": 5,
-    "googleReviewCount": null,
-    "dataConfidence": 70,
-    "sources": [
-      {
-        "tier": "primary",
-        "label": "Google Business Profile",
-        "url": "http://www.blackstarheavylift.gh.com/",
         "confidence": 75
       }
     ]
@@ -482,33 +401,6 @@
         "tier": "primary",
         "label": "Google Business Profile",
         "url": "http://casasolutions.com.gh/",
-        "confidence": 75
-      }
-    ]
-  },
-  {
-    "name": "Dalal Steel Industries - Ghana",
-    "slug": null,
-    "title": "General Contractor",
-    "phone": null,
-    "website": "http://ghana.dalalsteel.com/",
-    "description": "Dalal Steel Industries - Ghana is a general contractor operating in Tema. Contact details verified via its Google Business Profile.",
-    "specialties": [
-      "General Contracting"
-    ],
-    "registrationStatus": "not-verified",
-    "region": "Greater Accra",
-    "city": "Tema",
-    "address": "Tema Roundabout, Accra-Aflao Road, Opposite to Renault Trucks, Accra, Ghana",
-    "classificationNotVerified": true,
-    "googleRating": 5,
-    "googleReviewCount": null,
-    "dataConfidence": 70,
-    "sources": [
-      {
-        "tier": "primary",
-        "label": "Google Business Profile",
-        "url": "http://ghana.dalalsteel.com/",
         "confidence": 75
       }
     ]
@@ -649,33 +541,6 @@
     ]
   },
   {
-    "name": "Erapo Designs Ltd. East Legon, Accra",
-    "slug": null,
-    "title": "General Contractor",
-    "phone": null,
-    "website": "http://erapodesigns.com/",
-    "description": "Erapo Designs Ltd. East Legon, Accra is a general contractor operating in Accra. Contact details verified via its Google Business Profile.",
-    "specialties": [
-      "General Contracting"
-    ],
-    "registrationStatus": "not-verified",
-    "region": "Greater Accra",
-    "city": "Accra",
-    "address": "Accra, Ghana",
-    "classificationNotVerified": true,
-    "googleRating": 4.5,
-    "googleReviewCount": null,
-    "dataConfidence": 70,
-    "sources": [
-      {
-        "tier": "primary",
-        "label": "Google Business Profile",
-        "url": "http://erapodesigns.com/",
-        "confidence": 75
-      }
-    ]
-  },
-  {
     "name": "FA Masters",
     "slug": null,
     "title": "General Contractor",
@@ -730,7 +595,7 @@
     ]
   },
   {
-    "name": "GREAT HOMES | Cedar Ridge Residences",
+    "name": "GREAT HOMES",
     "slug": null,
     "title": "General Contractor",
     "phone": null,
@@ -752,33 +617,6 @@
         "tier": "primary",
         "label": "Google Business Profile",
         "url": "https://greathomesgh.com/",
-        "confidence": 75
-      }
-    ]
-  },
-  {
-    "name": "Ghana Expert Builders",
-    "slug": null,
-    "title": "General Contractor",
-    "phone": null,
-    "website": "https://ghanaexpertbuilders.com/",
-    "description": "Ghana Expert Builders is a general contractor operating in Tema. Contact details verified via its Google Business Profile.",
-    "specialties": [
-      "General Contracting"
-    ],
-    "registrationStatus": "not-verified",
-    "region": "Greater Accra",
-    "city": "Tema",
-    "address": "awoshie - anya main road Tema Motorway pokuase, amasaman, road, Ghana",
-    "classificationNotVerified": true,
-    "googleRating": 4.9,
-    "googleReviewCount": null,
-    "dataConfidence": 70,
-    "sources": [
-      {
-        "tier": "primary",
-        "label": "Google Business Profile",
-        "url": "https://ghanaexpertbuilders.com/",
         "confidence": 75
       }
     ]
@@ -833,87 +671,6 @@
         "tier": "primary",
         "label": "Google Business Profile",
         "url": "https://holocombe.com/",
-        "confidence": 75
-      }
-    ]
-  },
-  {
-    "name": "ILLAS Realty",
-    "slug": null,
-    "title": "General Contractor",
-    "phone": null,
-    "website": "https://illasrealty.com/",
-    "description": "ILLAS Realty is a general contractor operating in Accra. Contact details verified via its Google Business Profile.",
-    "specialties": [
-      "General Contracting"
-    ],
-    "registrationStatus": "not-verified",
-    "region": "Greater Accra",
-    "city": "Accra",
-    "address": "SSNIT Emporium, 7th Floor, Accra, Ghana",
-    "classificationNotVerified": true,
-    "googleRating": 4.6,
-    "googleReviewCount": null,
-    "dataConfidence": 70,
-    "sources": [
-      {
-        "tier": "primary",
-        "label": "Google Business Profile",
-        "url": "https://illasrealty.com/",
-        "confidence": 75
-      }
-    ]
-  },
-  {
-    "name": "JL Properties Ghana",
-    "slug": null,
-    "title": "General Contractor",
-    "phone": null,
-    "website": "https://jlpropertiesgh.com/",
-    "description": "JL Properties Ghana is a general contractor operating in Accra. Contact details verified via its Google Business Profile.",
-    "specialties": [
-      "General Contracting"
-    ],
-    "registrationStatus": "not-verified",
-    "region": "Greater Accra",
-    "city": "Accra",
-    "address": "Accra, Ghana",
-    "classificationNotVerified": true,
-    "googleRating": 4.6,
-    "googleReviewCount": null,
-    "dataConfidence": 70,
-    "sources": [
-      {
-        "tier": "primary",
-        "label": "Google Business Profile",
-        "url": "https://jlpropertiesgh.com/",
-        "confidence": 75
-      }
-    ]
-  },
-  {
-    "name": "Jodi Construction",
-    "slug": null,
-    "title": "General Contractor",
-    "phone": null,
-    "website": "http://jodiconstruction.com/",
-    "description": "Jodi Construction is a general contractor operating in Accra. Contact details verified via its Google Business Profile.",
-    "specialties": [
-      "General Contracting"
-    ],
-    "registrationStatus": "not-verified",
-    "region": "Greater Accra",
-    "city": "Accra",
-    "address": "City Galleria Mall, 4th Floor, T15, Spintex Rd, Accra, Ghana",
-    "classificationNotVerified": true,
-    "googleRating": 4.3,
-    "googleReviewCount": null,
-    "dataConfidence": 70,
-    "sources": [
-      {
-        "tier": "primary",
-        "label": "Google Business Profile",
-        "url": "http://jodiconstruction.com/",
         "confidence": 75
       }
     ]
@@ -1000,60 +757,6 @@
     ]
   },
   {
-    "name": "Lakeside Estate",
-    "slug": null,
-    "title": "General Contractor",
-    "phone": null,
-    "website": "http://lakesideestate.com/",
-    "description": "Lakeside Estate is a general contractor operating in Accra. Contact details verified via its Google Business Profile.",
-    "specialties": [
-      "General Contracting"
-    ],
-    "registrationStatus": "not-verified",
-    "region": "Greater Accra",
-    "city": "Accra",
-    "address": "lakeside estate, Adenta Municipality, Ghana",
-    "classificationNotVerified": true,
-    "googleRating": 4.1,
-    "googleReviewCount": null,
-    "dataConfidence": 70,
-    "sources": [
-      {
-        "tier": "primary",
-        "label": "Google Business Profile",
-        "url": "http://lakesideestate.com/",
-        "confidence": 75
-      }
-    ]
-  },
-  {
-    "name": "M. Barbisotti & Sons Ltd",
-    "slug": null,
-    "title": "General Contractor",
-    "phone": null,
-    "website": "http://www.mbsghana.com/",
-    "description": "M. Barbisotti & Sons Ltd is a general contractor operating in Tema. Contact details verified via its Google Business Profile.",
-    "specialties": [
-      "General Contracting"
-    ],
-    "registrationStatus": "not-verified",
-    "region": "Greater Accra",
-    "city": "Tema",
-    "address": "Akasanoma Rd, Tema, Ghana",
-    "classificationNotVerified": true,
-    "googleRating": 4.1,
-    "googleReviewCount": null,
-    "dataConfidence": 70,
-    "sources": [
-      {
-        "tier": "primary",
-        "label": "Google Business Profile",
-        "url": "http://www.mbsghana.com/",
-        "confidence": 75
-      }
-    ]
-  },
-  {
     "name": "Mawums limited",
     "slug": null,
     "title": "General Contractor",
@@ -1135,7 +838,7 @@
     ]
   },
   {
-    "name": "Molders - Developers Ltd ( Real Estate )",
+    "name": "Molders - Developers Ltd",
     "slug": null,
     "title": "General Contractor",
     "phone": null,
@@ -1157,33 +860,6 @@
         "tier": "primary",
         "label": "Google Business Profile",
         "url": "https://moldersdevelopers.com/",
-        "confidence": 75
-      }
-    ]
-  },
-  {
-    "name": "Mountain heights realty & construction",
-    "slug": null,
-    "title": "General Contractor",
-    "phone": null,
-    "website": "https://www.mountainheightsgh.com/",
-    "description": "Mountain heights realty & construction is a general contractor operating in Accra. Contact details verified via its Google Business Profile.",
-    "specialties": [
-      "General Contracting"
-    ],
-    "registrationStatus": "not-verified",
-    "region": "Greater Accra",
-    "city": "Accra",
-    "address": "Nikoi St, Accra, Ghana",
-    "classificationNotVerified": true,
-    "googleRating": 5,
-    "googleReviewCount": null,
-    "dataConfidence": 70,
-    "sources": [
-      {
-        "tier": "primary",
-        "label": "Google Business Profile",
-        "url": "https://www.mountainheightsgh.com/",
         "confidence": 75
       }
     ]
@@ -1324,33 +1000,6 @@
     ]
   },
   {
-    "name": "Prestigio Planners and Properties Ltd",
-    "slug": null,
-    "title": "General Contractor",
-    "phone": null,
-    "website": "http://www.prestigioghana.com/",
-    "description": "Prestigio Planners and Properties Ltd is a general contractor operating in Accra. Contact details verified via its Google Business Profile.",
-    "specialties": [
-      "General Contracting"
-    ],
-    "registrationStatus": "not-verified",
-    "region": "Greater Accra",
-    "city": "Accra",
-    "address": "13 Iris St, Accra, Ghana",
-    "classificationNotVerified": true,
-    "googleRating": 5,
-    "googleReviewCount": null,
-    "dataConfidence": 70,
-    "sources": [
-      {
-        "tier": "primary",
-        "label": "Google Business Profile",
-        "url": "http://www.prestigioghana.com/",
-        "confidence": 75
-      }
-    ]
-  },
-  {
     "name": "Quao Realty",
     "slug": null,
     "title": "General Contractor",
@@ -1373,33 +1022,6 @@
         "tier": "primary",
         "label": "Google Business Profile",
         "url": "http://www.quaorealty.com/",
-        "confidence": 75
-      }
-    ]
-  },
-  {
-    "name": "SBJ Properties",
-    "slug": null,
-    "title": "General Contractor",
-    "phone": null,
-    "website": "http://www.sbjproperties.com/",
-    "description": "SBJ Properties is a general contractor operating in Accra. Contact details verified via its Google Business Profile.",
-    "specialties": [
-      "General Contracting"
-    ],
-    "registrationStatus": "not-verified",
-    "region": "Greater Accra",
-    "city": "Accra",
-    "address": "Adjirganor, No. 9 Adjirganor Road, Accra, Ghana",
-    "classificationNotVerified": true,
-    "googleRating": 4.1,
-    "googleReviewCount": null,
-    "dataConfidence": 70,
-    "sources": [
-      {
-        "tier": "primary",
-        "label": "Google Business Profile",
-        "url": "http://www.sbjproperties.com/",
         "confidence": 75
       }
     ]
@@ -1454,141 +1076,6 @@
         "tier": "primary",
         "label": "Google Business Profile",
         "url": "http://www.spaceaccra.com/",
-        "confidence": 75
-      }
-    ]
-  },
-  {
-    "name": "Sethi Nyame Dua Apartments",
-    "slug": null,
-    "title": "General Contractor",
-    "phone": null,
-    "website": "http://www.nyameduagh.com/",
-    "description": "Sethi Nyame Dua Apartments is a general contractor operating in Tema. Contact details verified via its Google Business Profile.",
-    "specialties": [
-      "General Contracting"
-    ],
-    "registrationStatus": "not-verified",
-    "region": "Greater Accra",
-    "city": "Tema",
-    "address": "Sethi Realty Dr, Tema, Ghana",
-    "classificationNotVerified": true,
-    "googleRating": 4.2,
-    "googleReviewCount": null,
-    "dataConfidence": 70,
-    "sources": [
-      {
-        "tier": "primary",
-        "label": "Google Business Profile",
-        "url": "http://www.nyameduagh.com/",
-        "confidence": 75
-      }
-    ]
-  },
-  {
-    "name": "Spektra Global",
-    "slug": null,
-    "title": "General Contractor",
-    "phone": null,
-    "website": "http://www.spektra.global/",
-    "description": "Spektra Global is a general contractor operating in Tema. Contact details verified via its Google Business Profile.",
-    "specialties": [
-      "General Contracting"
-    ],
-    "registrationStatus": "not-verified",
-    "region": "Greater Accra",
-    "city": "Tema",
-    "address": "Baba Yara Rd, Tema, Ghana",
-    "classificationNotVerified": true,
-    "googleRating": 4.5,
-    "googleReviewCount": null,
-    "dataConfidence": 70,
-    "sources": [
-      {
-        "tier": "primary",
-        "label": "Google Business Profile",
-        "url": "http://www.spektra.global/",
-        "confidence": 75
-      }
-    ]
-  },
-  {
-    "name": "VAAL Real Estate Ghana",
-    "slug": null,
-    "title": "General Contractor",
-    "phone": null,
-    "website": "https://vaal.com.gh/",
-    "description": "VAAL Real Estate Ghana is a general contractor operating in Accra. Contact details verified via its Google Business Profile.",
-    "specialties": [
-      "General Contracting"
-    ],
-    "registrationStatus": "not-verified",
-    "region": "Greater Accra",
-    "city": "Accra",
-    "address": "One Airport Square, 3rd floor, office no. 4, Accra, Ghana",
-    "classificationNotVerified": true,
-    "googleRating": 4.7,
-    "googleReviewCount": null,
-    "dataConfidence": 70,
-    "sources": [
-      {
-        "tier": "primary",
-        "label": "Google Business Profile",
-        "url": "https://vaal.com.gh/",
-        "confidence": 75
-      }
-    ]
-  },
-  {
-    "name": "Whitewall Properties Limited",
-    "slug": null,
-    "title": "General Contractor",
-    "phone": null,
-    "website": "http://www.whitewallproperties.com/",
-    "description": "Whitewall Properties Limited is a general contractor operating in Accra. Contact details verified via its Google Business Profile.",
-    "specialties": [
-      "General Contracting"
-    ],
-    "registrationStatus": "not-verified",
-    "region": "Greater Accra",
-    "city": "Accra",
-    "address": "21 Dzanifio St, Accra, Ghana",
-    "classificationNotVerified": true,
-    "googleRating": 4.2,
-    "googleReviewCount": null,
-    "dataConfidence": 70,
-    "sources": [
-      {
-        "tier": "primary",
-        "label": "Google Business Profile",
-        "url": "http://www.whitewallproperties.com/",
-        "confidence": 75
-      }
-    ]
-  },
-  {
-    "name": "Wonda World Estates",
-    "slug": null,
-    "title": "General Contractor",
-    "phone": null,
-    "website": "https://wondaworldestates.com/",
-    "description": "Wonda World Estates is a general contractor operating in Accra. Contact details verified via its Google Business Profile.",
-    "specialties": [
-      "General Contracting"
-    ],
-    "registrationStatus": "not-verified",
-    "region": "Greater Accra",
-    "city": "Accra",
-    "address": "No.15, Avenue Lincoln, Ridge, Accra, Ghana",
-    "classificationNotVerified": true,
-    "googleRating": 4.8,
-    "googleReviewCount": null,
-    "dataConfidence": 70,
-    "sources": [
-      {
-        "tier": "primary",
-        "label": "Google Business Profile",
-        "url": "https://wondaworldestates.com/",
         "confidence": 75
       }
     ]
@@ -1996,41 +1483,6 @@
     ]
   },
   {
-    "name": "General Construction & Dev. Limited",
-    "slug": null,
-    "title": "Registered Contractor — Class A1B1",
-    "website": null,
-    "description": "General Construction & Dev. Limited is a registered building and civil engineering contractor classified A1, B1. Listed on the official List of Contractors in Good Standing (October 2025).",
-    "specialties": [
-      "Building Construction",
-      "Civil Works / Infrastructure"
-    ],
-    "companyType": "Limited Liability",
-    "legalName": "General Construction & Dev. Limited",
-    "registrationStatus": "registered",
-    "region": "Greater Accra",
-    "city": "Accra",
-    "address": "Box 6779, Accra",
-    "mwhBuildingClass": "A1",
-    "mwhCivilClass": "B1",
-    "mwhElectricalClass": null,
-    "licenseInfo": "A1B1",
-    "classificationSource": "Ministry of Works and Housing / ABCEC — List of Contractors in Good Standing (2 Oct 2025)",
-    "classificationNotVerified": false,
-    "classificationVerifiedAt": "2022-01-17",
-    "classificationExpiry": "2024-01-17",
-    "projectScale": "Major",
-    "dataConfidence": 85,
-    "sources": [
-      {
-        "tier": "official",
-        "label": "Ministry of Works and Housing / ABCEC — List of Contractors in Good Standing (2 Oct 2025)",
-        "url": null,
-        "confidence": 95
-      }
-    ]
-  },
-  {
     "name": "Insaan Ghana Limited",
     "slug": null,
     "title": "Registered Contractor — Class A1B1",
@@ -2136,41 +1588,6 @@
     ]
   },
   {
-    "name": "John Murphy Construction Ltd",
-    "slug": null,
-    "title": "Registered Contractor — Class A1B1",
-    "website": null,
-    "description": "John Murphy Construction Ltd is a registered building and civil engineering contractor classified A1, B1. Listed on the official List of Contractors in Good Standing (October 2025).",
-    "specialties": [
-      "Building Construction",
-      "Civil Works / Infrastructure"
-    ],
-    "companyType": "Limited Liability",
-    "legalName": "John Murphy Construction Ltd",
-    "registrationStatus": "registered",
-    "region": "Greater Accra",
-    "city": "Accra",
-    "address": "Box AN 15096, Accra-North",
-    "mwhBuildingClass": "A1",
-    "mwhCivilClass": "B1",
-    "mwhElectricalClass": null,
-    "licenseInfo": "A1B1",
-    "classificationSource": "Ministry of Works and Housing / ABCEC — List of Contractors in Good Standing (2 Oct 2025)",
-    "classificationNotVerified": false,
-    "classificationVerifiedAt": "2022-09-06",
-    "classificationExpiry": "2024-09-06",
-    "projectScale": "Major",
-    "dataConfidence": 85,
-    "sources": [
-      {
-        "tier": "official",
-        "label": "Ministry of Works and Housing / ABCEC — List of Contractors in Good Standing (2 Oct 2025)",
-        "url": null,
-        "confidence": 95
-      }
-    ]
-  },
-  {
     "name": "Joshob Construction Co. Ltd",
     "slug": null,
     "title": "Registered Contractor — Class A1B1",
@@ -2206,29 +1623,101 @@
     ]
   },
   {
-    "name": "Juttap Limited",
+    "name": "Kros Project Limited",
     "slug": null,
     "title": "Registered Contractor — Class A1B1",
     "website": null,
-    "description": "Juttap Limited is a registered building and civil engineering contractor classified A1, B1. Listed on the official List of Contractors in Good Standing (October 2025).",
+    "description": "Kros Project Limited is a registered building and civil engineering contractor classified A1, B1. Listed on the official List of Contractors in Good Standing (October 2025).",
     "specialties": [
       "Building Construction",
       "Civil Works / Infrastructure"
     ],
     "companyType": "Limited Liability",
-    "legalName": "Juttap Limited",
+    "legalName": "Kros Project Limited",
     "registrationStatus": "registered",
     "region": "Greater Accra",
-    "city": "Accra",
-    "address": "Box DL 762, Accra",
+    "city": "Cantonments",
+    "address": "Box CT 1519, Cantonments -Accra",
     "mwhBuildingClass": "A1",
     "mwhCivilClass": "B1",
     "mwhElectricalClass": null,
     "licenseInfo": "A1B1",
     "classificationSource": "Ministry of Works and Housing / ABCEC — List of Contractors in Good Standing (2 Oct 2025)",
     "classificationNotVerified": false,
-    "classificationVerifiedAt": "2022-09-22",
-    "classificationExpiry": "2024-09-22",
+    "classificationVerifiedAt": "2022-03-23",
+    "classificationExpiry": "2027-05-27",
+    "projectScale": "Major",
+    "dataConfidence": 85,
+    "sources": [
+      {
+        "tier": "official",
+        "label": "Ministry of Works and Housing / ABCEC — List of Contractors in Good Standing (2 Oct 2025)",
+        "url": null,
+        "confidence": 95
+      }
+    ]
+  },
+  {
+    "name": "Midwest Contract Works Ltd",
+    "slug": null,
+    "title": "Registered Contractor — Class A1B1",
+    "website": null,
+    "description": "Midwest Contract Works Ltd is a registered building and civil engineering contractor classified A1, B1. Listed on the official List of Contractors in Good Standing (October 2025).",
+    "specialties": [
+      "Building Construction",
+      "Civil Works / Infrastructure"
+    ],
+    "companyType": "Limited Liability",
+    "legalName": "Midwest Contract Works Ltd",
+    "registrationStatus": "registered",
+    "region": "Greater Accra",
+    "city": "Accra",
+    "address": "Box YK 1431 Kanda Accra",
+    "mwhBuildingClass": "A1",
+    "mwhCivilClass": "B1",
+    "mwhElectricalClass": null,
+    "licenseInfo": "A1B1",
+    "classificationSource": "Ministry of Works and Housing / ABCEC — List of Contractors in Good Standing (2 Oct 2025)",
+    "classificationNotVerified": false,
+    "classificationVerifiedAt": "2021-11-30",
+    "classificationExpiry": "2028-06-08",
+    "projectScale": "Major",
+    "dataConfidence": 85,
+    "sources": [
+      {
+        "tier": "official",
+        "label": "Ministry of Works and Housing / ABCEC — List of Contractors in Good Standing (2 Oct 2025)",
+        "url": null,
+        "confidence": 95
+      }
+    ]
+  },
+  {
+    "name": "Oswal Investment Ltd",
+    "slug": null,
+    "title": "Registered Contractor — Class A1B1A1B1S1L1",
+    "website": null,
+    "description": "Oswal Investment Ltd is a registered building and civil engineering contractor classified A1, B1, S1, L1. Listed on the official List of Contractors in Good Standing (October 2025).",
+    "specialties": [
+      "Building Construction",
+      "Civil Works / Infrastructure",
+      "Electrical Works",
+      "Specialized Works"
+    ],
+    "companyType": "Limited Liability",
+    "legalName": "Oswal Investment Ltd",
+    "registrationStatus": "registered",
+    "region": "Greater Accra",
+    "city": "Cantonment Accra",
+    "address": "Box CT 3081, Cantonment Accra",
+    "mwhBuildingClass": "A1",
+    "mwhCivilClass": "B1",
+    "mwhElectricalClass": "L1",
+    "licenseInfo": "A1B1A1B1S1L1",
+    "classificationSource": "Ministry of Works and Housing / ABCEC — List of Contractors in Good Standing (2 Oct 2025)",
+    "classificationNotVerified": false,
+    "classificationVerifiedAt": "2022-01-13",
+    "classificationExpiry": "2027-05-02",
     "projectScale": "Major",
     "dataConfidence": 85,
     "sources": [
