@@ -92,6 +92,7 @@ export async function seedContractorsFromResearch(
       projects = [],
       specialties = [],
       socialProfiles,
+      yearsOfExperience,
       name,
       slug,
       description,
@@ -104,6 +105,7 @@ export async function seedContractorsFromResearch(
       slug: slug || slugify(name),
       description: description || "",
       phone: phone || "",
+      yearsOfExperience: yearsOfExperience ?? 0,
       specialties: specialties.length ? specialties : ["General Contracting"],
       status: "active",
       // Verified only when the research found concrete registration evidence.
@@ -114,7 +116,7 @@ export async function seedContractorsFromResearch(
     }
 
     for (const key of Object.keys(data) as (keyof typeof data)[]) {
-      if (data[key] === undefined) delete data[key]
+      if (data[key] === undefined || data[key] === null) delete data[key]
     }
 
     if (socialProfiles && Object.keys(socialProfiles).length) {

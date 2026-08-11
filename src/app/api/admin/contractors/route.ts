@@ -80,6 +80,8 @@ export async function GET() {
   return NextResponse.json(contractors)
 }
 
+type CleanContractorInput = Omit<ContractorInput, "regions" | "sources" | "projects">
+
 // Strip undefined / null-sensitive fields so Prisma doesn't choke on
 // unset optional fields sent from the admin form.
 function sanitizeInput(body: ContractorInput) {
@@ -105,7 +107,7 @@ function sanitizeInput(body: ContractorInput) {
     }
   }
 
-  return { data: clean, regions, sources, projects }
+  return { data: clean as CleanContractorInput, regions, sources, projects }
 }
 
 export async function POST(req: NextRequest) {

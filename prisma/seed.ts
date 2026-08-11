@@ -1,4 +1,7 @@
 import { PrismaClient } from "@prisma/client"
+import fs from "fs"
+import path from "path"
+import { seedContractorsFromResearch, deleteFabricatedContractors } from "./seed-contractors"
 
 const prisma = new PrismaClient()
 
@@ -540,110 +543,20 @@ async function main() {
     })
   }
 
-  const regionMap: Record<string, string> = {}
-  for (const r of await prisma.region.findMany()) {
-    regionMap[r.name] = r.id
-  }
-
-  const contractors = [
-    {
-      name: "Kofi Mensah Constructions",
-      slug: "kofi-mensah-constructions",
-      title: "General Contractor & Building Engineer",
-      phone: "+233 24 123 4567",
-      email: "kofi@kofimensah.com",
-      website: "https://kofimensah.com",
-      description: "With over 15 years of experience in residential and commercial construction across Ghana, Kofi Mensah Constructions delivers quality projects on time and within budget. Specializing in reinforced concrete structures, finishing works, and project management.",
-      specialties: JSON.stringify(["Residential Construction", "Commercial Buildings", "Renovations", "Project Management", "Reinforced Concrete"]),
-      yearsOfExperience: 15,
-      verified: true,
-      rating: 4.8,
-      reviewCount: 23,
-      logo: null,
-      regions: ["Accra", "Kumasi", "Tema"],
-    },
-    {
-      name: "Nana Yaa Building Services",
-      slug: "nana-yaa-building-services",
-      title: "Architect & Interior Design Specialist",
-      phone: "+233 55 987 6543",
-      email: "info@nanayaabuild.com",
-      description: "Nana Yaa Building Services brings modern architectural design to Ghanaian homes. We specialize in contemporary residential projects, space optimization, and eco-friendly building practices. Our team of licensed architects ensures every project meets international standards.",
-      specialties: JSON.stringify(["Architectural Design", "Interior Design", "Eco-Friendly Building", "Space Optimization", "Residential Planning"]),
-      yearsOfExperience: 10,
-      verified: true,
-      insurance: "GLI-2024-8912",
-      licenseInfo: "GIA-ARCH-2024-045",
-      rating: 4.9,
-      reviewCount: 17,
-      logo: null,
-      regions: ["Accra", "Cape Coast", "Takoradi"],
-    },
-    {
-      name: "Asare Brothers Construction",
-      slug: "asare-brothers-construction",
-      title: "Civil Engineer & Infrastructure Developer",
-      phone: "+233 20 456 7890",
-      email: "projects@asarebrothers.com",
-      description: "Asare Brothers Construction is a multi-disciplinary construction firm handling everything from road infrastructure to luxury homes. We pride ourselves on using locally-sourced materials and employing skilled Ghanaian artisans.",
-      specialties: JSON.stringify(["Civil Engineering", "Infrastructure", "Luxury Homes", "Commercial Development", "Material Supply"]),
-      yearsOfExperience: 20,
-      verified: true,
-      rating: 4.7,
-      reviewCount: 31,
-      logo: null,
-      regions: ["Kumasi", "Sunyani", "Techiman", "Goaso"],
-    },
-    {
-      name: "Esi House Builders",
-      slug: "esi-house-builders",
-      title: "Residential Construction & Finishing",
-      phone: "+233 50 111 2233",
-      email: "esi@esibuilders.com",
-      description: "Esi House Builders focuses on high-quality residential construction for Ghanaian families and diaspora clients. We handle the entire build process — from foundation to finishing — with transparent pricing and regular progress updates.",
-      specialties: JSON.stringify(["Residential Construction", "Finishing Works", "Diaspora Builds", "Renovations", "Project Tracking"]),
-      yearsOfExperience: 8,
-      verified: false,
-      rating: 4.5,
-      reviewCount: 12,
-      logo: null,
-      regions: ["Accra", "Tema", "Koforidua"],
-    },
-    {
-      name: "Northern Heritage Developers",
-      slug: "northern-heritage-developers",
-      title: "Regional Development Specialists",
-      phone: "+233 37 222 3344",
-      email: "info@northernheritage.com",
-      description: "Northern Heritage Developers specializes in construction projects across Northern Ghana. We understand the unique building requirements of the Savannah, Northern, and Upper East regions, offering cost-effective solutions using regional materials and techniques.",
-      specialties: JSON.stringify(["Regional Construction", "Affordable Housing", "Commercial Buildings", "Community Projects", "Material Sourcing"]),
-      yearsOfExperience: 12,
-      verified: true,
-      rating: 4.6,
-      reviewCount: 19,
-      logo: null,
-      regions: ["Tamale", "Bolgatanga", "Wa", "Damongo", "Nalerigu"],
-    },
+  const fabricatedSlugs = [
+    "kofi-mensah-constructions",
+    "nana-yaa-building-services",
+    "asare-brothers-construction",
+    "esi-house-builders",
+    "northern-heritage-developers",
   ]
+  const deleted = await deleteFabricatedContractors(prisma, fabricatedSlugs)
+  if (deleted > 0) console.log(`Removed ${deleted} fabricated demo contractor(s)`)
 
-  for (const c of contractors) {
-    const { regions: regionNames, ...data } = c
-    const contractor = await prisma.contractor.upsert({
-      where: { slug: data.slug },
-      update: {},
-      create: data,
-    })
-    for (const regionName of regionNames) {
-      const regionId = regionMap[regionName]
-      if (regionId) {
-        await prisma.contractorRegion.upsert({
-          where: { contractorId_regionId: { contractorId: contractor.id, regionId } },
-          update: {},
-          create: { contractorId: contractor.id, regionId },
-        })
-      }
-    }
-  }
+  const seedPath = path.join(process.cwd(), "prisma", "data", "seed-contractors.json")
+  const researched = JSON.parse(fs.readFileSync(seedPath, "utf8"))
+  const { created, updated } = await seedContractorsFromResearch(prisma, researched)
+  console.log(`Seeded ${created} contractors from curated research data (${updated} updated), total ${researched.length}`)
 
   console.log(`Database seeded successfully with ${posts.length} blog posts (4 flood-related, 5 diaspora) — all with hero images, 2026 dates, and SEO-optimized excerpts!`)
 }
