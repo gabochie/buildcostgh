@@ -1425,7 +1425,7 @@
   {
     "name": "Oswal Investment Ltd",
     "slug": null,
-    "title": "Registered Contractor — Class A1B1A1B1S1L1",
+    "title": "Registered Contractor — Class A1B1S1L1",
     "website": null,
     "description": "Oswal Investment Ltd is a registered building and civil engineering contractor classified A1, B1, S1, L1. Listed on the official List of Contractors in Good Standing (October 2025).",
     "specialties": [
@@ -1443,7 +1443,7 @@
     "mwhBuildingClass": "A1",
     "mwhCivilClass": "B1",
     "mwhElectricalClass": "L1",
-    "licenseInfo": "A1B1A1B1S1L1",
+    "licenseInfo": "A1B1S1L1",
     "classificationSource": "Ministry of Works and Housing / ABCEC — List of Contractors in Good Standing (2 Oct 2025)",
     "classificationNotVerified": false,
     "classificationVerifiedAt": "2022-01-13",
