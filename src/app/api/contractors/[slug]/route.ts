@@ -8,7 +8,11 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
 
   const contractor = await prisma.contractor.findUnique({
     where: { slug },
-    include: { regions: { include: { region: true } } },
+    include: {
+      regions: { include: { region: true } },
+      sources: { orderBy: { confidence: "desc" } },
+      projects: { orderBy: { sort: "asc" } },
+    },
   })
 
   if (!contractor || contractor.status !== "active") {
