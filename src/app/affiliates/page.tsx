@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { Hammer, Users, DollarSign, Percent, ExternalLink, ArrowRight, CheckCircle } from "lucide-react"
+import { SafeEmail, EmailText } from "@/components/shared/SafeEmail"
 
 export const metadata: Metadata = {
   title: "Affiliates - BuildCost GH",
@@ -66,13 +67,13 @@ export default function AffiliatesPage() {
             <p className="text-emerald-100/70 text-sm max-w-lg mx-auto mb-6">
               Join our affiliate program and earn 20% commission on every referral. No minimum payout. Paid monthly.
             </p>
-            <a
-              href="mailto:affiliates@buildcostgh.com"
+            <SafeEmail
+              email="affiliates@buildcostgh.com"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gold text-charcoal font-bold hover:bg-gold-light transition-colors"
             >
               Join Affiliate Program <ArrowRight className="h-4 w-4" />
-            </a>
-            <p className="text-emerald-200/50 text-xs mt-3">Or email affiliates@buildcostgh.com to learn more</p>
+            </SafeEmail>
+            <p className="text-emerald-200/50 text-xs mt-3">Or email <EmailText email="affiliates@buildcostgh.com" /> to learn more</p>
           </div>
 
           <div className="bg-white rounded-xl border border-gray-200 p-6">

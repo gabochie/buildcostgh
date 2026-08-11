@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { EmailText } from "@/components/shared/SafeEmail"
 
 export const metadata: Metadata = {
   title: "Cookie Policy - BuildCost GH",
@@ -83,7 +84,7 @@ export default function CookiesPage() {
           <p>We may update this Cookie Policy from time to time. Changes will be posted on this page with an updated revision date.</p>
 
           <h2 className="text-xl font-heading font-bold text-charcoal mt-8">8. Contact</h2>
-          <p>If you have questions about our use of cookies, contact us at info@buildcostgh.com or call +233 53 936 4716.</p>
+          <p>If you have questions about our use of cookies, contact us at <EmailText email="info@buildcostgh.com" /> or call +233 53 936 4716.</p>
         </div>
       </div>
     </div>

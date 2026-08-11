@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { Shield, Heart, Droplets, Home, Users, BookOpen, ArrowRight, CheckCircle, Newspaper, ExternalLink } from "lucide-react"
+import { EmailText } from "@/components/shared/SafeEmail"
 
 export const metadata: Metadata = {
   title: "CSR & Flood Relief - BuildCost GH",
@@ -192,7 +193,7 @@ export default function CSRPage() {
       {/* ── DISCLAIMER ── */}
       <section className="py-8 bg-slate-50 border-t border-slate-200">
         <div className="container mx-auto px-4 max-w-3xl text-xs text-slate-400">
-          <p>BuildCost GH is committed to using data and technology for social impact. Our CSR initiatives are self-funded as part of our mission to make construction intelligence accessible to all Ghanaians. For partnership inquiries, contact us at hello@buildcostgh.com.</p>
+            <p>BuildCost GH is committed to using data and technology for social impact. Our CSR initiatives are self-funded as part of our mission to make construction intelligence accessible to all Ghanaians. For partnership inquiries, contact us at <EmailText email="hello@buildcostgh.com" />.</p>
         </div>
       </section>
     </div>

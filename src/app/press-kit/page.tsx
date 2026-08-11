@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { Hammer, Download, ArrowRight } from "lucide-react"
+import { SafeEmail, EmailText } from "@/components/shared/SafeEmail"
 
 export const metadata: Metadata = {
   title: "Press Kit - BuildCost GH",
@@ -87,12 +88,12 @@ export default function PressKitPage() {
             <p className="text-sm text-gray-600 max-w-lg mx-auto mb-4">
               For interview requests, guest articles, or partnership inquiries, contact our media team.
             </p>
-            <a
-              href="mailto:press@buildcostgh.com"
+            <SafeEmail
+              email="press@buildcostgh.com"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-medium text-sm hover:bg-emerald-700 transition-colors"
             >
-              press@buildcostgh.com <ArrowRight className="h-4 w-4" />
-            </a>
+              <EmailText email="press@buildcostgh.com" /> <ArrowRight className="h-4 w-4" />
+            </SafeEmail>
           </div>
         </div>
       </section>

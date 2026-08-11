@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { EmailText } from "@/components/shared/SafeEmail"
 
 export const metadata: Metadata = {
   title: "Refund Policy - BuildCost GH",
@@ -26,7 +27,7 @@ export default function RefundPage() {
           <h2 className="text-xl font-heading font-bold text-charcoal mt-8">3. How to Request a Refund</h2>
           <p>Contact us through any of the following channels:</p>
           <ul className="list-disc pl-6 space-y-1">
-            <li>Email: info@buildcostgh.com &mdash; include your order number and reason for refund</li>
+            <li>Email: <EmailText email="info@buildcostgh.com" /> &mdash; include your order number and reason for refund</li>
             <li>Phone: +233 53 936 4716</li>
             <li>WhatsApp: +233 53 936 4716</li>
             <li>Contact form: Visit our <a href="/contact" className="text-emerald-600 hover:text-emerald-700 underline">contact page</a></li>
@@ -50,7 +51,7 @@ export default function RefundPage() {
           <p>We reserve the right to update this Refund Policy at any time. Changes will be posted on this page with an updated revision date.</p>
 
           <h2 className="text-xl font-heading font-bold text-charcoal mt-8">8. Contact</h2>
-          <p>For refund-related questions, contact us at info@buildcostgh.com or call +233 53 936 4716.</p>
+          <p>For refund-related questions, contact us at <EmailText email="info@buildcostgh.com" /> or call +233 53 936 4716.</p>
         </div>
       </div>
     </div>

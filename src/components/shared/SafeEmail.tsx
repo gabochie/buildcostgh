@@ -38,14 +38,17 @@ export function SafeEmail({
   email,
   className,
   children,
+  subject,
 }: {
   email: string
   className?: string
   children?: React.ReactNode
+  subject?: string
 }) {
   const [local, domain] = email.split("@")
+  const query = subject ? `?subject=${subject}` : ""
   return (
-    <a href={`mailto:${local}%40${domain}`} className={className}>
+    <a href={`mailto:${local}%40${domain}${query}`} className={className}>
       {children ?? <EmailText email={email} />}
     </a>
   )

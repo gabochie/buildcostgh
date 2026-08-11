@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { Hammer, TrendingUp, Users, BarChart3, Globe, Shield, ArrowRight } from "lucide-react"
+import { SafeEmail } from "@/components/shared/SafeEmail"
 
 export const metadata: Metadata = {
   title: "Investors - BuildCost GH",
@@ -66,12 +67,12 @@ export default function InvestorsPage() {
             <p className="text-emerald-100/70 text-sm max-w-lg mx-auto mb-6">
               We are exploring strategic partnerships and investment opportunities. Contact us for our pitch deck and financials.
             </p>
-            <a
-              href="mailto:investors@buildcostgh.com"
+            <SafeEmail
+              email="investors@buildcostgh.com"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gold text-charcoal font-bold hover:bg-gold-light transition-colors"
             >
               Request Pitch Deck <ArrowRight className="h-4 w-4" />
-            </a>
+            </SafeEmail>
           </div>
         </div>
       </section>

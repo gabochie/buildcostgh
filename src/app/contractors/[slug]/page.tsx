@@ -5,6 +5,7 @@ import { useParams } from "next/navigation"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { MapPin, Star, BadgeCheck, Briefcase, Phone, Mail, Globe, ArrowLeft, Shield, Award, ChevronRight, ExternalLink, Clock, Building2 } from "lucide-react"
+import { SafeEmail, EmailText } from "@/components/shared/SafeEmail"
 
 interface ContractorRegion {
   region: { name: string; slug: string }
@@ -118,9 +119,9 @@ export default function ContractorDetailPage() {
                   <Phone className="h-4 w-4 text-gray-400" /> <span>{c.phone}</span>
                 </a>
                 {c.email && (
-                  <a href={`mailto:${c.email}`} className="flex items-center gap-2.5 text-sm text-gray-600 hover:text-emerald-600 transition-colors">
-                    <Mail className="h-4 w-4 text-gray-400" /> <span>{c.email}</span>
-                  </a>
+                  <SafeEmail email={c.email} className="flex items-center gap-2.5 text-sm text-gray-600 hover:text-emerald-600 transition-colors">
+                    <Mail className="h-4 w-4 text-gray-400" /> <EmailText email={c.email} />
+                  </SafeEmail>
                 )}
                 {c.website && (
                   <a href={c.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 text-sm text-gray-600 hover:text-emerald-600 transition-colors">

@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Hammer, Mail, Phone, MapPin } from "lucide-react"
 import { NewsletterForm } from "@/components/shared/NewsletterForm"
+import { SafeEmail, EmailText } from "@/components/shared/SafeEmail"
 
 const companyLinks = [
   { href: "/about", label: "About Us" },
@@ -105,9 +106,9 @@ export function Footer() {
               dream home or real estate investment with accurate, real-time cost data.
             </p>
             <div className="space-y-2 text-sm">
-              <a href="mailto:info@buildcostgh.com" className="flex items-center gap-2 hover:text-emerald-400">
-                <Mail className="h-4 w-4" /> info@buildcostgh.com
-              </a>
+              <SafeEmail email="info@buildcostgh.com" className="flex items-center gap-2 hover:text-emerald-400">
+                <Mail className="h-4 w-4" /> <EmailText email="info@buildcostgh.com" />
+              </SafeEmail>
               <a href="tel:+233539364716" className="flex items-center gap-2 hover:text-emerald-400">
                 <Phone className="h-4 w-4" /> +233 53 936 4716
               </a>

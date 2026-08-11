@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { EmailText } from "@/components/shared/SafeEmail"
 
 export const metadata: Metadata = {
   title: "Disclaimer - BuildCost GH",
@@ -60,7 +61,7 @@ export default function DisclaimerPage() {
           <p>We may update this disclaimer from time to time. Changes will be posted on this page with an updated revision date.</p>
 
           <h2 className="text-xl font-heading font-bold text-charcoal mt-8">8. Contact</h2>
-          <p>For questions about this disclaimer, contact us at info@buildcostgh.com or call +233 53 936 4716.</p>
+          <p>For questions about this disclaimer, contact us at <EmailText email="info@buildcostgh.com" /> or call +233 53 936 4716.</p>
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { Hammer, Mail, MapPin, Clock, CheckCircle } from "lucide-react"
+import { SafeEmail, EmailText } from "@/components/shared/SafeEmail"
 
 export const metadata: Metadata = {
   title: "Careers - BuildCost GH",
@@ -89,19 +90,20 @@ export default function CareersPage() {
                       </p>
                       <p className="text-sm text-gray-600 mt-2">{pos.description}</p>
                     </div>
-                    <a
-                      href="mailto:careers@buildcostgh.com?subject=Application: {pos.title}"
+                    <SafeEmail
+                      email="careers@buildcostgh.com"
+                      subject="Application: {pos.title}"
                       className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 transition-colors whitespace-nowrap"
                     >
                       Apply Now
-                    </a>
+                    </SafeEmail>
                   </div>
                 </div>
               ))
             ) : (
               <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
                 <p className="text-gray-500 mb-2">No open positions right now</p>
-                <p className="text-sm text-gray-400">Send your CV to careers@buildcostgh.com and we will keep you in mind.</p>
+                <p className="text-sm text-gray-400">Send your CV to <EmailText email="careers@buildcostgh.com" /> and we will keep you in mind.</p>
               </div>
             )}
           </div>
@@ -109,7 +111,7 @@ export default function CareersPage() {
           <div className="mt-12 p-6 rounded-xl bg-gray-50 border border-gray-200 text-center">
             <p className="text-sm text-gray-600">
               Do not see a role that fits? Send your CV to{" "}
-              <a href="mailto:careers@buildcostgh.com" className="text-emerald-600 hover:text-emerald-700 font-medium">careers@buildcostgh.com</a>
+              <SafeEmail email="careers@buildcostgh.com" className="text-emerald-600 hover:text-emerald-700 font-medium" />
             </p>
           </div>
         </div>

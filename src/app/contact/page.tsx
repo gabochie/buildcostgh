@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Mail, Phone, MapPin, Loader2, Shield, CheckCircle, Clock, Lock } from "lucide-react"
 import { toast } from "sonner"
+import { EmailText } from "@/components/shared/SafeEmail"
 
 export default function ContactPage() {
   const [form, setForm] = useState({ name: "", email: "", phone: "", subject: "", message: "" })
@@ -91,7 +92,7 @@ export default function ContactPage() {
                 <Mail className="h-5 w-5 text-emerald-600 mt-1" />
                 <div>
                   <h3 className="font-medium text-gray-900">Email</h3>
-                  <p className="text-gray-600">info@buildcostgh.com</p>
+                  <p className="text-gray-600"><EmailText email="info@buildcostgh.com" /></p>
                 </div>
               </div>
               <div className="flex items-start gap-4 p-4 rounded-lg bg-gray-50">

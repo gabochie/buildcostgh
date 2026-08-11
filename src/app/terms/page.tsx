@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { EmailText } from "@/components/shared/SafeEmail"
 
 export const metadata: Metadata = {
   title: "Terms of Service - BuildCost GH",
@@ -28,7 +29,7 @@ export default function TermsPage() {
           <p>BuildCost GH provides estimates for informational purposes. We are not liable for discrepancies between estimated and actual construction costs.</p>
 
           <h2 className="text-xl font-heading font-bold text-charcoal mt-8">6. Contact</h2>
-          <p>For questions about these terms, contact us at info@buildcostgh.com or call +233 53 936 4716.</p>
+          <p>For questions about these terms, contact us at <EmailText email="info@buildcostgh.com" /> or call +233 53 936 4716.</p>
         </div>
       </div>
     </div>

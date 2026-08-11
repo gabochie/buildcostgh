@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import { SafeEmail } from "@/components/shared/SafeEmail"
 
 export const metadata: Metadata = {
   title: "Authors - BuildCost GH",
@@ -46,9 +47,7 @@ function AuthorCard({ author: a }: { author: typeof authors[number] }) {
               </a>
             )}
             {a.social.email && (
-              <a href={`mailto:${a.social.email}`} className="text-gray-500 hover:text-emerald-600">
-                {a.social.email}
-              </a>
+              <SafeEmail email={a.social.email} className="text-gray-500 hover:text-emerald-600" />
             )}
           </div>
         </div>
@@ -79,9 +78,9 @@ export default function AuthorsPage() {
         <div className="max-w-2xl mx-auto mt-10 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl border border-emerald-100 p-8 text-center">
           <h2 className="text-2xl font-heading font-bold text-charcoal mb-3">Want to Contribute?</h2>
           <p className="text-gray-600 mb-4">We are always looking for construction professionals and building experts to contribute to our content.</p>
-          <a href="mailto:hello@buildcostgh.com" className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700 transition-colors">
+          <SafeEmail email="hello@buildcostgh.com" className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700 transition-colors">
             Get in Touch
-          </a>
+          </SafeEmail>
         </div>
       </div>
     </div>

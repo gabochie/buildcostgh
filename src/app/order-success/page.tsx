@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { CheckCircle, Loader2, Mail, Phone, Shield } from "lucide-react"
+import { SafeEmail } from "@/components/shared/SafeEmail"
 
 function OrderSuccessContent() {
   const searchParams = useSearchParams()
@@ -63,7 +64,7 @@ function OrderSuccessContent() {
           <div className="space-y-2 text-sm text-gray-600">
             <p className="flex items-center gap-2">
               <Mail className="h-4 w-4 text-emerald-600" />
-              <a href="mailto:info@buildcostgh.com" className="hover:text-emerald-600">info@buildcostgh.com</a>
+              <SafeEmail email="info@buildcostgh.com" className="hover:text-emerald-600" />
             </p>
             <p className="flex items-center gap-2">
               <Phone className="h-4 w-4 text-emerald-600" />
