@@ -1,5 +1,6 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
+import { useEffect, useState } from "react"
 import { trackEvent } from "@/lib/analytics"
 import type { EstimateResult } from "@/types"
 
@@ -79,6 +80,11 @@ export const useCalculatorStore = create<CalculatorStore>()(
     }),
     {
       name: "buildcost-calculator",
+      // Do NOT rehydrate synchronously at store creation: on the server there is no
+      // localStorage (initial state renders), but on the client the persisted step
+      // would already be applied during the FIRST render -> hydration mismatch (#418).
+      // Rehydration is triggered manually client-side via useHasHydrated / Providers.
+      skipHydration: true,
       partialize: (state) => ({
         step: state.step,
         step1: state.step1,
@@ -93,3 +99,18 @@ export const useCalculatorStore = create<CalculatorStore>()(
     }
   )
 )
+
+/**
+ * True once persisted state is rehydrated on the client. False during server
+ * render and the first client render, so gating UI on it prevents hydration
+ * mismatches (the store starts from initial state on both).
+ */
+export function useHasHydrated() {
+  const [hasHydrated, setHasHydrated] = useState(false)
+
+  useEffect(() => {
+    useCalculatorStore.persist.rehydrate().then(() => setHasHydrated(true))
+  }, [])
+
+  return hasHydrated
+}

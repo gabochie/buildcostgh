@@ -7,8 +7,8 @@ import { Step2point5Email } from "@/components/calculator/Step2point5Email"
 import { Step3Finishing } from "@/components/calculator/Step3Finishing"
 import { Step4Addons } from "@/components/calculator/Step4Addons"
 import { Step5Result } from "@/components/calculator/Step5Result"
-import { useCalculatorStore } from "@/store/calculatorStore"
-import { Hammer } from "lucide-react"
+import { useCalculatorStore, useHasHydrated } from "@/store/calculatorStore"
+import { Hammer, Loader2 } from "lucide-react"
 
 const stepLabels = ["Basic Info", "Floor Size", "Save", "Finishing", "Add-ons", "Estimate"]
 
@@ -28,6 +28,7 @@ const slideVariants = {
 }
 
 export default function CalculatorPage() {
+  const hasHydrated = useHasHydrated()
   const { step } = useCalculatorStore()
   const totalSteps = Object.keys(stepComponents).length
   const progress = Math.round((step / totalSteps) * 100)
@@ -46,7 +47,15 @@ export default function CalculatorPage() {
             <p className="text-gray-500">Get instant estimates for your residential construction project</p>
           </div>
 
-          <div className="mb-6">
+          {!hasHydrated ? (
+            <div className="bg-white rounded-2xl shadow-glass-lg border border-gray-100 p-6 md:p-8">
+              <div className="flex items-center justify-center py-20">
+                <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="mb-6">
             <div className="flex justify-between text-sm text-gray-500 mb-2">
               <span>Step {step} of {totalSteps}</span>
               <span>{progress}% complete</span>
@@ -98,6 +107,8 @@ export default function CalculatorPage() {
               </motion.div>
             </AnimatePresence>
           </div>
+            </>
+          )}
         </div>
       </div>
     </div>
