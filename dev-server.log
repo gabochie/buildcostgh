@@ -1,7 +1,7 @@
 ▲ Next.js 16.2.10
 - Local:         http://localhost:3001
 - Network:       http://169.254.83.107:3001
-✓ Ready in 519ms
+✓ Ready in 372ms
 ⚠ Attempted to load @next/swc-win32-x64-msvc, but an error occurred: \\?\C:\Users\user\Documents\GitHub\buildcostgh\node_modules\@next\swc-win32-x64-msvc\next-swc.win32-x64-msvc.node is not a valid Win32 application.
 \\?\C:\Users\user\Documents\GitHub\buildcostgh\node_modules\@next\swc-win32-x64-msvc\next-swc.win32-x64-msvc.node
 ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.

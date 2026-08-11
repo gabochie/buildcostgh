@@ -115,6 +115,22 @@ export function Footer() {
                 <MapPin className="h-4 w-4" /> Lashibi, Tema, Ghana
               </p>
             </div>
+
+            <div className="flex items-center gap-3 mt-5">
+              {socialLinks.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={link.label}
+                  title={link.label}
+                  className="w-9 h-9 rounded-lg bg-gray-800 hover:bg-emerald-600 flex items-center justify-center text-gray-300 hover:text-white transition-colors"
+                >
+                  <SocialIcon type={link.icon} />
+                </a>
+              ))}
+            </div>
           </div>
 
           <div>
