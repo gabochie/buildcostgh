@@ -471,6 +471,11 @@ function OrdersTab({ orders, onRefresh }: { orders: Order[]; onRefresh: () => vo
                     View Report &rarr;
                   </a>
                 )}
+                {String(order.metadata?.spreadsheetUrl ?? "") && (
+                  <a href={String(order.metadata?.spreadsheetUrl)} target="_blank" className="block text-xs text-teal-600 hover:underline mt-1 font-medium">
+                    View Excel &rarr;
+                  </a>
+                )}
               </div>
             </div>
           )

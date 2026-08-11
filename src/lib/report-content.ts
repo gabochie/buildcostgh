@@ -207,7 +207,7 @@ function diyVsContractorSection(): string {
 }
 
 function materialQuantitiesSection(ctx: ReportContext): string {
-  const area = ctx.estimate?.summary.totalSqm ?? parseFloat(ctx.input?.floorArea ?? "0") || 0
+  const area = ctx.estimate?.summary.totalSqm ?? (parseFloat(ctx.input?.floorArea ?? "0") || 0)
   if (area <= 0) return ""
   const rows = materialQuantityRows(area)
   const estCost = rows.reduce((sum, r) => sum + r.qty * r.unitPrice, 0)

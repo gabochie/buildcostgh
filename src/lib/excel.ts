@@ -96,7 +96,7 @@ export async function generateReportWorkbook(ctx: WorkbookContext): Promise<Buff
     { header: "Use", key: "note", width: 42 },
   ]
   headerRow(materials, ["Material", "Quantity", "Unit", "Indicative Unit Price (GHS)", "Est. Cost (GHS)", "Use"])
-  const area = ctx.estimate?.summary.totalSqm ?? parseFloat(ctx.input?.floorArea ?? "0") || 0
+  const area = ctx.estimate?.summary.totalSqm ?? (parseFloat(ctx.input?.floorArea ?? "0") || 0)
   if (area > 0) {
     const rows = materialQuantityRows(area)
     rows.forEach((r) => {
