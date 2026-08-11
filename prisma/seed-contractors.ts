@@ -71,6 +71,18 @@ function slugify(name: string): string {
     .replace(/^-+|-+$/g, "")
 }
 
+const DATE_FIELDS = ["classificationVerifiedAt", "classificationExpiry", "googleLastChecked", "lastVerifiedAt", "nextVerificationAt"]
+
+function normalizeDates(rest: Record<string, unknown>) {
+  for (const field of DATE_FIELDS) {
+    const v = rest[field]
+    if (typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v)) {
+      rest[field] = `${v}T00:00:00.000Z`
+    }
+  }
+  return rest
+}
+
 /**
  * Upsert researched contractors (with sources + projects) and link their
  * service cities to the Region table. Never fabricates — it only writes what
@@ -112,7 +124,7 @@ export async function seedContractorsFromResearch(
       // High confidence alone (2+ sources) does NOT grant the verified badge.
       verified: rest.registrationStatus === "registered" || false,
       dataConfidence: c.dataConfidence ?? 50,
-      ...rest,
+      ...normalizeDates(rest),
     }
 
     for (const key of Object.keys(data) as (keyof typeof data)[]) {
