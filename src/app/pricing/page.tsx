@@ -425,7 +425,7 @@ export default function PricingPage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 -mt-12 relative z-20">
+      <div className="container mx-auto px-4 mt-8">
         {/* Mode toggle */}
         <div className="flex items-center justify-center mb-8">
           <div className="inline-flex items-center bg-white rounded-xl border border-gray-200 shadow-sm p-1">
