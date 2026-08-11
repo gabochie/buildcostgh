@@ -271,7 +271,7 @@
     ]
   },
   {
-    "name": "Blackrock Developers Limited (Homes",
+    "name": "Blackrock Developers Limited",
     "slug": null,
     "title": "General Contractor",
     "phone": null,
@@ -293,33 +293,6 @@
         "tier": "primary",
         "label": "Google Business Profile",
         "url": "https://www.blackrockdevelopers.com.gh/",
-        "confidence": 75
-      }
-    ]
-  },
-  {
-    "name": "Buildaf Estate",
-    "slug": null,
-    "title": "General Contractor",
-    "phone": null,
-    "website": "http://buildafghana.com/",
-    "description": "Buildaf Estate is a general contractor operating in Accra. Contact details verified via its Google Business Profile.",
-    "specialties": [
-      "General Contracting"
-    ],
-    "registrationStatus": "not-verified",
-    "region": "Greater Accra",
-    "city": "Accra",
-    "address": "Madina, Ghana",
-    "classificationNotVerified": true,
-    "googleRating": 4.4,
-    "googleReviewCount": null,
-    "dataConfidence": 70,
-    "sources": [
-      {
-        "tier": "primary",
-        "label": "Google Business Profile",
-        "url": "http://buildafghana.com/",
         "confidence": 75
       }
     ]
@@ -347,33 +320,6 @@
         "tier": "primary",
         "label": "Google Business Profile",
         "url": "http://builderprojectsolutions.com/",
-        "confidence": 75
-      }
-    ]
-  },
-  {
-    "name": "Capemay Properties Ghana",
-    "slug": null,
-    "title": "General Contractor",
-    "phone": null,
-    "website": "http://www.capemaypropertiesgh.com/",
-    "description": "Capemay Properties Ghana is a general contractor operating in Accra. Contact details verified via its Google Business Profile.",
-    "specialties": [
-      "General Contracting"
-    ],
-    "registrationStatus": "not-verified",
-    "region": "Greater Accra",
-    "city": "Accra",
-    "address": "80 Spintex Rd, Accra, Ghana",
-    "classificationNotVerified": true,
-    "googleRating": 4.6,
-    "googleReviewCount": null,
-    "dataConfidence": 70,
-    "sources": [
-      {
-        "tier": "primary",
-        "label": "Google Business Profile",
-        "url": "http://www.capemaypropertiesgh.com/",
         "confidence": 75
       }
     ]
@@ -622,33 +568,6 @@
     ]
   },
   {
-    "name": "Goldkey Properties",
-    "slug": null,
-    "title": "General Contractor",
-    "phone": null,
-    "website": "http://www.goldkeyghana.com/",
-    "description": "Goldkey Properties is a general contractor operating in Accra. Contact details verified via its Google Business Profile.",
-    "specialties": [
-      "General Contracting"
-    ],
-    "registrationStatus": "not-verified",
-    "region": "Greater Accra",
-    "city": "Accra",
-    "address": "Cantonments City Ln, Accra, Ghana",
-    "classificationNotVerified": true,
-    "googleRating": 4.4,
-    "googleReviewCount": null,
-    "dataConfidence": 70,
-    "sources": [
-      {
-        "tier": "primary",
-        "label": "Google Business Profile",
-        "url": "http://www.goldkeyghana.com/",
-        "confidence": 75
-      }
-    ]
-  },
-  {
     "name": "Holocombe Flooring",
     "slug": null,
     "title": "General Contractor",
@@ -698,33 +617,6 @@
         "tier": "primary",
         "label": "Google Business Profile",
         "url": "http://joissamghana.com/",
-        "confidence": 75
-      }
-    ]
-  },
-  {
-    "name": "Kimo Interiors",
-    "slug": null,
-    "title": "General Contractor",
-    "phone": null,
-    "website": "http://www.kimo-interiors.com/",
-    "description": "Kimo Interiors is a general contractor operating in Accra. Contact details verified via its Google Business Profile.",
-    "specialties": [
-      "General Contracting"
-    ],
-    "registrationStatus": "not-verified",
-    "region": "Greater Accra",
-    "city": "Accra",
-    "address": "52 Spintex Rd, Accra, Ghana",
-    "classificationNotVerified": true,
-    "googleRating": 4.3,
-    "googleReviewCount": null,
-    "dataConfidence": 70,
-    "sources": [
-      {
-        "tier": "primary",
-        "label": "Google Business Profile",
-        "url": "http://www.kimo-interiors.com/",
         "confidence": 75
       }
     ]
@@ -946,87 +838,6 @@
     ]
   },
   {
-    "name": "PEPONI GRUPPE LLC",
-    "slug": null,
-    "title": "General Contractor",
-    "phone": null,
-    "website": "http://www.peponigruppe.com/",
-    "description": "PEPONI GRUPPE LLC is a general contractor operating in Accra. Contact details verified via its Google Business Profile.",
-    "specialties": [
-      "General Contracting"
-    ],
-    "registrationStatus": "not-verified",
-    "region": "Greater Accra",
-    "city": "Accra",
-    "address": "13 Jungle Ave, Accra, Ghana",
-    "classificationNotVerified": true,
-    "googleRating": 4.4,
-    "googleReviewCount": null,
-    "dataConfidence": 70,
-    "sources": [
-      {
-        "tier": "primary",
-        "label": "Google Business Profile",
-        "url": "http://www.peponigruppe.com/",
-        "confidence": 75
-      }
-    ]
-  },
-  {
-    "name": "Power Factor Limited",
-    "slug": null,
-    "title": "General Contractor",
-    "phone": null,
-    "website": "http://www.powerfactorgh.com/",
-    "description": "Power Factor Limited is a general contractor operating in Tema. Contact details verified via its Google Business Profile.",
-    "specialties": [
-      "General Contracting"
-    ],
-    "registrationStatus": "not-verified",
-    "region": "Greater Accra",
-    "city": "Tema",
-    "address": "MXHF+MFR, Hospital Rd Link Ext, Tema, Ghana",
-    "classificationNotVerified": true,
-    "googleRating": 5,
-    "googleReviewCount": null,
-    "dataConfidence": 70,
-    "sources": [
-      {
-        "tier": "primary",
-        "label": "Google Business Profile",
-        "url": "http://www.powerfactorgh.com/",
-        "confidence": 75
-      }
-    ]
-  },
-  {
-    "name": "Quao Realty",
-    "slug": null,
-    "title": "General Contractor",
-    "phone": null,
-    "website": "http://www.quaorealty.com/",
-    "description": "Quao Realty is a general contractor operating in Accra. Contact details verified via its Google Business Profile.",
-    "specialties": [
-      "General Contracting"
-    ],
-    "registrationStatus": "not-verified",
-    "region": "Greater Accra",
-    "city": "Accra",
-    "address": "House No. 14, 16 Dodi Link, Accra, Ghana",
-    "classificationNotVerified": true,
-    "googleRating": 4.9,
-    "googleReviewCount": null,
-    "dataConfidence": 70,
-    "sources": [
-      {
-        "tier": "primary",
-        "label": "Google Business Profile",
-        "url": "http://www.quaorealty.com/",
-        "confidence": 75
-      }
-    ]
-  },
-  {
     "name": "SKAIA Architecture & Construction",
     "slug": null,
     "title": "General Contractor",
@@ -1130,33 +941,6 @@
         "tier": "primary",
         "label": "Google Business Profile",
         "url": "https://asap-plumbinggh.com/",
-        "confidence": 75
-      }
-    ]
-  },
-  {
-    "name": "Brookmere Group",
-    "slug": null,
-    "title": "General Contractor",
-    "phone": null,
-    "website": "http://www.brookmeregroupgh.com/",
-    "description": "Brookmere Group is a electrician operating in Accra. Contact details verified via its Google Business Profile.",
-    "specialties": [
-      "Electrical Works"
-    ],
-    "registrationStatus": "not-verified",
-    "region": "Greater Accra",
-    "city": "Accra",
-    "address": "Westlands Blvd, Accra, Ghana",
-    "classificationNotVerified": true,
-    "googleRating": 5,
-    "googleReviewCount": null,
-    "dataConfidence": 70,
-    "sources": [
-      {
-        "tier": "primary",
-        "label": "Google Business Profile",
-        "url": "http://www.brookmeregroupgh.com/",
         "confidence": 75
       }
     ]
@@ -1292,60 +1076,6 @@
         "tier": "primary",
         "label": "Google Business Profile",
         "url": "https://www.icarghana.com/",
-        "confidence": 75
-      }
-    ]
-  },
-  {
-    "name": "Perfect Finishing Stainless steels",
-    "slug": null,
-    "title": "General Contractor",
-    "phone": "+233244263630",
-    "website": null,
-    "description": "Perfect Finishing Stainless steels is a Metal supplier operating in Accra. Contact details verified via its Google Business Profile.",
-    "specialties": [
-      "Steel & Metal Works"
-    ],
-    "registrationStatus": "not-verified",
-    "region": "Greater Accra",
-    "city": "Accra",
-    "address": "Metal supplier, Ashaiman Lashibi Rd, Open",
-    "classificationNotVerified": true,
-    "googleRating": 4.8,
-    "googleReviewCount": null,
-    "dataConfidence": 70,
-    "sources": [
-      {
-        "tier": "primary",
-        "label": "Google Business Profile",
-        "url": null,
-        "confidence": 75
-      }
-    ]
-  },
-  {
-    "name": "Reinswin Automated Co. Ltd",
-    "slug": null,
-    "title": "General Contractor",
-    "phone": null,
-    "website": "http://reinswin.com/",
-    "description": "Reinswin Automated Co. Ltd is a electrician operating in Accra. Contact details verified via its Google Business Profile.",
-    "specialties": [
-      "Electrical Works"
-    ],
-    "registrationStatus": "not-verified",
-    "region": "Greater Accra",
-    "city": "Accra",
-    "address": "american house, 3 Patricia Atswei Link, Accra, Ghana",
-    "classificationNotVerified": true,
-    "googleRating": 5,
-    "googleReviewCount": null,
-    "dataConfidence": 70,
-    "sources": [
-      {
-        "tier": "primary",
-        "label": "Google Business Profile",
-        "url": "http://reinswin.com/",
         "confidence": 75
       }
     ]
