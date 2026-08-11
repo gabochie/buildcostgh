@@ -19,7 +19,7 @@ export function Step1BasicInfo() {
     <div className="space-y-6">
       <div>
         <h2 className="text-xl font-semibold text-gray-900 mb-1">Basic Information</h2>
-        <p className="text-sm text-gray-500">Step 1 of 5</p>
+        <p className="text-sm text-gray-500">Step 1 of 6</p>
       </div>
 
       <div className="space-y-2">
