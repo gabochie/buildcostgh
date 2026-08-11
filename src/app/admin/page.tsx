@@ -382,7 +382,32 @@ function RecentMessagesCard({ messages }: { messages: ContactMessage[] }) {
 }
 
 /* ── Orders ── */
-function OrdersTab({ orders }: { orders: Order[] }) {
+function OrdersTab({ orders, onRefresh }: { orders: Order[]; onRefresh: () => void }) {
+  const [confirmingId, setConfirmingId] = useState<string | null>(null)
+  const isManual = (o: Order) => String(o.metadata?.paymentMethod) === "manual_momo"
+
+  const handleConfirm = async (order: Order) => {
+    setConfirmingId(order.id)
+    try {
+      const res = await fetch("/api/admin/orders/confirm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId: order.id }),
+      })
+      const data = await res.json()
+      if (res.ok && data.ok) {
+        toast.success(`Payment confirmed for ${order.fullName}`)
+        onRefresh()
+      } else {
+        toast.error(data.error || "Failed to confirm payment")
+      }
+    } catch {
+      toast.error("Something went wrong")
+    } finally {
+      setConfirmingId(null)
+    }
+  }
+
   return (
     <div className="space-y-3">
       {orders.length === 0 ? (
@@ -393,6 +418,7 @@ function OrdersTab({ orders }: { orders: Order[] }) {
       ) : (
         orders.map((order) => {
           const StatusIcon = statusIcons[order.status] || AlertCircle
+          const manual = isManual(order)
           return (
             <div key={order.id} className="rounded-2xl border bg-white p-5 flex items-center justify-between hover:shadow-md transition-shadow">
               <div className="flex items-center gap-4 min-w-0">
@@ -406,6 +432,11 @@ function OrdersTab({ orders }: { orders: Order[] }) {
                   <p className="font-medium text-slate-900">{order.fullName}</p>
                   <p className="text-sm text-slate-500">{order.email}</p>
                   <p className="text-xs text-slate-400 mt-0.5">{order.package} &middot; Ref: {order.reference}</p>
+                  {manual && (
+                    <p className="text-xs text-amber-600 font-medium mt-1">
+                      Manual MoMo &middot; Tx Ref: {String(order.metadata?.transactionRef ?? "-")} &middot; Payer: {String(order.metadata?.payerPhone ?? "-")} &middot; To: {String(order.metadata?.momoNumber ?? "-")}
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="text-right flex-shrink-0 ml-4">
@@ -413,6 +444,28 @@ function OrdersTab({ orders }: { orders: Order[] }) {
                 <span className={`inline-block text-xs px-2.5 py-1 rounded-full border mt-1 ${
                   statusStyles[order.status] || ""
                 }`}>{order.status}</span>
+                {manual && (
+                  <span className="inline-block text-xs px-2.5 py-1 rounded-full border bg-amber-50 text-amber-700 border-amber-200 mt-1 ml-1">
+                    Manual MoMo
+                  </span>
+                )}
+                {manual && order.status === "pending" && (
+                  <button
+                    onClick={() => handleConfirm(order)}
+                    disabled={confirmingId === order.id}
+                    className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 rounded-lg transition-colors"
+                  >
+                    {confirmingId === order.id ? (
+                      <>
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" /> Confirming...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle className="h-3.5 w-3.5" /> Confirm Payment
+                      </>
+                    )}
+                  </button>
+                )}
                 {order.reportUrl && (
                   <a href={order.reportUrl} target="_blank" className="block text-xs text-emerald-600 hover:underline mt-1.5 font-medium">
                     View Report &rarr;
