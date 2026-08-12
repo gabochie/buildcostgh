@@ -4,6 +4,9 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 import { ArrowRight, Play, Shield, Lock, MapPin, ChevronRight } from "lucide-react"
 import { AnimatedCounter, GradientButton, GlassCard, TestimonialCard } from "@/components/shared"
+import { FaqSection } from "@/components/seo/FaqSection"
+import { JsonLd } from "@/components/seo/JsonLd"
+import { homepageFaqs } from "@/lib/seo/faqs"
 
 const fadeUp = {
   initial: { opacity: 0, y: 30 },
@@ -55,6 +58,32 @@ const steps = [
 export default function HomePage() {
   return (
     <>
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: homepageFaqs.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
+        }}
+      />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "HowTo",
+          name: "How to estimate your construction cost in Ghana",
+          description:
+            "Get an accurate construction cost estimate for your Ghana building project in four simple steps.",
+          step: steps.map((s, i) => ({
+            "@type": "HowToStep",
+            position: i + 1,
+            name: s.title,
+            text: s.desc,
+          })),
+        }}
+      />
       <section className="relative overflow-hidden bg-gradient-to-br from-emerald-900 via-emerald-800 to-charcoal min-h-[90vh] flex items-center">
         <div className="absolute inset-0 bg-grid opacity-20" />
         <div className="absolute top-20 left-10 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl" />
@@ -239,6 +268,8 @@ export default function HomePage() {
           </Link>
         </div>
       </motion.section>
+
+      <FaqSection faqs={homepageFaqs} className="bg-gray-50" />
     </>
   )
 }

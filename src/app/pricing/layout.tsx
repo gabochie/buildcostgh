@@ -1,4 +1,6 @@
 import type { Metadata } from "next"
+import { JsonLd } from "@/components/seo/JsonLd"
+import { pricingFaqs } from "@/lib/seo/faqs"
 
 export const metadata: Metadata = {
   title: "Pricing - Construction Cost Reports & Subscriptions | BuildCost GH",
@@ -20,5 +22,20 @@ export const metadata: Metadata = {
 }
 
 export default function PricingLayout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: pricingFaqs.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
+        }}
+      />
+      {children}
+    </>
+  )
 }

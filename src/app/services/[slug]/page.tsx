@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { ArrowLeft, CheckCircle } from "lucide-react"
 import { GradientButton } from "@/components/shared"
+import { JsonLd } from "@/components/seo/JsonLd"
 import { getService, services } from "@/lib/services"
 
 interface Props {
@@ -17,9 +18,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const service = getService(slug)
   if (!service) return {}
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://buildcostgh.com"
   return {
     title: `${service.title} - BuildCost GH`,
     description: service.subtitle,
+    alternates: {
+      canonical: `/services/${service.slug}`,
+    },
+    openGraph: {
+      title: `${service.title} - BuildCost GH`,
+      description: service.subtitle,
+      type: "website",
+      url: `${baseUrl}/services/${service.slug}`,
+      siteName: "BuildCost GH",
+      images: [{ url: "/assets/og-image.jpg", width: 1200, height: 630 }],
+    },
   }
 }
 
@@ -29,8 +42,55 @@ export default async function ServicePage({ params }: Props) {
 
   if (!service) notFound()
 
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://buildcostgh.com"
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Service",
+          name: service.title,
+          serviceType: service.title,
+          description: service.description,
+          provider: {
+            "@type": "Organization",
+            name: "BuildCost GH",
+            url: baseUrl,
+          },
+          areaServed: "GH",
+          offers: {
+            "@type": "Offer",
+            description: service.includedIn,
+          },
+        }}
+      />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Home",
+              item: `${baseUrl}/`,
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "Services",
+              item: `${baseUrl}/services`,
+            },
+            {
+              "@type": "ListItem",
+              position: 3,
+              name: service.title,
+              item: `${baseUrl}/services/${service.slug}`,
+            },
+          ],
+        }}
+      />
       <div className="bg-gradient-primary py-16">
         <div className="container mx-auto px-4">
           <Link

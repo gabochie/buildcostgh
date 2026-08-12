@@ -7,6 +7,9 @@ import { Step2point5Email } from "@/components/calculator/Step2point5Email"
 import { Step3Finishing } from "@/components/calculator/Step3Finishing"
 import { Step4Addons } from "@/components/calculator/Step4Addons"
 import { Step5Result } from "@/components/calculator/Step5Result"
+import { FaqSection } from "@/components/seo/FaqSection"
+import { JsonLd } from "@/components/seo/JsonLd"
+import { calculatorFaqs } from "@/lib/seo/faqs"
 import { useCalculatorStore, useHasHydrated } from "@/store/calculatorStore"
 import { Hammer, Loader2 } from "lucide-react"
 
@@ -35,6 +38,17 @@ export default function CalculatorPage() {
 
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-gradient-to-b from-gray-50 to-white">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: calculatorFaqs.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
+        }}
+      />
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-8">
@@ -111,6 +125,8 @@ export default function CalculatorPage() {
           )}
         </div>
       </div>
+
+      <FaqSection faqs={calculatorFaqs} />
     </div>
   )
 }

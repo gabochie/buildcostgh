@@ -12,14 +12,24 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params
   const post = await prisma.blogPost.findUnique({ where: { slug } })
   if (!post) return {}
+  const tags = (() => {
+    try { return JSON.parse(post.tags) as string[] } catch { return [] }
+  })()
   return {
     title: `${post.title} - BuildCost GH Blog`,
     description: post.excerpt || "",
+    alternates: {
+      canonical: `/blog/${post.slug}`,
+    },
+    keywords: tags,
     openGraph: {
       title: post.title,
       description: post.excerpt || "",
       type: "article",
       publishedTime: post.createdAt.toISOString(),
+      modifiedTime: post.updatedAt?.toISOString(),
+      authors: [post.author],
+      section: post.category ?? undefined,
       images: post.imageUrl ? [{ url: post.imageUrl }] : [],
     },
   }
@@ -66,21 +76,29 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               __html: JSON.stringify({
                 "@context": "https://schema.org",
                 "@type": "Article",
+                mainEntityOfPage: {
+                  "@type": "WebPage",
+                  "@id": `${baseUrl}/blog/${post.slug}`,
+                },
                 headline: post.title,
                 description: post.excerpt,
                 image: post.imageUrl ? `${baseUrl}${post.imageUrl}` : undefined,
                 datePublished: post.createdAt.toISOString(),
                 dateModified: post.updatedAt?.toISOString(),
                 author: {
-                  "@type": "Organization",
-                  name: "BuildCost GH",
+                  "@type": "Person",
+                  name: post.author,
                   url: `${baseUrl}/authors`,
                 },
                 publisher: {
                   "@type": "Organization",
                   name: "BuildCost GH",
+                  url: `${baseUrl}/`,
                   logo: { "@type": "ImageObject", url: `${baseUrl}/icon.svg` },
                 },
+                inLanguage: "en",
+                articleSection: post.category ?? undefined,
+                keywords: tags.length > 0 ? tags : undefined,
               }),
             }}
           />

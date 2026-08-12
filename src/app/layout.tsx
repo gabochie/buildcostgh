@@ -10,7 +10,7 @@ import { CookieConsent } from "@/components/shared/CookieConsent"
 import { WhatsAppButton } from "@/components/shared/WhatsAppButton"
 import { ExitIntentPopup } from "@/components/shared/ExitIntentPopup"
 import { ServerInit } from "@/components/ServerInit"
-import { organizationLd } from "./ld"
+import { organizationLd, websiteLd } from "./ld"
 
 const inter = Inter({
   variable: "--font-inter",
@@ -35,8 +35,29 @@ export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: "BuildCost GH - Ghana Construction Cost Calculator for Ghanaians & the African Diaspora",
   description:
-    "Get accurate construction cost estimates in seconds. Built for Ghanaians and the global African diaspora planning to build or invest in real estate in Ghana.",
-  keywords: ["construction cost", "Ghana", "African diaspora", "building estimate", "house cost", "diaspora investment", "BuildCost GH"],
+    "Get accurate construction cost estimates in seconds. How much does it cost to build a house in Ghana? Free calculator, region-specific pricing across all 16 regions, and reports built for Ghanaians and the global African diaspora.",
+  keywords: [
+    "construction cost Ghana",
+    "how much to build a house in Ghana",
+    "building cost calculator Ghana",
+    "house building cost Accra",
+    "Ghana building estimate",
+    "cost per square metre Ghana",
+    "African diaspora",
+    "diaspora investment",
+    "BuildCost GH",
+  ],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
   icons: {
     icon: "/icon.svg",
   },
@@ -85,6 +106,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationLd()) }}
+          />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteLd()) }}
           />
         </Providers>
       </body>

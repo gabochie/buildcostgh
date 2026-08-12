@@ -42,14 +42,16 @@ export function websiteLd() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "BuildCost GH",
+    alternateName: "BuildCost Ghana",
     url: baseUrl(),
-    potentialAction: {
-      "@type": "SearchAction",
-      target: {
-        "@type": "EntryPoint",
-        urlTemplate: `${baseUrl()}/search?q={search_term_string}`,
-      },
-      "query-input": "required name=search_term_string",
+    description:
+      "Free construction cost calculator and building cost estimates for Ghana. Region-specific pricing across all 16 regions for Ghanaians and the diaspora.",
+    inLanguage: "en",
+    publisher: {
+      "@type": "Organization",
+      name: "BuildCost GH",
+      url: baseUrl(),
+      logo: `${baseUrl()}/icon.svg`,
     },
   }
 }

@@ -10,6 +10,7 @@ import { toast } from "sonner"
 import { GradientButton } from "@/components/shared"
 import { getClientGhsRate } from "@/lib/currency"
 import { useCalculatorStore } from "@/store/calculatorStore"
+import { pricingFaqs } from "@/lib/seo/faqs"
 import Link from "next/link"
 import {
   Accordion,
@@ -150,48 +151,7 @@ const allFeatures = [
   { name: "Project Monitoring Tools", free: false, basic: false, detailed: false, premium: true },
 ]
 
-const faqs = [
-  {
-    q: "What exactly is included in the report?",
-    a: "Each report includes a comprehensive breakdown of construction costs based on your specific project details. The Basic package includes a PDF summary, while Detailed and Premium include editable Excel files with full material quantities.",
-  },
-  {
-    q: "How quickly will I receive my report?",
-    a: "Basic reports are delivered instantly via email. Detailed reports within 2 hours. Premium reports include a consultation call scheduled within 24 hours, with the report delivered within 2 hours of booking.",
-  },
-  {
-    q: "Can I get a refund if I'm not satisfied?",
-    a: "Absolutely! We offer a 7-day money-back guarantee. If you're not satisfied with your report, we'll refund your full purchase — no questions asked.",
-  },
-  {
-    q: "Is there a free version?",
-    a: "Yes! Our Free Trial gives you an instant cost estimate with a breakdown chart and region comparison — no credit card required. Try the calculator and see how it works before you buy a full report.",
-  },
-  {
-    q: "Can I pay with Mobile Money?",
-    a: "Yes! Paystack accepts all major Ghanaian mobile money wallets — MTN MoMo, Vodafone Cash, and AirtelTigo Money. You can also pay with Visa and Mastercard. When you click buy, you will be redirected to Paystack where you can choose your preferred payment method.",
-  },
-  {
-    q: "Do you offer custom quotes for commercial projects?",
-    a: "Yes! Contact us directly for commercial construction cost estimation. Our team can handle multi-unit developments, commercial buildings, and industrial projects.",
-  },
-  {
-    q: "How is the cost data updated?",
-    a: "We update our cost database monthly using data from suppliers, contractors, and market research across all 16 regions of Ghana.",
-  },
-  {
-    q: "What's the difference between one-time reports and subscriptions?",
-    a: "One-time reports are single purchases — you pay once for a detailed report. Subscriptions give you unlimited access: monthly or annual plans with unlimited basic estimates, PDF reports, and tools.",
-  },
-  {
-    q: "Can I switch from monthly to annual?",
-    a: "Yes! You can upgrade from Monthly to Annual anytime. The remaining monthly balance is prorated toward your annual plan.",
-  },
-  {
-    q: "Can I cancel my subscription?",
-    a: "Absolutely. Cancel anytime from your account dashboard. Your access continues until the end of the billing period. No cancellation fees.",
-  },
-]
+const faqs = pricingFaqs
 
 const cardVariants = {
   initial: { opacity: 0, y: 30 },

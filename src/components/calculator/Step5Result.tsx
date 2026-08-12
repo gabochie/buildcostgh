@@ -1,12 +1,14 @@
 "use client"
 
 import { useEffect, useState, useRef } from "react"
+import { useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { useCalculatorStore } from "@/store/calculatorStore"
 import { formatCurrency } from "@/lib/utils"
 import { Loader2, ArrowRight, TrendingUp, MapPin, Download, Shield } from "lucide-react"
 import Link from "next/link"
 import type { EstimateResult } from "@/types"
+import { SignupGate } from "@/components/calculator/SignupGate"
 
 const regionMultipliers: Record<string, number> = {
   Accra: 1.0,
@@ -55,7 +57,8 @@ function AnimatedPrice({ value }: { value: number }) {
 }
 
 export function Step5Result() {
-  const { step1, step2, step3, step4, setStep, reset, setResult: persistResult } = useCalculatorStore()
+  const { step1, step2, step3, step4, setStep, reset, setResult: persistResult, email } = useCalculatorStore()
+  const { status } = useSession()
   const [result, setResult] = useState<EstimateResult | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -85,7 +88,7 @@ export function Step5Result() {
     fetchEstimate()
   }, [step1, step2, step3, step4])
 
-  if (loading) {
+  if (loading || status === "loading") {
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
@@ -102,6 +105,10 @@ export function Step5Result() {
         </Button>
       </div>
     )
+  }
+
+  if (status === "unauthenticated") {
+    return <SignupGate defaultEmail={email} />
   }
 
   const comparisonMultiplier = regionMultipliers[selectedRegion] || 1.0

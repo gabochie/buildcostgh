@@ -2,15 +2,31 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { Hammer, Users, DollarSign, Percent, ExternalLink, ArrowRight, CheckCircle } from "lucide-react"
 import { SafeEmail, EmailText } from "@/components/shared/SafeEmail"
+import { JsonLd } from "@/components/seo/JsonLd"
+import { affiliatesFaqs } from "@/lib/seo/faqs"
 
 export const metadata: Metadata = {
   title: "Affiliates - BuildCost GH",
   description: "Earn commissions by referring customers to BuildCost GH. Join our affiliate program and monetise your audience.",
+  alternates: {
+    canonical: "/affiliates",
+  },
 }
 
 export default function AffiliatesPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: affiliatesFaqs.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
+        }}
+      />
       <section className="bg-gradient-to-br from-emerald-900 via-emerald-800 to-charcoal py-20">
         <div className="container mx-auto px-4 text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
@@ -79,11 +95,7 @@ export default function AffiliatesPage() {
           <div className="bg-white rounded-xl border border-gray-200 p-6">
             <h3 className="font-bold text-gray-900 mb-4">Frequently Asked Questions</h3>
             <div className="space-y-4">
-              {[
-                { q: "Who can join?", a: "Anyone with an audience interested in construction or real estate in Ghana — bloggers, YouTubers, real estate agents, diaspora community leaders, and social media influencers." },
-                { q: "How and when do I get paid?", a: "Commissions are paid monthly via Mobile Money (MTN, Vodafone, AirtelTigo), bank transfer, or PayPal. Minimum payout is GHS 100." },
-                { q: "How are referrals tracked?", a: "You get a unique referral link. When someone clicks your link and makes a purchase within 30 days, the sale is attributed to you." },
-              ].map((faq) => (
+              {affiliatesFaqs.map((faq) => (
                 <div key={faq.q}>
                   <h4 className="font-medium text-gray-900 text-sm">{faq.q}</h4>
                   <p className="text-sm text-gray-600 mt-1">{faq.a}</p>
