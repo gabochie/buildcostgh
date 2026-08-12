@@ -55,10 +55,27 @@ type EcosystemStage = {
   products: string[]; revenue: string; link: string
 }
 
+type AdminContractorSource = {
+  id?: string; tier?: string; label: string; url?: string | null; confidence?: number; lastVerifiedAt?: string | null
+}
+
+type AdminContractorProject = {
+  id?: string; name: string; type?: string | null; location?: string | null; year?: number | null
+  value?: number | null; description?: string | null; imageUrl?: string | null; sort?: number
+}
+
 type AdminContractor = {
   id: string; name: string; title: string | null; phone: string; email: string | null
   website: string | null; description: string; specialties: string[]
   yearsOfExperience: number; verified: boolean; rating: number
+  licenseInfo: string | null; insurance: string | null; projectScale: string | null
+  companyType: string | null; legalName: string | null; yearEstablished: number | null
+  registrationStatus: string | null; city: string | null; region: string | null; district: string | null
+  mwhBuildingClass: string | null; mwhCivilClass: string | null; mwhElectricalClass: string | null
+  mwhPlumbingClass: string | null; mrhRoadClass: string | null; classificationSource: string | null
+  classificationExpiry: string | null; classificationNotVerified: boolean
+  verificationLevel: number; dataConfidence: number; featured: boolean
+  sources: AdminContractorSource[]; projects: AdminContractorProject[]
 }
 
 type AgentLogItem = {
@@ -3730,7 +3747,16 @@ function ContractorManager() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editing, setEditing] = useState<AdminContractor | null>(null)
-  const [form, setForm] = useState({ name: "", title: "", phone: "", email: "", description: "", specialties: "", yearsOfExperience: 0, verified: false, website: "" })
+  const [form, setForm] = useState({
+    name: "", title: "", phone: "", email: "", description: "", specialties: "", yearsOfExperience: 0,
+    verified: false, website: "", licenseInfo: "", insurance: "", projectScale: "",
+    companyType: "", legalName: "", yearEstablished: "", registrationStatus: "",
+    city: "", region: "", district: "",
+    mwhBuildingClass: "", mwhCivilClass: "", mwhElectricalClass: "", mwhPlumbingClass: "", mrhRoadClass: "",
+    classificationSource: "", classificationExpiry: "", classificationNotVerified: false,
+    verificationLevel: 0, dataConfidence: 50, featured: false,
+    sourcesJson: "", projectsJson: "",
+  })
   const [saving, setSaving] = useState(false)
 
   const fetchAll = async () => {
@@ -3754,7 +3780,20 @@ function ContractorManager() {
     return () => { ignore = true }
   }, [])
 
-  const openNew = () => { setEditing(null); setForm({ name: "", title: "", phone: "", email: "", description: "", specialties: "", yearsOfExperience: 0, verified: false, website: "" }); setShowForm(true) }
+  const openNew = () => {
+    setEditing(null)
+    setForm({
+      name: "", title: "", phone: "", email: "", description: "", specialties: "", yearsOfExperience: 0,
+      verified: false, website: "", licenseInfo: "", insurance: "", projectScale: "",
+      companyType: "", legalName: "", yearEstablished: "", registrationStatus: "",
+      city: "", region: "", district: "",
+      mwhBuildingClass: "", mwhCivilClass: "", mwhElectricalClass: "", mwhPlumbingClass: "", mrhRoadClass: "",
+      classificationSource: "", classificationExpiry: "", classificationNotVerified: false,
+      verificationLevel: 0, dataConfidence: 50, featured: false,
+      sourcesJson: "", projectsJson: "",
+    })
+    setShowForm(true)
+  }
 
   const openEdit = (c: AdminContractor) => {
     setEditing(c)
@@ -3762,6 +3801,20 @@ function ContractorManager() {
       name: c.name, title: c.title || "", phone: c.phone, email: c.email || "",
       description: c.description, specialties: (JSON.parse(JSON.stringify(c.specialties)) || []).join(", "),
       yearsOfExperience: c.yearsOfExperience, verified: c.verified, website: c.website || "",
+      licenseInfo: c.licenseInfo || "", insurance: c.insurance || "", projectScale: c.projectScale || "",
+      companyType: c.companyType || "", legalName: c.legalName || "",
+      yearEstablished: c.yearEstablished ? String(c.yearEstablished) : "", registrationStatus: c.registrationStatus || "",
+      city: c.city || "", region: c.region || "", district: c.district || "",
+      mwhBuildingClass: c.mwhBuildingClass || "", mwhCivilClass: c.mwhCivilClass || "",
+      mwhElectricalClass: c.mwhElectricalClass || "", mwhPlumbingClass: c.mwhPlumbingClass || "",
+      mrhRoadClass: c.mrhRoadClass || "",
+      classificationSource: c.classificationSource || "",
+      classificationExpiry: c.classificationExpiry ? c.classificationExpiry.slice(0, 10) : "",
+      classificationNotVerified: c.classificationNotVerified,
+      verificationLevel: c.verificationLevel || 0, dataConfidence: c.dataConfidence || 50,
+      featured: c.featured,
+      sourcesJson: JSON.stringify(c.sources || [], null, 2),
+      projectsJson: JSON.stringify(c.projects || [], null, 2),
     })
     setShowForm(true)
   }
@@ -3769,7 +3822,30 @@ function ContractorManager() {
   const handleSave = async () => {
     setSaving(true)
     const specialties = form.specialties.split(",").map((s: string) => s.trim()).filter(Boolean)
-    const body = { ...form, specialties: JSON.stringify(specialties), id: editing?.id }
+
+    let sources: AdminContractorSource[] = []
+    let projects: AdminContractorProject[] = []
+    try {
+      const parsedSources = JSON.parse(form.sourcesJson || "[]")
+      if (Array.isArray(parsedSources)) sources = parsedSources
+    } catch {}
+    try {
+      const parsedProjects = JSON.parse(form.projectsJson || "[]")
+      if (Array.isArray(parsedProjects)) projects = parsedProjects
+    } catch {}
+
+    const { sourcesJson, projectsJson, ...scalars } = form
+    const body: Record<string, unknown> = {
+      ...scalars,
+      specialties,
+      yearEstablished: scalars.yearEstablished ? parseInt(scalars.yearEstablished) || null : null,
+      classificationExpiry: scalars.classificationExpiry ? `${scalars.classificationExpiry}T00:00:00.000Z` : null,
+      id: editing?.id,
+    }
+    // Only replace sources/projects when the admin provides non-empty lists;
+    // omitting them preserves the existing relations on update.
+    if (sources.length) body.sources = sources
+    if (projects.length) body.projects = projects
     try {
       const url = "/api/admin/contractors"
       const method = editing ? "PUT" : "POST"
@@ -3832,6 +3908,73 @@ function ContractorManager() {
               <Label className="text-xs">Specialties (comma-separated)</Label>
               <Input value={form.specialties} onChange={(e) => setForm({ ...form, specialties: e.target.value })} className="h-9 text-sm" />
             </div>
+            <div className="space-y-1.5 md:col-span-2">
+              <Label className="text-xs">Company / Location</Label>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <Input placeholder="Company type (e.g. Limited Liability)" value={form.companyType} onChange={(e) => setForm({ ...form, companyType: e.target.value })} className="h-9 text-sm" />
+                <Input placeholder="Legal name" value={form.legalName} onChange={(e) => setForm({ ...form, legalName: e.target.value })} className="h-9 text-sm" />
+                <Input placeholder="Year established" type="number" value={form.yearEstablished} onChange={(e) => setForm({ ...form, yearEstablished: e.target.value })} className="h-9 text-sm" />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mt-3">
+                <Input placeholder="City" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className="h-9 text-sm" />
+                <Input placeholder="Region (e.g. Greater Accra)" value={form.region} onChange={(e) => setForm({ ...form, region: e.target.value })} className="h-9 text-sm" />
+                <Input placeholder="District" value={form.district} onChange={(e) => setForm({ ...form, district: e.target.value })} className="h-9 text-sm" />
+                <Input placeholder="Registry status (registered / not-verified / unknown)" value={form.registrationStatus} onChange={(e) => setForm({ ...form, registrationStatus: e.target.value })} className="h-9 text-sm" />
+              </div>
+            </div>
+            <div className="space-y-1.5 md:col-span-2">
+              <Label className="text-xs">Official Classification (Ministry of Works &amp; Housing / ABCEC)</Label>
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                <Input placeholder="Building (A1-A4)" value={form.mwhBuildingClass} onChange={(e) => setForm({ ...form, mwhBuildingClass: e.target.value })} className="h-9 text-sm" />
+                <Input placeholder="Civil (B1-B4)" value={form.mwhCivilClass} onChange={(e) => setForm({ ...form, mwhCivilClass: e.target.value })} className="h-9 text-sm" />
+                <Input placeholder="Electrical (L1-L3)" value={form.mwhElectricalClass} onChange={(e) => setForm({ ...form, mwhElectricalClass: e.target.value })} className="h-9 text-sm" />
+                <Input placeholder="Plumbing (G1-G2)" value={form.mwhPlumbingClass} onChange={(e) => setForm({ ...form, mwhPlumbingClass: e.target.value })} className="h-9 text-sm" />
+                <Input placeholder="Road (MRH)" value={form.mrhRoadClass} onChange={(e) => setForm({ ...form, mrhRoadClass: e.target.value })} className="h-9 text-sm" />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
+                <Input placeholder="Classification source (e.g. Ministry of Works and Housing)" value={form.classificationSource} onChange={(e) => setForm({ ...form, classificationSource: e.target.value })} className="h-9 text-sm" />
+                <Input placeholder="Certificate expiry (YYYY-MM-DD)" type="date" value={form.classificationExpiry} onChange={(e) => setForm({ ...form, classificationExpiry: e.target.value })} className="h-9 text-sm" />
+                <Input placeholder="License / registration no." value={form.licenseInfo} onChange={(e) => setForm({ ...form, licenseInfo: e.target.value })} className="h-9 text-sm" />
+              </div>
+            </div>
+            <div className="space-y-1.5 md:col-span-2">
+              <Label className="text-xs">Verification &amp; Listing</Label>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <Input placeholder="Insurance" value={form.insurance} onChange={(e) => setForm({ ...form, insurance: e.target.value })} className="h-9 text-sm" />
+                <select
+                  value={form.projectScale}
+                  onChange={(e) => setForm({ ...form, projectScale: e.target.value })}
+                  className="h-9 rounded-lg border border-gray-200 text-sm px-2 bg-white"
+                >
+                  <option value="">Project scale</option>
+                  <option value="Small">Small</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Large">Large</option>
+                  <option value="Major">Major</option>
+                  <option value="Enterprise">Enterprise</option>
+                </select>
+                <Input type="number" placeholder="Verification level (0-5)" min={0} max={5} value={form.verificationLevel} onChange={(e) => setForm({ ...form, verificationLevel: Math.max(0, Math.min(5, parseInt(e.target.value) || 0)) })} className="h-9 text-sm" />
+                <Input type="number" placeholder="Data confidence (0-100)" min={0} max={100} value={form.dataConfidence} onChange={(e) => setForm({ ...form, dataConfidence: Math.max(0, Math.min(100, parseInt(e.target.value) || 0)) })} className="h-9 text-sm" />
+              </div>
+              <div className="flex flex-wrap items-center gap-5 mt-3 text-sm text-gray-600">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" checked={form.classificationNotVerified} onChange={(e) => setForm({ ...form, classificationNotVerified: e.target.checked })} className="rounded border-gray-300 text-emerald-600" />
+                  Classification not independently verified
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" checked={form.featured} onChange={(e) => setForm({ ...form, featured: e.target.checked })} className="rounded border-gray-300 text-emerald-600" />
+                  Featured
+                </label>
+              </div>
+            </div>
+            <div className="space-y-1.5 md:col-span-2">
+              <Label className="text-xs">Sources (JSON array: [{`{ tier, label, url, confidence, lastVerifiedAt }`}])</Label>
+              <textarea value={form.sourcesJson} onChange={(e) => setForm({ ...form, sourcesJson: e.target.value })} placeholder='[{"tier":"official","label":"ABCEC Register","url":"https://...","confidence":95}]' className="w-full h-28 rounded-lg border border-gray-200 text-xs font-mono p-3 resize-none" />
+            </div>
+            <div className="space-y-1.5 md:col-span-2">
+              <Label className="text-xs">Projects (JSON array: [{`{ name, type, location, year, value, description, imageUrl, sort }`}])</Label>
+              <textarea value={form.projectsJson} onChange={(e) => setForm({ ...form, projectsJson: e.target.value })} placeholder='[{"name":"Office Block","type":"Commercial","location":"Accra","year":2024,"value":1500000}]' className="w-full h-28 rounded-lg border border-gray-200 text-xs font-mono p-3 resize-none" />
+            </div>
           </div>
           <div className="flex items-center gap-4">
             <label className="flex items-center gap-2 text-sm cursor-pointer">
@@ -3853,8 +3996,8 @@ function ContractorManager() {
             <thead>
               <tr className="bg-slate-50 border-b border-gray-200">
                 <th className="text-left py-3 px-4 font-semibold text-gray-900">Name</th>
+                <th className="text-left py-3 px-4 font-semibold text-gray-900">Class</th>
                 <th className="text-left py-3 px-4 font-semibold text-gray-900">Phone</th>
-                <th className="text-left py-3 px-4 font-semibold text-gray-900">Title</th>
                 <th className="text-center py-3 px-4 font-semibold text-gray-900">Verified</th>
                 <th className="text-center py-3 px-4 font-semibold text-gray-900">Rating</th>
                 <th className="text-center py-3 px-4 font-semibold text-gray-900">Actions</th>
@@ -3867,9 +4010,20 @@ function ContractorManager() {
                 <tr><td colSpan={6} className="text-center py-8 text-gray-400">No contractors yet</td></tr>
               ) : contractors.map((c: AdminContractor) => (
                 <tr key={c.id} className="border-b border-gray-100 hover:bg-slate-50">
-                  <td className="py-3 px-4 font-medium text-gray-900">{c.name}</td>
+                  <td className="py-3 px-4">
+                    <div className="font-medium text-gray-900">{c.name}</div>
+                    <div className="text-xs text-gray-400">{c.title || c.city || ""}</div>
+                  </td>
+                  <td className="py-3 px-4">
+                    {[c.mwhBuildingClass, c.mwhCivilClass, c.mwhElectricalClass, c.mwhPlumbingClass, c.mrhRoadClass].filter(Boolean).length > 0 ? (
+                      <span className="flex flex-wrap gap-1">
+                        {[c.mwhBuildingClass && `A:${c.mwhBuildingClass}`, c.mwhCivilClass && `B:${c.mwhCivilClass}`, c.mwhElectricalClass && `L:${c.mwhElectricalClass}`, c.mwhPlumbingClass && `G:${c.mwhPlumbingClass}`, c.mrhRoadClass && `R:${c.mrhRoadClass}`].filter(Boolean).map((cls) => (
+                          <span key={cls} className="px-1.5 py-0.5 bg-emerald-50 text-emerald-700 rounded-md text-[10px] font-medium border border-emerald-100">{cls}</span>
+                        ))}
+                      </span>
+                    ) : <span className="text-gray-300">-</span>}
+                  </td>
                   <td className="py-3 px-4 text-gray-600">{c.phone}</td>
-                  <td className="py-3 px-4 text-gray-500 text-xs">{c.title || "-"}</td>
                   <td className="py-3 px-4 text-center">{c.verified ? <BadgeCheck className="h-4 w-4 text-emerald-600 mx-auto" /> : <span className="text-gray-300">-</span>}</td>
                   <td className="py-3 px-4 text-center"><span className="flex items-center justify-center gap-1"><Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />{c.rating.toFixed(1)}</span></td>
                   <td className="py-3 px-4">
