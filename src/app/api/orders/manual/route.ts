@@ -3,6 +3,7 @@ import { generateReference } from "@/lib/utils"
 import { prisma } from "@/lib/prisma"
 import { validatePackageAmount } from "@/lib/pricing"
 import { logAgentAction } from "@/lib/agent-log"
+import { auth } from "@/lib/auth"
 
 export const dynamic = "force-dynamic"
 
@@ -20,6 +21,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid package or amount" }, { status: 400 })
     }
 
+    const session = await auth()
+
     const reference = generateReference()
 
     const order = await prisma.order.create({
@@ -31,6 +34,7 @@ export async function POST(request: NextRequest) {
         amount: serverAmount,
         reference,
         status: "pending",
+        userId: session?.user?.id ?? null,
         metadata: {
           paymentMethod: "manual_momo",
           momoNumber: "+233 24 326 2019",

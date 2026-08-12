@@ -4,12 +4,16 @@ import { auth } from "@/lib/auth"
 
 export async function GET() {
   const session = await auth()
-  if (!session?.user?.email) {
+  if (!session?.user?.id && !session?.user?.email) {
     return NextResponse.json([])
   }
 
+  const where = session?.user?.id
+    ? { OR: [{ userId: session.user.id }, { email: session.user.email || "" }] }
+    : { email: session.user.email || "" }
+
   const orders = await prisma.order.findMany({
-    where: { email: session.user.email },
+    where,
     orderBy: { createdAt: "desc" },
     select: {
       id: true,

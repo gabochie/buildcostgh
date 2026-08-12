@@ -1,0 +1,39 @@
+
+> buildcostgh@0.1.0 dev
+> next dev --webpack
+
+▲ Next.js 16.2.10 (webpack)
+- Local:         http://localhost:3000
+- Network:       http://169.254.83.107:3000
+- Environments: .env.local, .env
+✓ Ready in 1611ms
+⚠ Attempted to load @next/swc-win32-x64-msvc, but an error occurred: \\?\C:\Users\user\Documents\GitHub\buildcostgh\node_modules\@next\swc-win32-x64-msvc\next-swc.win32-x64-msvc.node is not a valid Win32 application.
+\\?\C:\Users\user\Documents\GitHub\buildcostgh\node_modules\@next\swc-win32-x64-msvc\next-swc.win32-x64-msvc.node
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of C:\Users\user\package-lock.json as the root directory.
+ To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.
+ Detected additional lockfiles: 
+   * C:\Users\user\Documents\GitHub\buildcostgh\package-lock.json
+
+  Skipping creating a lockfile at C:\Users\user\Documents\GitHub\buildcostgh\.next\dev\lock because we're using WASM bindings
+
+ GET /api/maintenance-status 200 in 1988ms (next.js: 1215ms, proxy.ts: 13ms, application-code: 761ms)
+ GET /api/maintenance-status 200 in 2.0s (next.js: 9ms, proxy.ts: 9ms, application-code: 1983ms)
+○ Compiling /login ...
+[BuildCost GH] Agents initialized: PaymentBot, ReportBot, LeadBot, PriceBot, SupportBot
+[BuildCost GH] MCP Server: buildcostgh-mcp v1.0.0
+ GET /api/maintenance-status 200 in 346ms (next.js: 32ms, proxy.ts: 23ms, application-code: 291ms)
+ GET /api/maintenance-status 200 in 351ms (next.js: 55ms, proxy.ts: 24ms, application-code: 272ms)
+ GET /api/maintenance-status 200 in 2.0s (next.js: 2ms, proxy.ts: 77ms, application-code: 1921ms)
+ GET /login 200 in 2.3s (next.js: 10ms, proxy.ts: 2.1s, application-code: 199ms)
+ GET /api/maintenance-status 200 in 18ms (next.js: 4ms, proxy.ts: 7ms, application-code: 7ms)
+ GET /login 200 in 195ms (next.js: 4ms, proxy.ts: 36ms, application-code: 155ms)
+ GET /api/maintenance-status 200 in 656ms (next.js: 5ms, proxy.ts: 15ms, application-code: 637ms)
+ POST /api/register 201 in 3.3s (next.js: 1017ms, proxy.ts: 686ms, application-code: 1558ms)
+ GET /api/maintenance-status 200 in 333ms (next.js: 14ms, proxy.ts: 18ms, application-code: 301ms)
+ POST /api/register 409 in 903ms (next.js: 25ms, proxy.ts: 624ms, application-code: 254ms)
+ GET /api/maintenance-status 200 in 22ms (next.js: 3ms, proxy.ts: 11ms, application-code: 8ms)
+ POST /api/register 400 in 60ms (next.js: 3ms, proxy.ts: 48ms, application-code: 9ms)
+ GET /api/maintenance-status 200 in 19ms (next.js: 3ms, proxy.ts: 9ms, application-code: 7ms)
+ POST /api/register 400 in 61ms (next.js: 3ms, proxy.ts: 52ms, application-code: 6ms)

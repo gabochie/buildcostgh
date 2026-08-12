@@ -4,6 +4,7 @@ import { validateSubscriptionAmount } from "@/lib/pricing"
 import { generateReference } from "@/lib/utils"
 import { prisma } from "@/lib/prisma"
 import { logAgentAction } from "@/lib/agent-log"
+import { auth } from "@/lib/auth"
 
 export const dynamic = "force-dynamic"
 
@@ -28,6 +29,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Plan not found or inactive" }, { status: 404 })
     }
 
+    const session = await auth()
+
     const reference = generateReference()
 
     const periodEnd = new Date()
@@ -43,6 +46,7 @@ export async function POST(request: NextRequest) {
         reference,
         amount: serverAmount,
         currentPeriodEnd: periodEnd,
+        userId: session?.user?.id ?? null,
       },
     })
 

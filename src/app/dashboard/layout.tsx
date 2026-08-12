@@ -2,8 +2,9 @@
 
 import { useSession } from "next-auth/react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { LayoutDashboard, ShoppingBag, User, LogOut, Hammer } from "lucide-react"
+import { usePathname, useRouter } from "next/navigation"
+import { useEffect } from "react"
+import { LayoutDashboard, ShoppingBag, User, LogOut, Hammer, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const navItems = [
@@ -13,8 +14,24 @@ const navItems = [
 ]
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const pathname = usePathname()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      const callbackUrl = encodeURIComponent(pathname)
+      router.replace(`/login?callbackUrl=${callbackUrl}`)
+    }
+  }, [status, pathname, router])
+
+  if (status === "loading" || status === "unauthenticated") {
+    return (
+      <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] bg-gray-50">
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-gray-50">

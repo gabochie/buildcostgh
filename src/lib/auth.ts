@@ -3,6 +3,8 @@ import Credentials from "next-auth/providers/credentials"
 import { checkRateLimit, recordAttempt } from "./rate-limit"
 import { ADMIN_EMAIL } from "./api-auth"
 import { secureEqual } from "./secure-compare"
+import { verifyPassword } from "./password"
+import { prisma } from "./prisma"
 
 function getIp(request?: Request): string | null {
   if (!request) return null
@@ -21,24 +23,42 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, request) {
-        const email = credentials?.email as string
+        const email = (credentials?.email as string)?.toLowerCase().trim()
         const password = credentials?.password as string
         const ip = getIp(request)
 
         const rateCheck = await checkRateLimit(ip)
         if (!rateCheck.allowed) return null
 
-        const passwordValid = secureEqual(password, process.env.ADMIN_PASSWORD)
-        const valid = email === ADMIN_EMAIL && passwordValid
-        await recordAttempt(ip, email, valid)
+        if (!email || !password) {
+          await recordAttempt(ip, email || "", false)
+          return null
+        }
 
+        if (email === ADMIN_EMAIL) {
+          const passwordValid = secureEqual(password, process.env.ADMIN_PASSWORD)
+          const valid = passwordValid
+          await recordAttempt(ip, email, valid)
+          if (!valid) return null
+          return { id: "1", name: "Admin", email: ADMIN_EMAIL }
+        }
+
+        const user = await prisma.user.findUnique({ where: { email } })
+        if (!user || !user.passwordHash) {
+          await recordAttempt(ip, email, false)
+          return null
+        }
+
+        const valid = await verifyPassword(password, user.passwordHash)
+        await recordAttempt(ip, email, valid)
         if (!valid) return null
-        return { id: "1", name: "Admin", email: ADMIN_EMAIL }
+
+        return { id: user.id, name: user.name || user.email || "", email: user.email || "" }
       },
     }),
   ],
   pages: {
-    signIn: "/admin",
+    signIn: "/login",
   },
   callbacks: {
     async jwt({ token, user }) {

@@ -3,6 +3,7 @@ import { initializePayment } from "@/lib/paystack"
 import { generateReference } from "@/lib/utils"
 import { prisma } from "@/lib/prisma"
 import { validatePackageAmount } from "@/lib/pricing"
+import { auth } from "@/lib/auth"
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,6 +19,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid package or amount" }, { status: 400 })
     }
 
+    const session = await auth()
+
     const reference = generateReference()
 
     await prisma.order.create({
@@ -30,6 +33,7 @@ export async function POST(request: NextRequest) {
         reference,
         metadata: metadata || {},
         status: "pending",
+        userId: session?.user?.id ?? null,
       },
     })
 

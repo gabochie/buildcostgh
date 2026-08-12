@@ -2,7 +2,8 @@
 
 import Link from "next/link"
 import { useState, useRef, useEffect } from "react"
-import { Menu, X, Hammer, Phone } from "lucide-react"
+import { useSession } from "next-auth/react"
+import { Menu, X, Hammer, Phone, LayoutDashboard } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -17,6 +18,8 @@ const navLinks = [
 export function Header() {
   const [open, setOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
+  const { data: session, status } = useSession()
+  const isAuthenticated = status === "authenticated"
 
   useEffect(() => {
     if (!open) return
@@ -58,11 +61,25 @@ export function Header() {
             <Phone className="h-4 w-4" />
             <span>+233 53 936 4716</span>
           </a>
-          <Link href="/calculator">
-            <Button className="bg-gradient-primary hover:opacity-90 shadow-glow-emerald text-white border-0">
-              Start Calculating
-            </Button>
-          </Link>
+          {isAuthenticated ? (
+            <Link href="/dashboard">
+              <Button className="bg-gradient-primary hover:opacity-90 shadow-glow-emerald text-white border-0">
+                <LayoutDashboard className="h-4 w-4 mr-1.5" />
+                Dashboard
+              </Button>
+            </Link>
+          ) : (
+            <>
+              <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-emerald-700 transition-colors">
+                Sign In
+              </Link>
+              <Link href="/calculator">
+                <Button className="bg-gradient-primary hover:opacity-90 shadow-glow-emerald text-white border-0">
+                  Start Calculating
+                </Button>
+              </Link>
+            </>
+          )}
         </div>
 
         <button
@@ -93,6 +110,15 @@ export function Header() {
               {link.label}
             </Link>
           ))}
+          {isAuthenticated ? (
+            <Link href="/dashboard" onClick={() => setOpen(false)} className="text-sm font-medium text-emerald-700 hover:text-emerald-600 py-2">
+              <LayoutDashboard className="h-4 w-4 inline mr-1.5" /> My Dashboard
+            </Link>
+          ) : (
+            <Link href="/login" onClick={() => setOpen(false)} className="text-sm font-medium text-emerald-700 hover:text-emerald-600 py-2">
+              Sign In
+            </Link>
+          )}
           <Link href="/calculator" onClick={() => setOpen(false)}>
             <Button className="w-full bg-gradient-primary text-white border-0">Start Calculating</Button>
           </Link>
