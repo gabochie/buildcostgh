@@ -11,6 +11,10 @@ export async function GET() {
     .findMany({ where: { published: true }, orderBy: { createdAt: "desc" }, take: 50 })
     .catch(() => [])
 
+  const regionRates = await prisma.regionRate
+    .findMany({ where: { published: true }, orderBy: { multiplier: "desc" } })
+    .catch(() => [])
+
   const sections = [
     "# BuildCost GH (llms-full.txt)",
     "",
@@ -20,6 +24,7 @@ export async function GET() {
     ...[
       "- [Home](https://buildcostgh.com/): Construction cost estimates for Ghana, built for Ghanaians and the diaspora.",
       "- [Calculator](https://buildcostgh.com/calculator): Free instant cost estimate for residential construction in Ghana.",
+      "- [Regional Cost Database](https://buildcostgh.com/costs): Live construction material and labour rates for all 16 regions of Ghana, updated monthly.",
       "- [How It Works](https://buildcostgh.com/how-it-works): How BuildCost GH estimates costs.",
       "- [Pricing](https://buildcostgh.com/pricing): One-time reports and unlimited subscriptions, payable by card or mobile money.",
       "- [Services](https://buildcostgh.com/services): All BuildCost GH services.",
@@ -28,6 +33,13 @@ export async function GET() {
       "- [Contractors](https://buildcostgh.com/contractors): Vetted construction contractors in Ghana.",
       "- [Contact](https://buildcostgh.com/contact): Contact us.",
     ],
+    "",
+    "## Regional cost data (Ghana, updated monthly)\n",
+    "Baseline: Greater Accra = 1.00x. Rates in GHS. Source: supplier surveys + NPA fuel benchmark + BuildCost GH field data.",
+    ...regionRates.map(
+      (r) =>
+        `- [${r.name} (${r.capital})](${baseUrl}/costs/${r.slug}): cost factor ${r.multiplier.toFixed(2)}x Accra; cement GHS ${r.cementBag}/50kg bag; rebar GHS ${r.rebarTon}/tonne; skilled labour GHS ${r.labourRate}/day; diesel GHS ${r.dieselLit}/litre; block GHS ${r.block}; sand GHS ${r.sandTrip}/trip; granite GHS ${r.graniteTrip}/trip; roofing GHS ${r.roofingSqm}/SQM installed.`,
+    ),
     "",
     "## Services\n",
     ...services.map(

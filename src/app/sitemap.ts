@@ -11,6 +11,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/pricing`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
     { url: `${baseUrl}/services`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.7 },
     { url: `${baseUrl}/how-it-works`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.6 },
+    { url: `${baseUrl}/costs`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
     { url: `${baseUrl}/contractors`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.6 },
     { url: `${baseUrl}/flood-safe-land`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.6 },
     { url: `${baseUrl}/reports/flood-risk`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
@@ -35,13 +36,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }))
 
   try {
-    const [posts, contractors] = await Promise.all([
+    const [posts, contractors, rates] = await Promise.all([
       prisma.blogPost.findMany({
         where: { published: true },
         select: { slug: true, updatedAt: true },
       }),
       prisma.contractor.findMany({
         where: { status: "active" },
+        select: { slug: true, updatedAt: true },
+      }),
+      prisma.regionRate.findMany({
+        where: { published: true },
         select: { slug: true, updatedAt: true },
       }),
     ])
@@ -60,7 +65,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.5,
     }))
 
-    return [...staticPages, ...servicePages, ...blogPages, ...contractorPages]
+    const regionPages: MetadataRoute.Sitemap = rates.map((r) => ({
+      url: `${baseUrl}/costs/${r.slug}`,
+      lastModified: r.updatedAt,
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    }))
+
+    return [...staticPages, ...servicePages, ...blogPages, ...contractorPages, ...regionPages]
   } catch {
     return [...staticPages, ...servicePages]
   }

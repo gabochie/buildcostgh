@@ -15,9 +15,10 @@ import { toast } from "sonner"
 import {
   Loader2, TrendingUp, ShoppingBag, MessageSquare, Users, Mail,
   FileText, ExternalLink, Eye, Shield, CheckCircle, Clock,
-  AlertCircle, ArrowRight, Plus, Search, Download, Presentation, Printer, Crosshair, Zap, Target, Globe, Award, Lightbulb, Cpu, Activity, CheckSquare, Sliders, RefreshCw, Pause, Play, Trash2, Building2, Star, BadgeCheck, Briefcase, MapPin, Edit,
+  AlertCircle, ArrowRight, Plus, Search, Download, Presentation, Printer, Crosshair, Zap, Target, Globe, Award, Lightbulb, Cpu, Activity, CheckSquare, Sliders, RefreshCw, Pause, Play, Trash2, Building2, Star, BadgeCheck, Briefcase, MapPin, Edit, ChevronDown,
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
+import { fmtGhs } from "@/lib/rates"
 
 type Stats = {
   totalOrders: number; completedOrders: number; pendingOrders: number
@@ -4813,6 +4814,221 @@ function AdminLogin() {
             {loggingIn ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Signing in...</> : "Sign In"}
           </Button>
         </form>
+      </div>
+    </div>
+  )
+}
+
+/* ── Regional Rates ── */
+type RegionRateItem = {
+  id: string
+  name: string
+  slug: string
+  capital: string
+  multiplier: number
+  labourRate: number
+  cementBag: number
+  rebarTon: number
+  block: number
+  sandTrip: number
+  graniteTrip: number
+  timber: number
+  roofingSqm: number
+  dieselLit: number
+  paintLit: number
+  source: string | null
+  notes: string | null
+  published: boolean
+  updatedAt: string
+}
+
+const RATE_FIELDS: { key: keyof RegionRateItem; label: string; hint: string }[] = [
+  { key: "cementBag", label: "Cement (50kg)", hint: "GHS/bag" },
+  { key: "rebarTon", label: "Rebar", hint: "GHS/tonne" },
+  { key: "block", label: "Block", hint: "GHS/block" },
+  { key: "sandTrip", label: "Sand", hint: "GHS/trip" },
+  { key: "graniteTrip", label: "Granite", hint: "GHS/trip" },
+  { key: "timber", label: "Timber", hint: "GHS/length" },
+  { key: "roofingSqm", label: "Roofing", hint: "GHS/SQM" },
+  { key: "dieselLit", label: "Diesel", hint: "GHS/L" },
+  { key: "paintLit", label: "Paint", hint: "GHS/L" },
+]
+
+function RegionRatesTab() {
+  const [rates, setRates] = useState<RegionRateItem[]>([])
+  const [loading, setLoading] = useState(true)
+  const [savingId, setSavingId] = useState<string | null>(null)
+  const [draft, setDraft] = useState<Record<string, Partial<RegionRateItem>>>({})
+  const [expanded, setExpanded] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetch("/api/admin/rates")
+      .then((r) => r.json())
+      .then((data: RegionRateItem[]) => setRates(data))
+      .catch(() => setRates([]))
+      .finally(() => setLoading(false))
+  }, [])
+
+  const update = (id: string, field: string, value: string) => {
+    setDraft((d) => ({ ...d, [id]: { ...(d[id] || {}), [field]: value } }))
+  }
+
+  const save = async (r: RegionRateItem) => {
+    setSavingId(r.id)
+    try {
+      const changes = draft[r.id] || {}
+      const payload: Record<string, unknown> = {}
+      for (const [k, v] of Object.entries(changes)) {
+        if (typeof v === "string") payload[k] = k === "multiplier" || k === "labourRate" || k === "cementBag" || k === "rebarTon" || k === "block" || k === "sandTrip" || k === "graniteTrip" || k === "timber" || k === "roofingSqm" || k === "dieselLit" || k === "paintLit" ? Number(v) : v
+        else payload[k] = v
+      }
+      if (Object.keys(payload).length === 0) return
+      const res = await fetch(`/api/admin/rates/${r.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+      const updated = await res.json()
+      if (res.ok) {
+        setRates((rs) => rs.map((x) => (x.id === r.id ? updated : x)))
+        setDraft((d) => { const nd = { ...d }; delete nd[r.id]; return nd })
+        toast.success(`${updated.name} rates saved`)
+      } else {
+        toast.error(updated.error || "Failed to save")
+      }
+    } catch {
+      toast.error("Failed to save")
+    } finally {
+      setSavingId(null)
+    }
+  }
+
+  const togglePublished = async (r: RegionRateItem) => {
+    const res = await fetch(`/api/admin/rates/${r.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ published: !r.published }),
+    })
+    const updated = await res.json()
+    if (res.ok) {
+      setRates((rs) => rs.map((x) => (x.id === r.id ? updated : x)))
+      toast.success(`${updated.name} ${updated.published ? "published" : "hidden"}`)
+    }
+  }
+
+  const val = (r: RegionRateItem, field: string) =>
+    (draft[r.id] as Record<string, string | number | boolean | null> | undefined)?.[field] ?? r[field as keyof RegionRateItem]
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-20">
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+        <div className="flex items-center gap-3 mb-3">
+          <Globe className="h-6 w-6 text-emerald-600" />
+          <div>
+            <h2 className="text-xl font-bold text-slate-900">Regional Rate Database</h2>
+            <p className="text-sm text-slate-500">
+              Live rates shown on /costs and /costs/[region]. Published rows feed the sitemap, llms-full.txt and public /api/rates.
+            </p>
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-4 text-sm">
+          <div className="rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-2.5">
+            <span className="text-2xl font-bold text-emerald-700">{rates.length}</span>
+            <span className="ml-2 text-emerald-900 font-medium">regions</span>
+          </div>
+          <div className="rounded-xl bg-slate-50 border border-slate-200 px-4 py-2.5">
+            <span className="text-2xl font-bold text-slate-800">{rates.filter((r) => r.published).length}</span>
+            <span className="ml-2 text-slate-600 font-medium">published</span>
+          </div>
+          <div className="rounded-xl bg-amber-50 border border-amber-200 px-4 py-2.5">
+            <span className="text-sm text-amber-900">
+              Baseline: Greater Accra = 1.00x. Rows sync automatically to public pages.
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        {rates.map((r) => {
+          const isOpen = expanded === r.id
+          const dirty = Object.keys(draft[r.id] || {}).length > 0
+          return (
+            <div key={r.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+              <button
+                onClick={() => setExpanded(isOpen ? null : r.id)}
+                className="w-full flex items-center justify-between px-5 py-4 hover:bg-slate-50 text-left"
+              >
+                <div className="flex items-center gap-3">
+                  <span className={`w-2.5 h-2.5 rounded-full ${r.published ? "bg-emerald-500" : "bg-slate-300"}`} />
+                  <div>
+                    <p className="font-bold text-slate-900">{r.name} <span className="font-normal text-slate-400">· {r.capital}</span></p>
+                    <p className="text-xs text-slate-500">
+                      Factor {r.multiplier.toFixed(2)}x · Cement {fmtGhs(Number(val(r, "cementBag")))}/bag · Labour {fmtGhs(Number(val(r, "labourRate")))}/day · Updated {new Date(r.updatedAt).toLocaleDateString("en-GH")}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  {dirty && <span className="text-xs font-semibold text-amber-600 bg-amber-50 px-2 py-1 rounded-full">Unsaved</span>}
+                  <ChevronDown className={`h-5 w-5 text-slate-400 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+                </div>
+              </button>
+
+              {isOpen && (
+                <div className="px-5 pb-5 border-t border-slate-100 pt-4 space-y-4">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div>
+                      <Label className="text-xs text-slate-500">Region name</Label>
+                      <Input value={String(val(r, "name"))} onChange={(e) => update(r.id, "name", e.target.value)} className="h-10" />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-slate-500">Capital</Label>
+                      <Input value={String(val(r, "capital"))} onChange={(e) => update(r.id, "capital", e.target.value)} className="h-10" />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-slate-500">Cost factor (vs Accra)</Label>
+                      <Input value={String(val(r, "multiplier"))} onChange={(e) => update(r.id, "multiplier", e.target.value)} className="h-10" inputMode="decimal" />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-slate-500">Labour rate GHS/day</Label>
+                      <Input value={String(val(r, "labourRate"))} onChange={(e) => update(r.id, "labourRate", e.target.value)} className="h-10" inputMode="numeric" />
+                    </div>
+                    {RATE_FIELDS.map((f) => (
+                      <div key={f.key}>
+                        <Label className="text-xs text-slate-500">{f.label}</Label>
+                        <Input value={String(val(r, f.key))} onChange={(e) => update(r.id, f.key, e.target.value)} className="h-10" inputMode="numeric" placeholder={f.hint} />
+                      </div>
+                    ))}
+                    <div className="col-span-2">
+                      <Label className="text-xs text-slate-500">Source note</Label>
+                      <Input value={String(val(r, "source") ?? "")} onChange={(e) => update(r.id, "source", e.target.value)} className="h-10" />
+                    </div>
+                    <div className="col-span-2">
+                      <Label className="text-xs text-slate-500">Notes</Label>
+                      <Input value={String(val(r, "notes") ?? "")} onChange={(e) => update(r.id, "notes", e.target.value)} className="h-10" />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Button onClick={() => save(r)} disabled={savingId === r.id || !dirty} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+                      {savingId === r.id ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</> : <><CheckCircle className="mr-2 h-4 w-4" /> Save</>}
+                    </Button>
+                    <Button variant="outline" onClick={() => togglePublished(r)}>
+                      <Eye className="mr-2 h-4 w-4" /> {r.published ? "Hide from site" : "Publish"}
+                    </Button>
+                    <span className="text-xs text-slate-400">/costs/{r.slug}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )
+        })}
       </div>
     </div>
   )

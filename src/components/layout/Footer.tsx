@@ -16,6 +16,7 @@ const companyLinks = [
 const quickLinks = [
   { href: "/", label: "Home" },
   { href: "/calculator", label: "Calculator" },
+  { href: "/costs", label: "Regional Cost Database" },
   { href: "/pricing", label: "Pricing" },
   { href: "/contractors", label: "Contractors" },
   { href: "/flood-safe-land", label: "Flood Safe Land" },
