@@ -3149,6 +3149,34 @@ function CompetitiveAnalysisView() {
 
   const competitors = [
     {
+      name: "ExactoCost",
+      url: "exactocost.com",
+      tagline: "BOQ & construction cost estimation software for QS professionals — SMM7/NRM2, live Ghana supplier rates",
+      tier: "Direct",
+      founders: "David Odoi",
+      backed: "Self-funded",
+      launched: "2025/2026",
+      focus: "Professional QS & Construction Firms (B2B)",
+      pricing: "Student free · Professional GHS 150/mo · Firm GHS 400/mo",
+      strengths: [
+        "SMM7/NRM2-compliant BOQ workflows — real professional QS credibility",
+        "Transparent live rate database published publicly (cement GHS 101/bag, rebar GHS 9,800/t, NPA diesel GHS 16.10/L, plant hire)",
+        "Distance-banded haulage built into unit rates, not bolted on",
+        "Free academic tier for students & lecturers — captures the next generation of QS professionals",
+        "AEO-savvy: llms.txt with hard rate data + AI crawlers explicitly allowed",
+        "Subscription pricing (GHS 150–400/mo) = strong recurring revenue per customer",
+      ],
+      weaknesses: [
+        "Only 4 regions covered (Greater Accra, Ashanti, Western, Northern) — BuildCost GH covers all 16",
+        "B2B/QS-only — no self-serve homeowner or diaspora market (the mass market)",
+        "High price + GHS 2.00 card verification = high friction vs our free calculator",
+        "No contractor directory, no flood-risk data, no diaspora angle",
+        "Blog is 8 posts from a single April–May 2026 burst — content gap we can exploit",
+        "GHS-only pricing — no multi-currency for diaspora",
+      ],
+      threat: "High",
+    },
+    {
       name: "GhanaHousePlanner",
       url: "ghanahouseplanner.com",
       tagline: "Free cost calculator + AI floor plans + project management",
@@ -3305,20 +3333,22 @@ function CompetitiveAnalysisView() {
   ]
 
   const matrixFeatures = [
-    { feature: "Instant cost estimate", bc: true, ghp: true, cmb: true, ban: true, tosi: false, brc: true, ha: false },
-    { feature: "Ghana-specific pricing", bc: true, ghp: true, cmb: true, ban: true, tosi: true, brc: true, ha: true },
-    { feature: "16-region coverage", bc: true, ghp: true, cmb: false, ban: false, tosi: false, brc: false, ha: false },
-    { feature: "AI-powered estimation", bc: true, ghp: "Partial", cmb: false, ban: false, tosi: false, brc: false, ha: false },
-    { feature: "Multi-currency support", bc: true, ghp: false, cmb: false, ban: false, tosi: false, brc: true, ha: false },
-    { feature: "PDF report download", bc: true, ghp: true, cmb: false, ban: true, tosi: false, brc: true, ha: true },
-    { feature: "Diaspora-first features", bc: true, ghp: true, cmb: true, ban: false, tosi: false, brc: false, ha: false },
-    { feature: "Contractor marketplace", bc: false, ghp: false, cmb: true, ban: false, tosi: true, brc: false, ha: false },
-    { feature: "Material price tracking", bc: false, ghp: "CornerStore", cmb: true, ban: false, tosi: true, brc: false, ha: true },
-    { feature: "Project management", bc: false, ghp: true, cmb: false, ban: true, tosi: true, brc: false, ha: true },
-    { feature: "Payment integration", bc: "Paystack", ghp: false, cmb: "Escrow", ban: false, tosi: false, brc: "Stripe", ha: false },
-    { feature: "Agentic/AI workflows", bc: true, ghp: "AI Agent", cmb: false, ban: false, tosi: false, brc: false, ha: false },
-    { feature: "Mobile app", bc: false, ghp: false, cmb: false, ban: false, tosi: true, brc: false, ha: false },
-    { feature: "Free tier available", bc: false, ghp: true, cmb: true, ban: false, tosi: true, brc: true, ha: true },
+    { feature: "Instant cost estimate", bc: true, ghp: true, cmb: true, ban: true, tosi: false, brc: true, ha: false, exc: true },
+    { feature: "Ghana-specific pricing", bc: true, ghp: true, cmb: true, ban: true, tosi: true, brc: true, ha: true, exc: true },
+    { feature: "16-region coverage", bc: true, ghp: true, cmb: false, ban: false, tosi: false, brc: false, ha: false, exc: false },
+    { feature: "AI-powered estimation", bc: true, ghp: "Partial", cmb: false, ban: false, tosi: false, brc: false, ha: false, exc: false },
+    { feature: "Multi-currency support", bc: true, ghp: false, cmb: false, ban: false, tosi: false, brc: true, ha: false, exc: false },
+    { feature: "PDF report download", bc: true, ghp: true, cmb: false, ban: true, tosi: false, brc: true, ha: true, exc: false },
+    { feature: "BOQ / Excel export", bc: false, ghp: false, cmb: false, ban: true, tosi: false, brc: false, ha: false, exc: true },
+    { feature: "SMM7 / NRM2 measurement", bc: false, ghp: false, cmb: false, ban: true, tosi: false, brc: false, ha: false, exc: true },
+    { feature: "Diaspora-first features", bc: true, ghp: true, cmb: true, ban: false, tosi: false, brc: false, ha: false, exc: false },
+    { feature: "Contractor marketplace", bc: false, ghp: false, cmb: true, ban: false, tosi: true, brc: false, ha: false, exc: false },
+    { feature: "Material price tracking", bc: false, ghp: "CornerStore", cmb: true, ban: false, tosi: true, brc: false, ha: true, exc: true },
+    { feature: "Project management", bc: false, ghp: true, cmb: false, ban: true, tosi: true, brc: false, ha: true, exc: true },
+    { feature: "Payment integration", bc: "Paystack", ghp: false, cmb: "Escrow", ban: false, tosi: false, brc: "Stripe", ha: false, exc: "Paystack" },
+    { feature: "Agentic/AI workflows", bc: true, ghp: "AI Agent", cmb: false, ban: false, tosi: false, brc: false, ha: false, exc: false },
+    { feature: "Mobile app", bc: false, ghp: false, cmb: false, ban: false, tosi: true, brc: false, ha: false, exc: false },
+    { feature: "Free tier available", bc: false, ghp: true, cmb: true, ban: false, tosi: true, brc: true, ha: true, exc: "Students" },
   ]
 
   const sections = [
@@ -3326,6 +3356,7 @@ function CompetitiveAnalysisView() {
     { id: "profiles", label: "Competitor Profiles" },
     { id: "matrix", label: "Feature Matrix" },
     { id: "swot", label: "SWOT Analysis" },
+    { id: "strategy", label: "Monopoly Strategy" },
     { id: "recommendations", label: "Recommendations" },
   ]
 
@@ -3495,6 +3526,7 @@ function CompetitiveAnalysisView() {
                   <th className="text-center py-3 px-4 font-semibold text-emerald-600 bg-emerald-50/50 min-w-[100px]">BuildCost GH</th>
                   <th className="text-center py-3 px-4 font-semibold text-slate-700 min-w-[100px]">GhanaHouse Planner</th>
                   <th className="text-center py-3 px-4 font-semibold text-slate-700 min-w-[100px]">CostmyBuild</th>
+                  <th className="text-center py-3 px-4 font-semibold text-slate-700 min-w-[100px]">ExactoCost</th>
                   <th className="text-center py-3 px-4 font-semibold text-slate-700 min-w-[100px]">BaniEstimations</th>
                   <th className="text-center py-3 px-4 font-semibold text-slate-700 min-w-[100px]">ToSi</th>
                   <th className="text-center py-3 px-4 font-semibold text-slate-700 min-w-[100px]">Backrow Calc</th>
