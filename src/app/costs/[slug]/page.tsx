@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic"
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
-  const r = await prisma.regionRate.findUnique({ where: { slug } }).catch(() => null)
+  const r = await prisma.regionRate.findUnique({ where: { slug } })
   if (!r) return {}
   const est = estimateFor(r.multiplier)
   return {
@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function RegionCostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const r = await prisma.regionRate.findUnique({ where: { slug } }).catch(() => null)
+  const r = await prisma.regionRate.findUnique({ where: { slug } })
   if (!r || !r.published) notFound()
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://buildcostgh.com"

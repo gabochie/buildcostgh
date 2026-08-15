@@ -245,7 +245,7 @@ export default async function CostsIndexPage() {
         <div className="bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-3xl p-10 text-center text-white">
           <h2 className="text-3xl font-heading font-bold mb-3">Build with real numbers</h2>
           <p className="text-emerald-50 max-w-xl mx-auto mb-6">
-            Get a free, itemized cost estimate for your project — automatically adjusted to your region's rates.
+            Get a free, itemized cost estimate for your project — automatically adjusted to your region&apos;s rates.
           </p>
           <Link
             href="/calculator"
