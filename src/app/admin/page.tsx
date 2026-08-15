@@ -244,6 +244,8 @@ export default function AdminPage() {
     <CompetitiveAnalysisView />
   ) : tab === "contractors" ? (
     <ContractorManager />
+  ) : tab === "rates" ? (
+    <RegionRatesTab />
   ) : tab === "commandcenter" ? (
     <CommandCenter />
   ) : tab === "cofounder" ? (
