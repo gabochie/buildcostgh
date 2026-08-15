@@ -477,3 +477,42 @@ model CofounderTask {
   @@index([goalId, status])
   @@index([agent])
 }
+
+model ContentDraft {
+  id          String   @id @default(cuid())
+  kind        String   @default("social") // social | blog
+  title       String
+  caption     String   // social caption / post body
+  body        String?  // extended blog/thread body (optional)
+  offer       Json?    // { headline, detail, expiresInDays?, cta? }
+  platforms   Json     @default("[]") // ["facebook","instagram","x","linkedin","tiktok"]
+  status      String   @default("draft") // draft | approved | rejected | published
+  reviewNote  String?
+  source      String?  // e.g. "content-agent"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  approvedAt  DateTime?
+  publishedAt DateTime?
+
+  posts SocialPost[]
+
+  @@index([status, createdAt])
+}
+
+model SocialPost {
+  id          String        @id @default(cuid())
+  draftId     String?
+  platform    String        // facebook | instagram | x | linkedin | tiktok | manual
+  status      String        @default("pending") // pending | published | failed | manual
+  externalUrl String?
+  error       String?
+  scheduledAt DateTime?
+  publishedAt DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  draft ContentDraft? @relation(fields: [draftId], references: [id], onDelete: SetNull)
+
+  @@index([platform, status])
+  @@index([draftId])
+}

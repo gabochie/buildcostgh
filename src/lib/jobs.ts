@@ -3,6 +3,9 @@ import { registerJobHandler } from "./queue"
 import { logAgentAction } from "./agent-log"
 import { generateOrderReport } from "./pdf"
 import { generateReportWorkbook } from "./excel"
+import { generateContentDraft } from "./content-engine"
+import { publishContentDraft } from "./social"
+import type { SocialPlatform } from "./social"
 import type { ContractorInsight } from "./report-content"
 import type { CalculatorInput, EstimateResult } from "@/types"
 
@@ -177,6 +180,17 @@ export function registerAllJobHandlers() {
   registerJobHandler("send_receipt", async (payload) => {
     const { orderId } = payload as { orderId: string }
     await sendReceiptForOrder(orderId)
+  })
+
+  registerJobHandler("generate_content_draft", async (payload) => {
+    const { platforms } = (payload ?? {}) as { platforms?: string[] }
+    const result = await generateContentDraft({ platforms: (platforms ?? []) as SocialPlatform[] })
+    if (!result.draft && result.error) throw new Error(result.error)
+  })
+
+  registerJobHandler("publish_social", async (payload) => {
+    const { draftId } = payload as { draftId: string }
+    await publishContentDraft(draftId)
   })
 
   registerJobHandler("nurture_lead", async (payload) => {

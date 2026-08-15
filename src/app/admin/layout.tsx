@@ -6,7 +6,7 @@ import { useEffect, useState, useSyncExternalStore } from "react"
 import Link from "next/link"
 import {
   LayoutDashboard, ShoppingBag, MessageSquare, Users, Mail,
-  FileText, ListChecks, Settings, LogOut, Menu, X, Loader2, Hammer, Lightbulb, Network, ClipboardCheck, Presentation, Crosshair, Cpu, Building2, Bot, Coins,
+  FileText, ListChecks, Settings, LogOut, Menu, X, Loader2, Hammer, Lightbulb, Network, ClipboardCheck, Presentation, Crosshair, Cpu, Building2, Bot, Coins, Megaphone,
 } from "lucide-react"
 
 const navItems = [
@@ -23,6 +23,7 @@ const navItems = [
   { href: "/admin?tab=prelaunch", label: "Prelaunch", icon: ClipboardCheck },
   { href: "/admin?tab=contractors", label: "Contractors", icon: Building2 },
   { href: "/admin?tab=rates", label: "Regional Rates", icon: Coins },
+  { href: "/admin?tab=content", label: "Content Marketing", icon: Megaphone },
   { href: "/admin?tab=commandcenter", label: "Command Center", icon: Cpu },
   { href: "/admin?tab=pitchdeck", label: "Pitch Deck", icon: Presentation },
   { href: "/admin?tab=competitiveanalysis", label: "Competitive Analysis", icon: Crosshair },

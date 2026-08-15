@@ -15,7 +15,7 @@ import { toast } from "sonner"
 import {
   Loader2, TrendingUp, ShoppingBag, MessageSquare, Users, Mail,
   FileText, ExternalLink, Eye, Shield, CheckCircle, Clock,
-  AlertCircle, ArrowRight, Plus, Search, Download, Presentation, Printer, Crosshair, Zap, Target, Globe, Award, Lightbulb, Cpu, Activity, CheckSquare, Sliders, RefreshCw, Pause, Play, Trash2, Building2, Star, BadgeCheck, Briefcase, MapPin, Edit, ChevronDown,
+  AlertCircle, ArrowRight, Plus, Search, Download, Presentation, Printer, Crosshair, Zap, Target, Globe, Award, Lightbulb, Cpu, Activity, CheckSquare, Sliders, RefreshCw, Pause, Play, Trash2, Building2, Star, BadgeCheck, Briefcase, MapPin, Edit, ChevronDown, Megaphone, Sparkles, Send, X,
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 import { fmtGhs } from "@/lib/rates"
@@ -247,6 +247,8 @@ export default function AdminPage() {
     <ContractorManager />
   ) : tab === "rates" ? (
     <RegionRatesTab />
+  ) : tab === "content" ? (
+    <ContentMarketingTab />
   ) : tab === "commandcenter" ? (
     <CommandCenter />
   ) : tab === "cofounder" ? (
@@ -5030,6 +5032,258 @@ function RegionRatesTab() {
           )
         })}
       </div>
+    </div>
+  )
+}
+
+/* ── Content Marketing ── */
+type ContentPostItem = {
+  id: string; platform: string; status: string
+  externalUrl: string | null; error: string | null; publishedAt: string | null
+}
+
+type ContentDraftItem = {
+  id: string; kind: string; title: string; caption: string; body: string | null
+  offer: Record<string, unknown> | null; platforms: string[]
+  status: string; reviewNote: string | null
+  createdAt: string; approvedAt: string | null; publishedAt: string | null
+  posts: ContentPostItem[]
+}
+
+const CONTENT_PLATFORM_LABELS: Record<string, string> = {
+  facebook: "Facebook", instagram: "Instagram", x: "X", linkedin: "LinkedIn", tiktok: "TikTok",
+}
+
+const CONTENT_STATUS_STYLES: Record<string, string> = {
+  draft: "bg-slate-100 text-slate-700",
+  approved: "bg-emerald-100 text-emerald-700",
+  rejected: "bg-red-100 text-red-700",
+  published: "bg-indigo-100 text-indigo-700",
+}
+
+function ContentMarketingTab() {
+  const [drafts, setDrafts] = useState<ContentDraftItem[]>([])
+  const [loading, setLoading] = useState(true)
+  const [generating, setGenerating] = useState(false)
+  const [publishingId, setPublishingId] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetch("/api/content")
+      .then((r) => r.json())
+      .then((data: ContentDraftItem[]) => setDrafts(data))
+      .catch(() => setDrafts([]))
+      .finally(() => setLoading(false))
+  }, [])
+
+  const refresh = async () => {
+    const res = await fetch("/api/content")
+    if (res.ok) setDrafts(await res.json())
+  }
+
+  const generate = async () => {
+    setGenerating(true)
+    setError(null)
+    try {
+      const res = await fetch("/api/content", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      })
+      const data = await res.json()
+      if (res.ok && data.draft) {
+        toast.success("Draft generated — review it in the queue")
+        await refresh()
+      } else {
+        toast.error(data.error || "Generation failed")
+        setError(data.error || "Generation failed")
+      }
+    } catch {
+      toast.error("Generation failed")
+      setError("Generation failed")
+    } finally {
+      setGenerating(false)
+    }
+  }
+
+  const setStatus = async (d: ContentDraftItem, status: string) => {
+    const res = await fetch(`/api/content/${d.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
+    })
+    if (res.ok) {
+      await refresh()
+      toast.success(status === "approved" ? "Draft approved" : status === "rejected" ? "Draft rejected" : "Draft restored")
+    } else {
+      const data = await res.json().catch(() => null)
+      toast.error(data?.error || "Update failed")
+    }
+  }
+
+  const publish = async (d: ContentDraftItem) => {
+    setPublishingId(d.id)
+    try {
+      const res = await fetch(`/api/content/${d.id}`, { method: "POST" })
+      const data = await res.json()
+      if (res.ok) {
+        await refresh()
+        toast.success(`Published to ${data.published} platform(s)`)
+      } else {
+        toast.error(data.error || "Publish failed")
+      }
+    } catch {
+      toast.error("Publish failed")
+    } finally {
+      setPublishingId(null)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-20">
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
+      </div>
+    )
+  }
+
+  const offerOf = (d: ContentDraftItem) => (d.offer ?? {}) as Record<string, string | number>
+
+  return (
+    <div className="space-y-6">
+      <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+        <div className="flex items-center justify-between gap-3 mb-3">
+          <div className="flex items-center gap-3">
+            <Megaphone className="h-6 w-6 text-emerald-600" />
+            <div>
+              <h2 className="text-xl font-bold text-slate-900">Content Marketing Engine</h2>
+              <p className="text-sm text-slate-500">
+                The Content agent drafts a strategic post + irresistible offer from live business data. Drafts always await your approval before anything is published.
+              </p>
+            </div>
+          </div>
+          <Button onClick={generate} disabled={generating} className="bg-emerald-600 hover:bg-emerald-700 text-white shrink-0">
+            {generating ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating...</> : <><Sparkles className="mr-2 h-4 w-4" /> Generate draft</>}
+          </Button>
+        </div>
+        {error && (
+          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 mb-3">
+            {error}
+          </div>
+        )}
+        <div className="flex flex-wrap gap-4 text-sm">
+          <div className="rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-2.5">
+            <span className="text-2xl font-bold text-emerald-700">{drafts.length}</span>
+            <span className="ml-2 text-emerald-900 font-medium">drafts</span>
+          </div>
+          <div className="rounded-xl bg-indigo-50 border border-indigo-200 px-4 py-2.5">
+            <span className="text-2xl font-bold text-indigo-700">{drafts.filter((d) => d.status === "approved").length}</span>
+            <span className="ml-2 text-indigo-900 font-medium">awaiting publish</span>
+          </div>
+          <div className="rounded-xl bg-slate-50 border border-slate-200 px-4 py-2.5">
+            <span className="text-2xl font-bold text-slate-800">{drafts.filter((d) => d.status === "published").length}</span>
+            <span className="ml-2 text-slate-600 font-medium">published</span>
+          </div>
+          <div className="rounded-xl bg-amber-50 border border-amber-200 px-4 py-2.5">
+            <span className="text-sm text-amber-900">
+              Auto-publish needs Facebook, X and/or LinkedIn credentials in env vars. Instagram/TikTok are manual.
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {drafts.length === 0 ? (
+        <div className="bg-white rounded-2xl border border-dashed border-slate-300 p-10 text-center">
+          <p className="text-slate-500 mb-2">No content drafts yet.</p>
+          <p className="text-sm text-slate-400">Click “Generate draft” to have the Content agent create the first post + offer.</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {drafts.map((d) => {
+            const offer = offerOf(d)
+            return (
+              <div key={d.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${CONTENT_STATUS_STYLES[d.status] || CONTENT_STATUS_STYLES.draft}`}>
+                        {d.status}
+                      </span>
+                      <span className="text-xs font-medium text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full uppercase">
+                        {d.kind}
+                      </span>
+                      {d.platforms.map((p) => (
+                        <span key={p} className="text-xs text-slate-600 bg-slate-100 px-2.5 py-1 rounded-full">
+                          {CONTENT_PLATFORM_LABELS[p] || p}
+                        </span>
+                      ))}
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-900 mt-2">{d.title}</h3>
+                    <p className="text-sm text-slate-600 mt-1 whitespace-pre-wrap">{d.caption}</p>
+                    {offer.headline && (
+                      <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+                        <p className="text-sm font-bold text-amber-800">Offer: {String(offer.headline)}</p>
+                        <p className="text-sm text-amber-900 mt-0.5">{String(offer.detail ?? "")}</p>
+                        <p className="text-xs text-amber-700 mt-1">
+                          {String(offer.cta ?? "")} · expires in {String(offer.expiresInDays ?? "?")} days
+                        </p>
+                      </div>
+                    )}
+                    {d.reviewNote && <p className="text-xs text-slate-400 mt-2">Review note: {d.reviewNote}</p>}
+                  </div>
+                  <div className="shrink-0 flex flex-col items-end gap-2">
+                    {d.status === "draft" && (
+                      <>
+                        <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white" onClick={() => setStatus(d, "approved")}>
+                          <CheckCircle className="mr-1.5 h-4 w-4" /> Approve
+                        </Button>
+                        <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50" onClick={() => setStatus(d, "rejected")}>
+                          <X className="mr-1.5 h-4 w-4" /> Reject
+                        </Button>
+                      </>
+                    )}
+                    {d.status === "approved" && (
+                      <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white" onClick={() => publish(d)} disabled={publishingId === d.id}>
+                        {publishingId === d.id ? <><Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> Publishing...</> : <><Send className="mr-1.5 h-4 w-4" /> Publish to social</>}
+                      </Button>
+                    )}
+                    {d.status === "rejected" && (
+                      <Button size="sm" variant="outline" onClick={() => setStatus(d, "draft")}>
+                        <RefreshCw className="mr-1.5 h-4 w-4" /> Restore to draft
+                      </Button>
+                    )}
+                  </div>
+                </div>
+
+                {d.posts.length > 0 && (
+                  <div className="mt-4 border-t border-slate-100 pt-3">
+                    <div className="flex flex-wrap gap-3">
+                      {d.posts.map((p) => (
+                        <div key={p.id} className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-1.5 text-xs">
+                          <span className={`w-1.5 h-1.5 rounded-full ${p.status === "published" ? "bg-emerald-500" : p.status === "failed" ? "bg-red-500" : "bg-amber-500"}`} />
+                          <span className="font-medium text-slate-700">{CONTENT_PLATFORM_LABELS[p.platform] || p.platform}</span>
+                          <span className="text-slate-400 capitalize">{p.status}</span>
+                          {p.externalUrl && (
+                            <a href={p.externalUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-emerald-600 hover:underline">
+                              view <ExternalLink className="ml-0.5 h-3 w-3" />
+                            </a>
+                          )}
+                          {p.error && <span className="text-red-500 max-w-xs truncate" title={p.error}>{p.error}</span>}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <p className="text-xs text-slate-400 mt-3">
+                  Drafted {new Date(d.createdAt).toLocaleString("en-GH")}
+                  {d.publishedAt ? ` · Published ${new Date(d.publishedAt).toLocaleString("en-GH")}` : ""}
+                </p>
+              </div>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }
