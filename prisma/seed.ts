@@ -21,6 +21,54 @@ async function main() {
     })
   }
 
+  // ── Regional cost data (16 Ghana regions) ──
+  // Baseline = Accra (1.00). Multipliers match the calculator location factors.
+  const regionRates: {
+    name: string; capital: string; slug: string; multiplier: number; labourRate: number
+    cementBag: number; rebarTon: number; block: number; sandTrip: number
+    graniteTrip: number; timber: number; roofingSqm: number; dieselLit: number; paintLit: number
+    notes?: string
+  }[] = [
+    { name: "Greater Accra", capital: "Accra", slug: "greater-accra", multiplier: 1.0, labourRate: 130, cementBag: 101, rebarTon: 9800, block: 12, sandTrip: 700, graniteTrip: 800, timber: 35, roofingSqm: 60, dieselLit: 16, paintLit: 140, notes: "Highest labour rates and material prices in Ghana. Cement from Ghacem Tema and Shai Hills." },
+    { name: "Ashanti", capital: "Kumasi", slug: "ashanti", multiplier: 0.85, labourRate: 110, cementBag: 96, rebarTon: 9400, block: 11, sandTrip: 600, graniteTrip: 720, timber: 30, roofingSqm: 55, dieselLit: 16, paintLit: 130, notes: "Rebar cheapest near Kumasi steel suppliers. Competitive labour with good material availability." },
+    { name: "Western", capital: "Sekondi-Takoradi", slug: "western", multiplier: 0.8, labourRate: 105, cementBag: 98, rebarTon: 9600, block: 11, sandTrip: 620, graniteTrip: 750, timber: 32, roofingSqm: 56, dieselLit: 16, paintLit: 128, notes: "Oil-city premium on some materials, lower labour than Accra." },
+    { name: "Central", capital: "Cape Coast", slug: "central", multiplier: 0.75, labourRate: 95, cementBag: 93, rebarTon: 9500, block: 10, sandTrip: 560, graniteTrip: 700, timber: 28, roofingSqm: 52, dieselLit: 16, paintLit: 122, notes: "Lower land costs than Accra with good access to coastal aggregates." },
+    { name: "Volta", capital: "Ho", slug: "volta", multiplier: 0.68, labourRate: 88, cementBag: 90, rebarTon: 9300, block: 10, sandTrip: 520, graniteTrip: 660, timber: 26, roofingSqm: 50, dieselLit: 16, paintLit: 115, notes: "Affordable labour and materials; transport costs rise further from the coast." },
+    { name: "Eastern", capital: "Koforidua", slug: "eastern", multiplier: 0.7, labourRate: 90, cementBag: 92, rebarTon: 9400, block: 10, sandTrip: 540, graniteTrip: 680, timber: 27, roofingSqm: 51, dieselLit: 16, paintLit: 118, notes: "Close to Accra markets but cheaper land and labour." },
+    { name: "Northern", capital: "Tamale", slug: "northern", multiplier: 0.7, labourRate: 85, cementBag: 95, rebarTon: 9500, block: 10, sandTrip: 500, graniteTrip: 650, timber: 28, roofingSqm: 50, dieselLit: 16, paintLit: 115, notes: "Material transport from the south pushes prices up despite lower labour." },
+    { name: "Upper East", capital: "Bolgatanga", slug: "upper-east", multiplier: 0.65, labourRate: 80, cementBag: 94, rebarTon: 9400, block: 10, sandTrip: 480, graniteTrip: 620, timber: 27, roofingSqm: 49, dieselLit: 16, paintLit: 112, notes: "Lowest labour rates in Ghana; long haulage adds to material costs." },
+    { name: "Upper West", capital: "Wa", slug: "upper-west", multiplier: 0.67, labourRate: 82, cementBag: 94, rebarTon: 9400, block: 10, sandTrip: 490, graniteTrip: 630, timber: 27, roofingSqm: 49, dieselLit: 16, paintLit: 113, notes: "Cheap land and labour offset by transport distances." },
+    { name: "Bono", capital: "Sunyani", slug: "bono", multiplier: 0.72, labourRate: 92, cementBag: 91, rebarTon: 9300, block: 10, sandTrip: 530, graniteTrip: 670, timber: 27, roofingSqm: 51, dieselLit: 16, paintLit: 118, notes: "Central location keeps haulage moderate." },
+    { name: "Bono East", capital: "Techiman", slug: "bono-east", multiplier: 0.73, labourRate: 93, cementBag: 92, rebarTon: 9350, block: 10, sandTrip: 535, graniteTrip: 675, timber: 27, roofingSqm: 51, dieselLit: 16, paintLit: 119, notes: "Major trading hub keeps material supply steady." },
+    { name: "Ahafo", capital: "Goaso", slug: "ahafo", multiplier: 0.7, labourRate: 90, cementBag: 92, rebarTon: 9400, block: 10, sandTrip: 530, graniteTrip: 665, timber: 27, roofingSqm: 51, dieselLit: 16, paintLit: 118, notes: "Similar costs to Bono with smaller labour pool." },
+    { name: "Savannah", capital: "Damongo", slug: "savannah", multiplier: 0.66, labourRate: 81, cementBag: 94, rebarTon: 9400, block: 10, sandTrip: 485, graniteTrip: 625, timber: 27, roofingSqm: 49, dieselLit: 16, paintLit: 113, notes: "Low land costs; materials shipped up from the south." },
+    { name: "Oti", capital: "Dambai", slug: "oti", multiplier: 0.69, labourRate: 87, cementBag: 91, rebarTon: 9300, block: 10, sandTrip: 510, graniteTrip: 650, timber: 26, roofingSqm: 50, dieselLit: 16, paintLit: 115, notes: "Emerging region with competitive build costs." },
+    { name: "North East", capital: "Nalerigu", slug: "north-east", multiplier: 0.63, labourRate: 78, cementBag: 95, rebarTon: 9500, block: 10, sandTrip: 470, graniteTrip: 610, timber: 27, roofingSqm: 49, dieselLit: 16, paintLit: 112, notes: "Cheapest region to build in Ghana — offset by long haulage." },
+    { name: "Western North", capital: "Sefwi Wiawso", slug: "western-north", multiplier: 0.76, labourRate: 97, cementBag: 93, rebarTon: 9400, block: 10, sandTrip: 540, graniteTrip: 680, timber: 28, roofingSqm: 52, dieselLit: 16, paintLit: 122, notes: "Timber rich region with rising construction activity." },
+  ]
+
+  for (const r of regionRates) {
+    await prisma.regionRate.upsert({
+      where: { slug: r.slug },
+      update: {
+        name: r.name, capital: r.capital, multiplier: r.multiplier, labourRate: r.labourRate,
+        cementBag: r.cementBag, rebarTon: r.rebarTon, block: r.block, sandTrip: r.sandTrip,
+        graniteTrip: r.graniteTrip, timber: r.timber, roofingSqm: r.roofingSqm, dieselLit: r.dieselLit,
+        paintLit: r.paintLit, notes: r.notes,
+        source: "Supplier survey + NPA fuel benchmark + BuildCost GH field data, Aug 2026",
+        published: true,
+      },
+      create: {
+        name: r.name, capital: r.capital, slug: r.slug, multiplier: r.multiplier, labourRate: r.labourRate,
+        cementBag: r.cementBag, rebarTon: r.rebarTon, block: r.block, sandTrip: r.sandTrip,
+        graniteTrip: r.graniteTrip, timber: r.timber, roofingSqm: r.roofingSqm, dieselLit: r.dieselLit,
+        paintLit: r.paintLit, notes: r.notes,
+        source: "Supplier survey + NPA fuel benchmark + BuildCost GH field data, Aug 2026",
+        published: true,
+      },
+    })
+  }
+
   const posts = [
     {
       title: "How Much Does a House Cost in Ghana in 2026? (The Real Numbers)",
