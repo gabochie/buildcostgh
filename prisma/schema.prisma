@@ -421,6 +421,32 @@ model AdminLoginAttempt {
   @@index([ip, createdAt])
 }
 
+model RegionRate {
+  id          String   @id @default(cuid())
+  name        String   @unique // "Greater Accra"
+  slug        String   @unique // "greater-accra"
+  capital     String   // "Accra"
+  multiplier  Float    @default(1.0) // vs Accra baseline
+  labourRate  Int      @default(0) // typical artisan day rate GHS
+  cementBag   Int      @default(0) // per 50kg bag
+  rebarTon    Int      @default(0) // per tonne
+  block       Int      @default(0) // per block
+  sandTrip    Int      @default(0) // per tipper trip
+  graniteTrip Int      @default(0) // per tipper trip
+  timber      Int      @default(0) // per standard length
+  roofingSqm  Int      @default(0) // per SQM installed
+  dieselLit   Int      @default(0) // per litre
+  paintLit    Int      @default(0) // per litre
+  source      String?  // e.g. "Supplier survey + NPA benchmark, Aug 2026"
+  notes       String?
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([published])
+  @@index([multiplier])
+}
+
 model CofounderGoal {
   id          String   @id @default(cuid())
   title       String
