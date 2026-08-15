@@ -47,9 +47,10 @@ const faqs: Faq[] = [
 ]
 
 export default async function CostsIndexPage() {
-  const rates = await prisma.regionRate
-    .findMany({ where: { published: true }, orderBy: [{ multiplier: "desc" }, { name: "asc" }] })
-    .catch(() => [])
+  const rates = await prisma.regionRate.findMany({
+    where: { published: true },
+    orderBy: [{ multiplier: "desc" }, { name: "asc" }],
+  })
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://buildcostgh.com"
 

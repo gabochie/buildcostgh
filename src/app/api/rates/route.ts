@@ -28,7 +28,6 @@ export async function GET() {
         updatedAt: true,
       },
     })
-    .catch(() => [])
 
   const units = {
     labourRate: "GHS per day (typical skilled artisan)",
