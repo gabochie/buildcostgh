@@ -720,6 +720,7 @@ function StrategyTab() {
     { id: "gtm", label: "GTM Strategy" },
     { id: "revenue", label: "Revenue & Monetization" },
     { id: "diaspora", label: "Diaspora Market" },
+    { id: "competitive", label: "Competitive Strategy" },
     { id: "growth", label: "Content & Growth" },
     { id: "launch", label: "Launch Plan" },
     { id: "investor", label: "Investor Strategy" },
@@ -769,6 +770,59 @@ function StrategyTab() {
             "Discount code for first 100 users ('LAUNCH100')",
             "Collect testimonials from early paying users for social proof",
             "Publish 10+ SEO blog posts targeting long-tail keywords before paid ads",
+          ],
+        },
+      ],
+    },
+    competitive: {
+      title: "Competitive Strategy — Beat ExactoCost & Own the Market",
+      sections: [
+        {
+          heading: "The Monopoly Thesis",
+          items: [
+            "Win the demand surface (everyone who wants to build), then the supply side (contractors) — ExactoCost only serves QS professionals",
+            "We own the funnel: free estimate → paid report → contractor match. Whoever owns that funnel owns the market",
+            "ExactoCost is the primary professional threat: SMM7/NRM2 BOQ workflows, published live supplier rates, free academic tier, AEO-savvy llms.txt",
+            "Their weakness is structural: 4 of 16 regions, B2B-only, no consumer/diaspora, no ecosystem (no directory, no flood data, no API)",
+          ],
+        },
+        {
+          heading: "Phase 1 — Land-grab the free surface",
+          items: [
+            "Publish 16 regional cost pages with live rate tables + FAQ/JSON-LD (they have 4)",
+            "Launch a public Ghana rate database page — mirror their transparency play with 4x coverage",
+            "Keep the free calculator frictionless: no signup, no card, mobile money at checkout",
+          ],
+        },
+        {
+          heading: "Phase 2 — Win the professional segment",
+          items: [
+            "Add BOQ/Excel export + measurement-grade line items to Detailed/Premium reports (GHS 249 once vs their GHS 150/mo)",
+            "Launch free academic tier for Ghanaian universities — intercept students before they pick ExactoCost",
+            "Publish SMM7/NRM2 alignment note to win QS credibility",
+          ],
+        },
+        {
+          heading: "Phase 3 — SEO & AEO dominance",
+          items: [
+            "Target every keyword they rank for ('BOQ tool Ghana', 'how to prepare BOQ in Ghana') PLUS all homeowner/diaspora keywords",
+            "Keep llms.txt fresh with hard rate data and keep AI crawlers open (already live)",
+            "Weekly content cadence: 2 posts/week — rate data, region guides, cost guides",
+          ],
+        },
+        {
+          heading: "Phase 4 — Ecosystem moat",
+          items: [
+            "Bundle contractor directory + flood-risk + API + voice into every paid report",
+            "Two-sided network effects: contractors pay to be listed where homeowners already estimate",
+            "Open estimation API to banks, real-estate portals, and remittance platforms",
+          ],
+        },
+        {
+          heading: "First Strike (do now)",
+          items: [
+            "Build the 16-region cost data pages and public rate database — our data, their weakness",
+            "Counters their transparency moat and owns SEO/AEO for every region keyword",
           ],
         },
       ],
@@ -3383,10 +3437,10 @@ function CompetitiveAnalysisView() {
           {/* Hero stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { val: "11", label: "Competitors Identified", icon: Crosshair, color: "from-red-500 to-red-600" },
-              { val: "7", label: "Direct (Ghana)", icon: Target, color: "from-amber-500 to-amber-600" },
+              { val: "12", label: "Competitors Identified", icon: Crosshair, color: "from-red-500 to-red-600" },
+              { val: "8", label: "Direct (Ghana)", icon: Target, color: "from-amber-500 to-amber-600" },
               { val: "4", label: "Pan-African", icon: Globe, color: "from-blue-500 to-blue-600" },
-              { val: "3", label: "High Threat", icon: Zap, color: "from-red-600 to-red-700" },
+              { val: "4", label: "High Threat", icon: Zap, color: "from-red-600 to-red-700" },
             ].map((s) => (
               <div key={s.label} className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${s.color} p-5 text-white shadow-lg`}>
                 <div className="relative z-10">
@@ -3404,12 +3458,12 @@ function CompetitiveAnalysisView() {
           {/* Market summary */}
           <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
             <h3 className="font-bold text-slate-900 mb-3">Market Landscape Summary</h3>
-            <p className="text-sm text-slate-600 mb-4">The Ghana construction estimation market is rapidly evolving with 11+ identified platforms. The market splits into three tiers:</p>
+            <p className="text-sm text-slate-600 mb-4">The Ghana construction estimation market is rapidly evolving with 12+ identified platforms. The market splits into three tiers:</p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="bg-red-50 rounded-xl border border-red-200 p-4">
                 <h4 className="font-bold text-red-800 text-sm mb-2">High Threat</h4>
-                <p className="text-xs text-red-700">GhanaHousePlanner, CostmyBuild, DiasporaBuild</p>
-                <p className="text-xs text-red-600 mt-1">Strong overlap with BuildCost GH&apos;s target market and feature set. These platforms have funding, research backing, or diaspora traction.</p>
+                <p className="text-xs text-red-700">ExactoCost, GhanaHousePlanner, CostmyBuild, DiasporaBuild</p>
+                <p className="text-xs text-red-600 mt-1">ExactoCost owns the professional QS/BOQ segment; GhanaHousePlanner, CostmyBuild, and DiasporaBuild overlap BuildCost GH&apos;s consumer/diaspora market. All are gaining traction.</p>
               </div>
               <div className="bg-amber-50 rounded-xl border border-amber-200 p-4">
                 <h4 className="font-bold text-amber-800 text-sm mb-2">Medium Threat</h4>
@@ -3430,7 +3484,9 @@ function CompetitiveAnalysisView() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {[
                 "No single platform dominates — the market is fragmented with early-stage players, creating a window of opportunity",
-                "GhanaHousePlanner is the closest direct competitor with research-backed pricing and strong diaspora features",
+                "ExactoCost is the primary PROFESSIONAL threat: B2B BOQ software (SMM7/NRM2) with transparent live supplier rates and a free academic tier — but only 4 regions and zero homeowner/diaspora self-serve",
+                "ExactoCost is AEO-savvy (llms.txt with hard rate data, AI crawlers allowed) — we must counter by publishing our own 16-region public rate database",
+                "GhanaHousePlanner is the closest direct consumer competitor with research-backed pricing and strong diaspora features",
                 "Only BuildCost GH and Backrow Calculator offer multi-currency options (USD/GHS/GBP/EUR)",
                 "AI-powered estimation is still nascent — only GhanaHousePlanner (AI Agent) and Genuine Stuffs (AI BoQ) have it",
                 "Most competitors lack a paid report model — BuildCost GH's per-report revenue is unique in the market",
@@ -3537,7 +3593,7 @@ function CompetitiveAnalysisView() {
                 {matrixFeatures.map((row, i) => (
                   <tr key={i} className="border-b border-slate-100 hover:bg-slate-50/50">
                     <td className="py-2.5 px-4 font-medium text-slate-900">{row.feature}</td>
-                    {["bc", "ghp", "cmb", "ban", "tosi", "brc", "ha"].map((key) => {
+                    {["bc", "ghp", "cmb", "exc", "ban", "tosi", "brc", "ha"].map((key) => {
                       const val = row[key as keyof typeof row]
                       const isBc = key === "bc"
                       return (
@@ -3609,6 +3665,9 @@ function CompetitiveAnalysisView() {
               <ul className="space-y-2">
                 {[
                   "First-mover in AI/agentic workflows for Ghana construction estimation",
+                  "ExactoCost only covers 4 regions and ignores the homeowner/diaspora market — publish 16-region public rate pages to counter their transparency moat and own the SEO/AEO surface",
+                  "Professional BOQ/Excel export at one-time prices (GHS 249 vs their GHS 150/mo) lets us win QS customers on price",
+                  "Free academic tier for Ghanaian universities intercepts students before they default to ExactoCost",
                   "Diaspora market is underserved — $3.5B+ remittances, few platforms cater specifically to diaspora needs",
                   "No competitor offers both estimation AND contractor marketplace — BuildCost GH can bridge this",
                   "Corporate/B2B API licensing — no competitor offers embeddable estimates for real estate platforms/banks",
@@ -3630,6 +3689,8 @@ function CompetitiveAnalysisView() {
               </div>
               <ul className="space-y-2">
                 {[
+                  "ExactoCost owns the professional QS segment (SMM7/NRM2, live supplier rates) and captures students for free — if they expand to the consumer market they become formidable",
+                  "ExactoCost publishes transparent rate data publicly — if we don't publish our 16-region data, their transparency claim wins credibility with AI engines and professional buyers",
                   "GhanaHousePlanner has research validation (UCC/KNUST) — BuildCost GH lacks academic backing",
                   "CostmyBuild already has 100+ verified contractors — hard to catch up in marketplace",
                   "DiasporaBuild has 500+ diaspora families and multi-country presence",
@@ -3649,6 +3710,123 @@ function CompetitiveAnalysisView() {
         </div>
       )}
 
+      {section === "strategy" && (
+        <div className="space-y-6">
+          {/* Thesis */}
+          <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 text-white">
+            <div className="flex items-center gap-2 mb-2">
+              <Crosshair className="h-5 w-5 text-emerald-400" />
+              <h3 className="font-bold text-lg">The Monopoly Thesis</h3>
+            </div>
+            <p className="text-sm text-slate-300 max-w-3xl leading-relaxed">
+              Win the demand surface, then win the supply side. Every Ghanaians and diaspora member who wants to build is a buyer;
+              every contractor is a supplier. ExactoCost only serves a narrow slice of the middle (QS professionals). BuildCost GH
+              owns the funnel that feeds everyone: free estimate &rarr; paid report &rarr; contractor match. Whoever owns that funnel owns the market.
+            </p>
+          </div>
+
+          {/* Attack surface */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+            <h3 className="font-bold text-slate-900 mb-4">ExactoCost — Attack Surface (their weaknesses, our weapons)</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                { icon: Globe, title: "4 regions vs our 16", desc: "They pitch 'Tamale projects don't get Accra rates' — but they have no Tamale rates. Publish per-region cost pages for all 16 regions. That destroys their only real moat.", color: "text-blue-600 bg-blue-50" },
+                { icon: Target, title: "B2B-only, no mass market", desc: "They chase a few thousand QSs. Every homeowner + diaspora investor who wants a house price is a BuildCost customer. Free calculator = land-grab weapon; they can't give a BOQ tool away to a homeowner.", color: "text-emerald-600 bg-emerald-50" },
+                { icon: Building2, title: "No ecosystem", desc: "No contractor directory, no flood-risk data, no diaspora angle, no API, no voice. We have all five. Bundle them so switching to a point-solution is pointless.", color: "text-violet-600 bg-violet-50" },
+                { icon: Zap, title: "High friction + price", desc: "Card verification (GHS 2.00) + GHS 150/mo kills impulse conversion. Our free instant estimate + one-time GHS 99 report + mobile money is 10x friendlier for the mass market.", color: "text-amber-600 bg-amber-50" },
+                { icon: Award, title: "Content volume gap", desc: "They published 8 posts in a 3-week burst (Apr-May 2026). We have 50+ with diaspora and flood depth. Win every keyword: consumer + QS terms, plus AI answer engines.", color: "text-red-600 bg-red-50" },
+              ].map((a) => (
+                <div key={a.title} className="flex items-start gap-3 rounded-xl border border-slate-200 p-4">
+                  <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${a.color.split(" ")[1]}`}>
+                    <a.icon className={`h-4 w-4 ${a.color.split(" ")[0]}`} />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-slate-900 text-sm">{a.title}</h4>
+                    <p className="text-xs text-slate-600 mt-1 leading-relaxed">{a.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Phases */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+            <h3 className="font-bold text-slate-900 mb-4">The 4-Phase Execution Plan</h3>
+            <div className="space-y-4">
+              {[
+                {
+                  phase: "Phase 1 — Land-grab the free surface",
+                  timeline: "This week",
+                  color: "bg-emerald-600",
+                  items: [
+                    "Publish 16 regional cost pages with live rate tables + FAQ/JSON-LD (they have 4 — beat them on coverage)",
+                    "Launch a public Ghana rate database page (mirror their transparency play, but 16 regions, monthly updates)",
+                    "Keep the free calculator frictionless — no signup, no card, mobile money at checkout",
+                  ],
+                },
+                {
+                  phase: "Phase 2 — Win the professional segment",
+                  timeline: "Next 2-4 weeks",
+                  color: "bg-blue-600",
+                  items: [
+                    "Add BOQ/Excel export + measurement-grade line items to Detailed/Premium reports (GHS 249 once vs their GHS 150/mo)",
+                    "Launch free academic tier for Ghanaian universities — intercept students before they pick ExactoCost",
+                    "Publish an SMM7/NRM2 alignment note to win QS credibility",
+                  ],
+                },
+                {
+                  phase: "Phase 3 — SEO & AEO dominance",
+                  timeline: "Ongoing",
+                  color: "bg-violet-600",
+                  items: [
+                    "Target every keyword they rank for (BOQ tool Ghana, how to prepare BOQ in Ghana) PLUS all homeowner/diaspora keywords",
+                    "Keep llms.txt fresh with hard rate data and keep AI crawlers open (already done)",
+                    "Weekly content cadence: 2 posts/week covering rate data, region guides, cost guides",
+                  ],
+                },
+                {
+                  phase: "Phase 4 — Ecosystem moat",
+                  timeline: "This quarter",
+                  color: "bg-amber-600",
+                  items: [
+                    "Bundle contractor directory + flood-risk + API + voice into every paid report",
+                    "Two-sided network effects: contractors pay to be listed where homeowners already estimate",
+                    "Open the estimation API to banks, real-estate portals, and remittance platforms",
+                  ],
+                },
+              ].map((p) => (
+                <div key={p.phase} className="rounded-xl border border-slate-200 overflow-hidden">
+                  <div className={`${p.color} px-5 py-3 flex items-center justify-between text-white`}>
+                    <h4 className="font-bold text-sm">{p.phase}</h4>
+                    <span className="text-xs bg-white/20 px-2.5 py-0.5 rounded-full font-medium">{p.timeline}</span>
+                  </div>
+                  <ul className="p-5 space-y-2">
+                    {p.items.map((item, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-slate-700">
+                        <CheckSquare className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* First strike */}
+          <div className="bg-gradient-to-br from-red-500 to-red-700 rounded-2xl p-6 text-white">
+            <div className="flex items-center gap-2 mb-2">
+              <Zap className="h-5 w-5" />
+              <h3 className="font-bold">First Strike (do now)</h3>
+            </div>
+            <p className="text-sm text-red-100 leading-relaxed">
+              Build the 16-region cost data pages and the public rate database. It&apos;s our data, their weakness, and it single-handedly
+              counters their transparency moat while owning the SEO/AEO surface for every region keyword.
+            </p>
+          </div>
+        </div>
+      )}
+
       {section === "recommendations" && (
         <div className="space-y-6">
           <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
@@ -3662,6 +3840,30 @@ function CompetitiveAnalysisView() {
                   impact: "High",
                   effort: "High",
                   status: "done",
+                },
+                {
+                  priority: "Critical",
+                  title: "Publish 16-region rate database publicly to counter ExactoCost",
+                  desc: "ExactoCost's transparency play (published live rates, llms.txt) is their credibility moat. Publish our own 16-region rate database with FAQ/JSON-LD and monthly updates — 4x their coverage, on our own data.",
+                  impact: "High",
+                  effort: "Medium",
+                  status: "done",
+                },
+                {
+                  priority: "High",
+                  title: "Add BOQ/Excel export to paid reports — attack ExactoCost's B2B turf",
+                  desc: "ExactoCost charges GHS 150/mo for SMM7/NRM2 BOQ workflows. Offer measurement-grade line items + BOQ/Excel export in Detailed/Premium reports at a one-time GHS 249 — cheaper than two months of their subscription, zero commitment.",
+                  impact: "High",
+                  effort: "Medium",
+                  status: "pending",
+                },
+                {
+                  priority: "Medium",
+                  title: "Launch free academic tier to intercept QS students",
+                  desc: "ExactoCost gives students free access, capturing tomorrow's professionals. Offer free university/lecturer access to BuildCost GH reports so graduates default to us, not them.",
+                  impact: "Medium",
+                  effort: "Low",
+                  status: "pending",
                 },
                 {
                   priority: "Critical",
