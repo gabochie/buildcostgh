@@ -54,7 +54,7 @@ export function VoiceWidget({ onExit }: Props) {
     endCall,
     toggleMute,
   } = useVoiceAgent({
-    agent: "BuildCostVoiceAgent",
+    agent: "build-cost-voice-agent",
     name: sessionName,
     host,
     enabled: mounted,
