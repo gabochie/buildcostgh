@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
-import { Loader2, ArrowLeft, Eye } from "lucide-react"
+import { Loader2, ArrowLeft, Eye, Plus, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { RichTextEditor } from "@/components/shared/RichTextEditor"
 
@@ -25,15 +25,26 @@ const CATEGORIES = [
   "finishing",
 ]
 
+type FaqItem = { question: string; answer: string }
+
 export default function NewBlogPost() {
   const router = useRouter()
-  const [form, setForm] = useState({ title: "", slug: "", excerpt: "", content: "", tags: "", imageUrl: "", category: "uncategorized" })
+  const [form, setForm] = useState({ title: "", slug: "", excerpt: "", content: "", tags: "", imageUrl: "", category: "uncategorized", authorBio: "", schemaType: "Article" })
+  const [faqItems, setFaqItems] = useState<FaqItem[]>([])
   const [saving, setSaving] = useState(false)
 
   const generateSlug = (title: string) =>
     title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")
 
   const slug = form.slug || generateSlug(form.title)
+
+  const addFaq = () => setFaqItems([...faqItems, { question: "", answer: "" }])
+  const removeFaq = (i: number) => setFaqItems(faqItems.filter((_, idx) => idx !== i))
+  const updateFaq = (i: number, field: keyof FaqItem, value: string) => {
+    const next = [...faqItems]
+    next[i] = { ...next[i], [field]: value }
+    setFaqItems(next)
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -51,6 +62,9 @@ export default function NewBlogPost() {
           imageUrl: form.imageUrl || null,
           category: form.category,
           tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean),
+          authorBio: form.authorBio || null,
+          faqJson: faqItems.filter((f) => f.question && f.answer),
+          schemaType: form.schemaType,
           published: true,
         }),
       })
@@ -133,22 +147,41 @@ export default function NewBlogPost() {
               )}
             </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="category">Category</Label>
-            <select
-              id="category"
-              value={form.category}
-              onChange={(e) => setForm({ ...form, category: e.target.value })}
-              className="flex h-10 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            >
-              {CATEGORIES.map((c) => (
-                <option key={c} value={c}>{c.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}</option>
-              ))}
-            </select>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="category">Category</Label>
+              <select
+                id="category"
+                value={form.category}
+                onChange={(e) => setForm({ ...form, category: e.target.value })}
+                className="flex h-10 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              >
+                {CATEGORIES.map((c) => (
+                  <option key={c} value={c}>{c.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}</option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="schemaType">Schema Type</Label>
+              <select
+                id="schemaType"
+                value={form.schemaType}
+                onChange={(e) => setForm({ ...form, schemaType: e.target.value })}
+                className="flex h-10 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              >
+                <option value="Article">Article</option>
+                <option value="FAQPage">FAQ Page</option>
+                <option value="HowTo">How-To</option>
+              </select>
+            </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="excerpt">Excerpt</Label>
-            <Textarea id="excerpt" value={form.excerpt} onChange={(e) => setForm({ ...form, excerpt: e.target.value })} rows={2} />
+            <Label htmlFor="excerpt">Excerpt (meta description)</Label>
+            <Textarea id="excerpt" value={form.excerpt} onChange={(e) => setForm({ ...form, excerpt: e.target.value })} rows={2} placeholder="150-160 characters recommended for SEO" />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="authorBio">Author Bio</Label>
+            <Input id="authorBio" value={form.authorBio} onChange={(e) => setForm({ ...form, authorBio: e.target.value })} placeholder="e.g. Certified quantity surveyor with 12 years experience in Ghana construction" />
           </div>
           <div className="space-y-2">
             <Label>Content (Rich Text) *</Label>
@@ -161,6 +194,36 @@ export default function NewBlogPost() {
             <Label htmlFor="tags">Tags (comma separated)</Label>
             <Input id="tags" value={form.tags} onChange={(e) => setForm({ ...form, tags: e.target.value })} placeholder="cost-guide, 3-bedroom, accra" />
           </div>
+
+          <div className="border-t pt-4">
+            <div className="flex items-center justify-between mb-3">
+              <Label>FAQ Section ({faqItems.length} items)</Label>
+              <Button type="button" variant="outline" size="sm" onClick={addFaq}>
+                <Plus className="h-3 w-3 mr-1" /> Add FAQ
+              </Button>
+            </div>
+            {faqItems.map((item, i) => (
+              <div key={i} className="space-y-2 mb-3 p-3 bg-gray-50 rounded-lg">
+                <div className="flex gap-2">
+                  <Input
+                    value={item.question}
+                    onChange={(e) => updateFaq(i, "question", e.target.value)}
+                    placeholder="Question"
+                  />
+                  <Button type="button" variant="ghost" size="sm" onClick={() => removeFaq(i)} className="text-red-500 hover:text-red-700">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+                <Textarea
+                  value={item.answer}
+                  onChange={(e) => updateFaq(i, "answer", e.target.value)}
+                  placeholder="Answer"
+                  rows={2}
+                />
+              </div>
+            ))}
+          </div>
+
           <div className="flex gap-3 pt-4">
             <Button type="submit" disabled={saving} className="bg-gradient-primary text-white border-0">
               {saving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Publishing...</> : "Publish Post"}

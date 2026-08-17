@@ -6,6 +6,7 @@ import { ArrowLeft, Calendar, Clock, User, Shield, CheckCircle } from "lucide-re
 import { readingTime } from "@/lib/utils"
 import { ShareButtons } from "@/components/shared/ShareButtons"
 import { FaqSection } from "@/components/shared/FaqSection"
+import { HelpfulWidget } from "@/components/shared/HelpfulWidget"
 
 export const dynamic = "force-dynamic"
 
@@ -183,23 +184,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             </div>
           </div>
 
-          <div className="mt-8 p-5 rounded-xl bg-white border border-gray-200 text-center">
-            <p className="text-sm font-medium text-gray-700 mb-3">Was this article helpful?</p>
-            <div className="flex items-center justify-center gap-3">
-              <button
-                onClick={(e) => { const t = e.currentTarget; t.innerHTML = "Thanks!"; t.disabled = true; t.classList.add("opacity-50"); }}
-                className="px-4 py-2 bg-emerald-50 text-emerald-700 rounded-lg text-sm font-medium hover:bg-emerald-100 transition-colors"
-              >
-                Yes, very helpful
-              </button>
-              <button
-                onClick={(e) => { const t = e.currentTarget; t.innerHTML = "Noted"; t.disabled = true; t.classList.add("opacity-50"); }}
-                className="px-4 py-2 bg-gray-50 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
-              >
-                Needs improvement
-              </button>
-            </div>
-          </div>
+          <HelpfulWidget />
         </article>
 
         <div className="mt-12 p-6 rounded-2xl bg-gradient-to-br from-emerald-900 via-emerald-800 to-charcoal text-center shadow-lg">
