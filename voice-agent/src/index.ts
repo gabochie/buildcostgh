@@ -38,6 +38,8 @@ export class BuildCostVoiceAgent extends VoiceAgent<Env> {
   }
 
   async onTurn(transcript: string, context: VoiceTurnContext) {
+    console.log("[onTurn] OPENAI_API_KEY present:", !!this.env.OPENAI_API_KEY, "length:", this.env.OPENAI_API_KEY?.length);
+    console.log("[onTurn] env keys:", Object.keys(this.env));
     if (!this.env.OPENAI_API_KEY) {
       return "Sorry, the voice assistant is not configured yet. Please check back soon.";
     }
