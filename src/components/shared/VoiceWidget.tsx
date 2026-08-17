@@ -68,25 +68,6 @@ export function VoiceWidget({ onExit }: Props) {
     })
   }, [transcript, interimTranscript])
 
-  const [micError, setMicError] = useState<string | null>(null)
-
-  const handleStartCall = async () => {
-    setMicError(null)
-    if (!navigator.mediaDevices?.getUserMedia) {
-      setMicError("Your browser does not support microphone access. Try Chrome, Edge, or Firefox.")
-      return
-    }
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      stream.getTracks().forEach((t) => t.stop())
-    } catch (e: unknown) {
-      const msg = e instanceof DOMException ? e.message : String(e)
-      setMicError(`Mic error: ${msg}`)
-      return
-    }
-    startCall()
-  }
-
   const inCall = status !== "idle"
 
   return (
@@ -143,7 +124,7 @@ export function VoiceWidget({ onExit }: Props) {
                     : "bg-gray-300"
             }`}
           />
-          <span>{error ? `Error: ${error}` : micError ? micError : STATUS_LABEL[status]}</span>
+          <span>{error ? `Error: ${error}` : STATUS_LABEL[status]}</span>
         </div>
 
         <div className="flex items-center gap-1.5">
@@ -166,8 +147,8 @@ export function VoiceWidget({ onExit }: Props) {
             </button>
           ) : (
             <button
-              onClick={handleStartCall}
-              disabled={!mounted || !!error}
+              onClick={() => startCall()}
+              disabled={!mounted || !!error || !connected}
               className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 text-white text-xs font-medium hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {mounted && !error ? (
