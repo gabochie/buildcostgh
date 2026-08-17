@@ -5,8 +5,11 @@ import Link from "next/link"
 import { ArrowLeft, Calendar, Clock, User, Shield, CheckCircle } from "lucide-react"
 import { readingTime } from "@/lib/utils"
 import { ShareButtons } from "@/components/shared/ShareButtons"
+import { FaqSection } from "@/components/shared/FaqSection"
 
 export const dynamic = "force-dynamic"
+
+type FaqItem = { question: string; answer: string }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
@@ -45,6 +48,10 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     try { return JSON.parse(post.tags) as string[] } catch { return [] }
   })()
 
+  const faqItems: FaqItem[] = (() => {
+    try { return JSON.parse(post.faqJson || "[]") } catch { return [] }
+  })()
+
   const relatedPosts = tags.length > 0
     ? await prisma.blogPost.findMany({
         where: {
@@ -58,6 +65,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     : []
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://buildcostgh.com"
+  const authorBio = post.authorBio || "Construction cost analysts helping Ghanaians and the diaspora build smarter homes."
 
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-gradient-to-b from-gray-50 to-white">
@@ -75,7 +83,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             dangerouslySetInnerHTML={{
               __html: JSON.stringify({
                 "@context": "https://schema.org",
-                "@type": "Article",
+                "@type": post.schemaType === "FAQPage" ? "FAQPage" : "Article",
                 mainEntityOfPage: {
                   "@type": "WebPage",
                   "@id": `${baseUrl}/blog/${post.slug}`,
@@ -99,6 +107,16 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                 inLanguage: "en",
                 articleSection: post.category ?? undefined,
                 keywords: tags.length > 0 ? tags : undefined,
+                ...(faqItems.length > 0 && {
+                  mainEntity: faqItems.map((faq) => ({
+                    "@type": "Question",
+                    name: faq.question,
+                    acceptedAnswer: {
+                      "@type": "Answer",
+                      text: faq.answer,
+                    },
+                  })),
+                }),
               }),
             }}
           />
@@ -119,7 +137,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             </span>
             <span className="flex items-center gap-1">
               <Clock className="h-4 w-4" />
-              {readingTime(post.content)}
+              {post.readTimeMin ? `${post.readTimeMin} min read` : readingTime(post.content)}
             </span>
             <span className="flex items-center gap-1">
               <User className="h-4 w-4" />
@@ -145,6 +163,8 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
           <div className="prose prose-gray max-w-none" dangerouslySetInnerHTML={{ __html: post.content }} />
 
+          {faqItems.length > 0 && <FaqSection items={faqItems} />}
+
           <ShareButtons url={`${baseUrl}/blog/${post.slug}`} title={post.title} />
 
           <div className="mt-10 p-5 rounded-xl bg-gray-50 border border-gray-200">
@@ -154,7 +174,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               </Link>
               <div className="flex-1">
                 <Link href="/authors" className="font-semibold text-gray-900 text-sm hover:text-emerald-600">{post.author}</Link>
-                <p className="text-xs text-gray-500">Construction cost analysts helping Ghanaians and the diaspora build smarter. <Link href="/authors" className="text-emerald-600 hover:underline">Meet the team →</Link></p>
+                <p className="text-xs text-gray-500 mt-0.5">{authorBio}</p>
               </div>
               <div className="flex items-center gap-3 text-[11px] text-gray-500">
                 <span className="flex items-center gap-1"><CheckCircle className="h-3 w-3 text-emerald-600" /> Fact-checked</span>
@@ -167,13 +187,13 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             <p className="text-sm font-medium text-gray-700 mb-3">Was this article helpful?</p>
             <div className="flex items-center justify-center gap-3">
               <button
-                onClick={(e) => { const t = e.currentTarget; t.innerHTML = "✓ Thanks!"; t.disabled = true; t.classList.add("opacity-50"); }}
+                onClick={(e) => { const t = e.currentTarget; t.innerHTML = "Thanks!"; t.disabled = true; t.classList.add("opacity-50"); }}
                 className="px-4 py-2 bg-emerald-50 text-emerald-700 rounded-lg text-sm font-medium hover:bg-emerald-100 transition-colors"
               >
                 Yes, very helpful
               </button>
               <button
-                onClick={(e) => { const t = e.currentTarget; t.innerHTML = "✓ Noted"; t.disabled = true; t.classList.add("opacity-50"); }}
+                onClick={(e) => { const t = e.currentTarget; t.innerHTML = "Noted"; t.disabled = true; t.classList.add("opacity-50"); }}
                 className="px-4 py-2 bg-gray-50 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
               >
                 Needs improvement
@@ -215,7 +235,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                     </div>
                   )}
                   <div className="p-4">
-                    <p className="text-sm text-gray-400 mb-1">{readingTime(rp.content)}</p>
+                    <p className="text-sm text-gray-400 mb-1">{rp.readTimeMin ? `${rp.readTimeMin} min read` : readingTime(rp.content)}</p>
                     <h3 className="text-sm font-semibold text-gray-900 group-hover:text-emerald-600 transition-colors line-clamp-2">
                       {rp.title}
                     </h3>
