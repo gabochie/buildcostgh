@@ -17,11 +17,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   }
 
-  const { title, slug, excerpt, content, imageUrl, published, tags, category } = await request.json()
+  const { title, slug, excerpt, content, imageUrl, published, tags, category, authorBio, faqJson, schemaType } = await request.json()
 
   if (!title || !slug || !content) {
     return NextResponse.json({ error: "Title, slug, and content required" }, { status: 400 })
   }
+
+  const wordCount = content.replace(/<[^>]*>/g, "").split(/\s+/).length
+  const readTimeMin = Math.max(1, Math.ceil(wordCount / 200))
 
   const post = await prisma.blogPost.create({
     data: {
@@ -31,6 +34,10 @@ export async function POST(request: Request) {
       content,
       imageUrl: imageUrl || null,
       author: session?.user?.name || "Admin",
+      authorBio: authorBio || null,
+      faqJson: JSON.stringify(faqJson || []),
+      schemaType: schemaType || "Article",
+      readTimeMin,
       published: published || false,
       category: category || "uncategorized",
       tags: JSON.stringify(tags || []),
