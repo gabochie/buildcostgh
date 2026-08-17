@@ -68,17 +68,21 @@ export function VoiceWidget({ onExit }: Props) {
     })
   }, [transcript, interimTranscript])
 
+  const spokenIdxRef = useRef(-1)
+
   useEffect(() => {
-    if (status !== "speaking" || transcript.length === 0) return
-    const last = transcript[transcript.length - 1]
+    if (transcript.length === 0 || !("speechSynthesis" in window)) return
+    const lastIdx = transcript.length - 1
+    if (lastIdx <= spokenIdxRef.current) return
+    const last = transcript[lastIdx]
     if (last.role !== "assistant" || !last.text) return
-    if (!("speechSynthesis" in window)) return
+    spokenIdxRef.current = lastIdx
     window.speechSynthesis.cancel()
     const utter = new SpeechSynthesisUtterance(last.text)
     utter.rate = 1
     utter.pitch = 1
     window.speechSynthesis.speak(utter)
-  }, [status, transcript])
+  }, [transcript])
 
   const inCall = status !== "idle"
 
