@@ -10,10 +10,14 @@ import { Mail, Phone, MapPin, Loader2, Shield, CheckCircle, Clock, Lock } from "
 import { toast } from "sonner"
 import { EmailText } from "@/components/shared/SafeEmail"
 import { organizationLd, breadcrumbLd } from "@/app/ld"
+import { TurnstileWidget } from "@/components/shared/TurnstileWidget"
+
+const TURNSTILE_SITEKEY = process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY || ""
 
 export default function ContactPage() {
   const [form, setForm] = useState({ name: "", email: "", phone: "", subject: "", message: "" })
   const [loading, setLoading] = useState(false)
+  const [turnstileToken, setTurnstileToken] = useState("")
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -24,7 +28,7 @@ export default function ContactPage() {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, turnstileToken }),
       })
 
       if (res.ok) {
@@ -89,6 +93,9 @@ export default function ContactPage() {
                   <Label htmlFor="message">Message *</Label>
                   <Textarea id="message" rows={5} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} required />
                 </div>
+                {TURNSTILE_SITEKEY && (
+                  <TurnstileWidget sitekey={TURNSTILE_SITEKEY} onVerify={setTurnstileToken} />
+                )}
                 <Button type="submit" disabled={loading} className="w-full bg-emerald-600 hover:bg-emerald-700">
                   {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending...</> : "Send Message"}
                 </Button>

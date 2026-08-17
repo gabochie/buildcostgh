@@ -3,6 +3,7 @@ import crypto from "node:crypto"
 import { prisma } from "@/lib/prisma"
 import { checkRateLimit } from "@/lib/rate-limit"
 import { sendPasswordReset } from "@/lib/email"
+import { verifyTurnstileToken } from "@/lib/turnstile"
 
 export const dynamic = "force-dynamic"
 
@@ -23,6 +24,14 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json()
     const email = typeof body.email === "string" ? body.email.toLowerCase().trim() : ""
+    const turnstileToken = typeof body.turnstileToken === "string" ? body.turnstileToken : null
+
+    if (turnstileToken) {
+      const valid = await verifyTurnstileToken(turnstileToken, ip)
+      if (!valid) {
+        return NextResponse.json({ error: "Verification failed. Please try again." }, { status: 403 })
+      }
+    }
 
     if (!EMAIL_RE.test(email)) {
       return NextResponse.json({ error: "Please enter a valid email address" }, { status: 400 })

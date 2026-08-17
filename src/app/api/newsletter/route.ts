@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
 import { isAdmin } from "@/lib/api-auth"
 import { checkRateLimit } from "@/lib/rate-limit"
+import { verifyTurnstileToken } from "@/lib/turnstile"
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,7 +13,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: limit.message || "Too many requests" }, { status: 429 })
     }
 
-    const { email } = await request.json()
+    const { email, turnstileToken } = await request.json()
+
+    if (turnstileToken) {
+      const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown"
+      const valid = await verifyTurnstileToken(turnstileToken, ip)
+      if (!valid) {
+        return NextResponse.json({ error: "Verification failed. Please try again." }, { status: 403 })
+      }
+    }
 
     if (!email || !email.includes("@")) {
       return NextResponse.json({ error: "Valid email required" }, { status: 400 })

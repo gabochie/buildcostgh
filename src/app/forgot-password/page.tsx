@@ -7,8 +7,10 @@ import { Hammer, Loader2, Mail, ArrowLeft, CheckCircle } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
+import { TurnstileWidget } from "@/components/shared/TurnstileWidget"
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const TURNSTILE_SITEKEY = process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY || ""
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("")
@@ -16,6 +18,7 @@ export default function ForgotPasswordPage() {
   const [sent, setSent] = useState(false)
   const [resetUrl, setResetUrl] = useState("")
   const [error, setError] = useState("")
+  const [turnstileToken, setTurnstileToken] = useState("")
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -31,7 +34,7 @@ export default function ForgotPasswordPage() {
       const res = await fetch("/api/auth/forgot-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, turnstileToken }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -110,6 +113,10 @@ export default function ForgotPasswordPage() {
                 <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">
                   {error}
                 </div>
+              )}
+
+              {TURNSTILE_SITEKEY && (
+                <TurnstileWidget sitekey={TURNSTILE_SITEKEY} onVerify={setTurnstileToken} />
               )}
 
               <Button

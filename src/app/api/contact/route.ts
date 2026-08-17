@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
 import { isAdmin } from "@/lib/api-auth"
 import { checkRateLimit } from "@/lib/rate-limit"
+import { verifyTurnstileToken } from "@/lib/turnstile"
 
 export async function GET() {
   const session = await auth()
@@ -27,7 +28,14 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { name, email, phone, subject, message } = body
+    const { name, email, phone, subject, message, turnstileToken } = body
+
+    if (turnstileToken !== undefined) {
+      const valid = await verifyTurnstileToken(turnstileToken, ip)
+      if (!valid) {
+        return NextResponse.json({ error: "Verification failed. Please try again." }, { status: 403 })
+      }
+    }
 
     if (!name || !email || !message) {
       return NextResponse.json({ error: "Name, email, and message are required" }, { status: 400 })
