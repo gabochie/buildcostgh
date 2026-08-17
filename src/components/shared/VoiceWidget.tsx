@@ -68,6 +68,18 @@ export function VoiceWidget({ onExit }: Props) {
     })
   }, [transcript, interimTranscript])
 
+  useEffect(() => {
+    if (status !== "speaking" || transcript.length === 0) return
+    const last = transcript[transcript.length - 1]
+    if (last.role !== "assistant" || !last.text) return
+    if (!("speechSynthesis" in window)) return
+    window.speechSynthesis.cancel()
+    const utter = new SpeechSynthesisUtterance(last.text)
+    utter.rate = 1
+    utter.pitch = 1
+    window.speechSynthesis.speak(utter)
+  }, [status, transcript])
+
   const inCall = status !== "idle"
 
   return (
