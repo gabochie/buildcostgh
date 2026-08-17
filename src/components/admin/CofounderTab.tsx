@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import {
   Bot, Send, Target, TrendingUp, CalendarDays, Loader2, AlertCircle,
   CheckCircle2, Activity, Users, Wrench, PenLine, DollarSign, Search, Cpu,
@@ -92,7 +92,7 @@ export function CofounderTab() {
   const scrollRef = useRef<HTMLDivElement>(null)
   const msgId = useRef(0)
 
-  const loadState = useCallback(async () => {
+  const refreshState = async () => {
     try {
       const res = await fetch("/api/admin/cofounder")
       if (!res.ok) throw new Error("Failed to load cofounder state")
@@ -103,11 +103,16 @@ export function CofounderTab() {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }
 
   useEffect(() => {
-    loadState()
-  }, [loadState])
+    let cancelled = false
+    ;(async () => {
+      await refreshState()
+      if (cancelled) setLoading(false)
+    })()
+    return () => { cancelled = true }
+  }, [])
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" })
@@ -189,7 +194,7 @@ export function CofounderTab() {
       setError(e instanceof Error ? e.message : String(e))
     } finally {
       setStreaming(false)
-      loadState() // refresh goal progress + tasks after the turn
+      refreshState()
     }
   }
 

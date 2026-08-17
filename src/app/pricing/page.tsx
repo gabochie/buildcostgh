@@ -280,7 +280,7 @@ export default function PricingPage() {
       const data = await res.json()
 
       if (data.checkoutUrl) {
-        window.location.href = data.checkoutUrl
+        window.location.assign(data.checkoutUrl)
       } else {
         toast.error(data.error || "Failed to initialize payment. Please try again.")
       }
@@ -848,9 +848,9 @@ export default function PricingPage() {
                             <CheckCircle className="h-8 w-8 text-emerald-600 mx-auto" />
                             <p className="text-sm font-bold text-emerald-800">Thank you, {form.fullName}!</p>
                             <p className="text-xs text-emerald-700 leading-relaxed">
-                              We've received your proof of payment for the {selectedPackage!.name} report.
+                              We&apos;ve received your proof of payment for the {selectedPackage!.name} report.
                               Your order reference is <span className="font-semibold">{manualSubmitted.reference}</span>.
-                              We'll confirm your payment and deliver your report by email within 24 hours.
+                              We&apos;ll confirm your payment and deliver your report by email within 24 hours.
                             </p>
                             <p className="text-xs text-emerald-600">Questions? Call +233 53 936 4716</p>
                           </div>
@@ -909,7 +909,7 @@ export default function PricingPage() {
                               ) : (
                                 <>
                                   <CheckCircle className="h-4 w-4" />
-                                  I've Sent Payment — Submit Proof
+                                  I&apos;ve Sent Payment &mdash; Submit Proof
                                 </>
                               )}
                             </Button>

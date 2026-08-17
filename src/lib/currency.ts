@@ -22,7 +22,7 @@ const CACHE_MS = 5 * 60 * 1000
 let cached: RateResult | null = null
 let cachedAt = 0
 
-async function fetchFrom(url: string, pick: (data: any) => { rate?: number; date?: string }): Promise<RateResult | null> {
+async function fetchFrom(url: string, pick: (data: Record<string, unknown>) => { rate?: number; date?: string }): Promise<RateResult | null> {
   const res = await fetch(url, { signal: AbortSignal.timeout(5000) })
   if (!res.ok) return null
   const data = await res.json()
@@ -34,14 +34,21 @@ async function fetchFrom(url: string, pick: (data: any) => { rate?: number; date
 
 const SOURCES: Array<() => Promise<RateResult | null>> = [
   () =>
-    fetchFrom("https://open.er-api.com/v6/latest/USD", (d) => ({
-      rate: d?.rates?.GHS,
-      date: d?.time_last_update_utc ? String(d.time_last_update_utc).slice(0, 10) : "",
-    })),
+    fetchFrom("https://open.er-api.com/v6/latest/USD", (d) => {
+      const rates = d.rates as Record<string, unknown> | undefined
+      return {
+        rate: rates?.GHS as number | undefined,
+        date: d.time_last_update_utc ? String(d.time_last_update_utc).slice(0, 10) : "",
+      }
+    }),
   () =>
-    fetchFrom("https://api.coinbase.com/v2/exchange-rates?currency=USD", (d) => ({
-      rate: d?.data?.rates?.GHS,
-    })),
+    fetchFrom("https://api.coinbase.com/v2/exchange-rates?currency=USD", (d) => {
+      const data = d.data as Record<string, unknown> | undefined
+      const rates = data?.rates as Record<string, unknown> | undefined
+      return {
+        rate: rates?.GHS as number | undefined,
+      }
+    }),
 ]
 
 /** Server-side: fetch (and cache) the current USD→GHS rate. Never throws. */

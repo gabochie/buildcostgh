@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, useSyncExternalStore } from "react"
 import { Mic, MicOff, Phone, PhoneOff, Loader2 } from "lucide-react"
 import { useVoiceAgent } from "@cloudflare/voice/react"
 
@@ -16,27 +16,23 @@ type Props = {
 }
 
 export function VoiceWidget({ onExit }: Props) {
-  const [mounted, setMounted] = useState(false)
-  const [sessionName, setSessionName] = useState("default")
-  const transcriptRef = useRef<HTMLDivElement>(null)
-
-  // Stable per-browser session name so conversation history survives reloads.
-  useEffect(() => {
-    let name = "default"
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  )
+  const [sessionName] = useState(() => {
     try {
       const existing = localStorage.getItem("bcg-voice-session")
-      if (existing) {
-        name = existing
-      } else {
-        name = `visitor_${Math.random().toString(36).slice(2, 10)}`
-        localStorage.setItem("bcg-voice-session", name)
-      }
+      if (existing) return existing
+      const name = `visitor_${Math.random().toString(36).slice(2, 10)}`
+      localStorage.setItem("bcg-voice-session", name)
+      return name
     } catch {
-      // localStorage unavailable (private mode) — fall back to "default"
+      return "default"
     }
-    setSessionName(name)
-    setMounted(true)
-  }, [])
+  })
+  const transcriptRef = useRef<HTMLDivElement>(null)
 
   // Only resolve the host after mount so SSR never touches window.
   const host = mounted
