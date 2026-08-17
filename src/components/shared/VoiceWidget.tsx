@@ -143,7 +143,7 @@ export function VoiceWidget({ onExit }: Props) {
                     : "bg-gray-300"
             }`}
           />
-          <span>{error ? `Error: ${error}` : STATUS_LABEL[status]}</span>
+          <span>{error ? `Error: ${error}` : micError ? micError : STATUS_LABEL[status]}</span>
         </div>
 
         <div className="flex items-center gap-1.5">
