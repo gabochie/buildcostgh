@@ -1,7 +1,7 @@
 import { Agent, routeAgentRequest, type Connection } from "agents";
 import {
   withVoice,
-  WorkersAIFluxSTT,
+  WorkersAINova3STT,
   WorkersAITTS,
   type VoiceTurnContext,
 } from "@cloudflare/voice";
