@@ -93,6 +93,12 @@ function LoginForm() {
             showGenerate={false}
           />
 
+          <div className="text-right">
+            <Link href="/forgot-password" className="text-xs font-medium text-emerald-600 hover:text-emerald-700">
+              Forgot password?
+            </Link>
+          </div>
+
           {error && (
             <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">
               <AlertCircle className="h-4 w-4 flex-shrink-0" /> {error}
