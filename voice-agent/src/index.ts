@@ -26,7 +26,7 @@ const VoiceAgent = withVoice(Agent, {
 });
 
 export class BuildCostVoiceAgent extends VoiceAgent<Env> {
-  transcriber = new WorkersAIFluxSTT(this.env.AI);
+  transcriber = new WorkersAINova3STT(this.env.AI);
   tts = new WorkersAITTS(this.env.AI);
 
   async onCallStart(connection: Connection) {
