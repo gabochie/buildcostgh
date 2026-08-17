@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
+import Script from "next/script"
+import { organizationLd, faqLd, breadcrumbLd } from "@/app/ld"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -373,6 +375,20 @@ export default function PricingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      <Script
+        id="pricing-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([
+            organizationLd(),
+            breadcrumbLd([
+              { name: "Home", url: "https://buildcostgh.com" },
+              { name: "Pricing", url: "https://buildcostgh.com/pricing" },
+            ]),
+            faqLd(pricingFaqs.map((f) => ({ question: f.q, answer: f.a }))),
+          ]),
+        }}
+      />
       <section className="relative overflow-hidden bg-gradient-to-br from-emerald-900 via-emerald-800 to-charcoal py-20">
         <div className="absolute inset-0 bg-grid opacity-10" />
         <div className="absolute top-10 left-20 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl" />

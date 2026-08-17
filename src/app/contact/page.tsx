@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Script from "next/script"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -8,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Mail, Phone, MapPin, Loader2, Shield, CheckCircle, Clock, Lock } from "lucide-react"
 import { toast } from "sonner"
 import { EmailText } from "@/components/shared/SafeEmail"
+import { organizationLd, breadcrumbLd } from "@/app/ld"
 
 export default function ContactPage() {
   const [form, setForm] = useState({ name: "", email: "", phone: "", subject: "", message: "" })
@@ -40,6 +42,19 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-[calc(100vh-4rem)]">
+      <Script
+        id="contact-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([
+            organizationLd(),
+            breadcrumbLd([
+              { name: "Home", url: "https://buildcostgh.com" },
+              { name: "Contact", url: "https://buildcostgh.com/contact" },
+            ]),
+          ]),
+        }}
+      />
       <section className="bg-gradient-to-br from-emerald-50 via-white to-emerald-50 py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">

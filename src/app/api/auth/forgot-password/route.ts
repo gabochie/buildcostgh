@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import crypto from "node:crypto"
 import { prisma } from "@/lib/prisma"
 import { checkRateLimit } from "@/lib/rate-limit"
+import { sendPasswordReset } from "@/lib/email"
 
 export const dynamic = "force-dynamic"
 
@@ -49,7 +50,8 @@ export async function POST(request: NextRequest) {
 
     const resetUrl = `${request.nextUrl.origin}/reset-password?token=${token}`
 
-    // TODO: send email. For now, return the link in dev.
+    await sendPasswordReset(user.email!, resetUrl)
+
     const isDev = process.env.NODE_ENV !== "production"
     return NextResponse.json({
       ok: true,
