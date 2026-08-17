@@ -84,6 +84,16 @@ export class BuildCostVoiceAgent extends VoiceAgent<Env> {
 }
 
 export default {
-  fetch: async (request: Request, env: Env, ctx: ExecutionContext) =>
-    (await routeAgentRequest(request, env)) ?? new Response("Not found", { status: 404 }),
+  fetch: async (request: Request, env: Env, ctx: ExecutionContext) => {
+    const url = new URL(request.url);
+    if (url.pathname === "/debug/env") {
+      return Response.json({
+        keys: Object.keys(env),
+        OPENAI_API_KEY_present: !!env.OPENAI_API_KEY,
+        OPENAI_API_KEY_length: env.OPENAI_API_KEY?.length,
+        OPENAI_MODEL: env.OPENAI_MODEL,
+      });
+    }
+    return (await routeAgentRequest(request, env)) ?? new Response("Not found", { status: 404 });
+  },
 };
