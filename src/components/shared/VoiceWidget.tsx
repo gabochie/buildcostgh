@@ -57,6 +57,11 @@ export function VoiceWidget({ onExit }: Props) {
   })
 
   useEffect(() => {
+    if (error) console.error("[VoiceWidget] error:", error, "host:", host, "mounted:", mounted, "connected:", connected, "status:", status)
+    else console.log("[VoiceWidget] state:", { mounted, host, connected, status })
+  }, [error, mounted, host, connected, status])
+
+  useEffect(() => {
     transcriptRef.current?.scrollTo({
       top: transcriptRef.current.scrollHeight,
       behavior: "smooth",
@@ -119,7 +124,7 @@ export function VoiceWidget({ onExit }: Props) {
                     : "bg-gray-300"
             }`}
           />
-          <span>{error ? "Connection error" : STATUS_LABEL[status]}</span>
+          <span>{error ? `Error: ${error}` : STATUS_LABEL[status]}</span>
         </div>
 
         <div className="flex items-center gap-1.5">

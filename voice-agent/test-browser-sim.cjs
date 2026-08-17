@@ -1,58 +1,36 @@
-const WebSocket = require('ws');
+const https = require('https');
 
-// Exact URL PartySocket would construct:
-// wss://{host}/agents/{party}/{room}
-// host = "voice.buildcostgh.com"
-// party = camelCaseToKebabCase("build-cost-voice-agent") = "build-cost-voice-agent"
-// room = sessionName (e.g. "visitor_abc123")
-// prefix = "agents"
+// Test HTTP upgrade request like a browser would
+const options = {
+  hostname: 'voice.buildcostgh.com',
+  port: 443,
+  path: '/agents/build-cost-voice-agent/upgrade-test',
+  method: 'GET',
+  headers: {
+    'Upgrade': 'websocket',
+    'Connection': 'Upgrade',
+    'Sec-WebSocket-Key': 'dGhlIHNhbXBsZSBub25jZQ==',
+    'Sec-WebSocket-Version': '13',
+    'Origin': 'https://buildcostgh.com',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+    'Sec-WebSocket-Protocol': 'cloudflare-ws-v1+cbor',
+    'Sec-WebSocket-Extensions': 'permessage-deflate; client_max_window_bits',
+  }
+};
 
-const url = 'wss://voice.buildcostgh.com/agents/build-cost-voice-agent/visitor_test123';
-console.log('Connecting to:', url);
-
-const ws = new WebSocket(url);
-
-ws.on('open', () => {
-  console.log('[open] WebSocket connected');
-  // VoiceClient sends hello immediately on open
-  ws.send(JSON.stringify({ type: 'hello', protocol_version: 1 }));
+const req = https.request(options, (res) => {
+  console.log('Status:', res.statusCode);
+  console.log('Headers:', JSON.stringify(res.headers, null, 2));
+  
+  let body = '';
+  res.on('data', (chunk) => body += chunk);
+  res.on('end', () => {
+    if (body) console.log('Body:', body.substring(0, 500));
+  });
 });
 
-ws.on('message', (data, isBinary) => {
-  if (isBinary) return;
-  const msg = JSON.parse(data.toString());
-  console.log('[' + msg.type + ']', JSON.stringify(msg).substring(0, 200));
-  
-  // After getting audio_config, try start_call
-  if (msg.type === 'audio_config') {
-    console.log('[action] Sending start_call...');
-    ws.send(JSON.stringify({ type: 'start_call' }));
-  }
-  
-  // After listening, send a text message like the browser would
-  if (msg.type === 'status' && msg.status === 'listening') {
-    setTimeout(() => {
-      console.log('[action] Sending text_message...');
-      ws.send(JSON.stringify({ type: 'text_message', text: 'Hello, what services do you offer?' }));
-    }, 1000);
-  }
-  
-  if (msg.type === 'transcript_end') {
-    console.log('[response]', msg.text?.substring(0, 300));
-    setTimeout(() => { ws.close(); process.exit(0); }, 2000);
-  }
-  
-  if (msg.type === 'error') {
-    console.log('[ERROR FROM SERVER]:', msg.message);
-  }
+req.on('error', (e) => {
+  console.log('Error:', e.message);
 });
 
-ws.on('error', (e) => {
-  console.log('[ws-error]', e.message);
-});
-
-ws.on('close', (code, reason) => {
-  console.log('[close]', code, reason?.toString());
-});
-
-setTimeout(() => { console.log('TIMEOUT'); ws.close(); process.exit(0); }, 30000);
+req.end();
