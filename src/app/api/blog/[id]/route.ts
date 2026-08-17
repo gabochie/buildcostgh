@@ -17,7 +17,10 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   }
 
   const { id } = await params
-  const { title, slug, excerpt, content, imageUrl, published, tags, category } = await request.json()
+  const { title, slug, excerpt, content, imageUrl, published, tags, category, authorBio, faqJson, schemaType } = await request.json()
+
+  const wordCount = (content || "").replace(/<[^>]*>/g, "").split(/\s+/).length
+  const readTimeMin = Math.max(1, Math.ceil(wordCount / 200))
 
   const post = await prisma.blogPost.update({
     where: { id },
@@ -30,6 +33,10 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       published,
       category: category || "uncategorized",
       tags: JSON.stringify(tags || []),
+      authorBio: authorBio || null,
+      faqJson: faqJson !== undefined ? JSON.stringify(faqJson) : undefined,
+      schemaType: schemaType || "Article",
+      readTimeMin,
     },
   })
 
