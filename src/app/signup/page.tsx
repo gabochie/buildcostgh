@@ -9,6 +9,7 @@ import { Hammer, Loader2, UserPlus, AlertCircle } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
+import { PasswordField } from "@/components/shared/PasswordField"
 import { toast } from "sonner"
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -143,32 +144,20 @@ export default function SignupPage() {
               className="h-11"
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="signup-password">Password</Label>
-            <Input
-              id="signup-password"
-              type="password"
-              value={form.password}
-              onChange={set("password")}
-              placeholder="At least 8 characters"
-              required
-              autoComplete="new-password"
-              className="h-11"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="signup-confirm">Confirm Password</Label>
-            <Input
-              id="signup-confirm"
-              type="password"
-              value={form.confirm}
-              onChange={set("confirm")}
-              placeholder="Repeat your password"
-              required
-              autoComplete="new-password"
-              className="h-11"
-            />
-          </div>
+          <PasswordField
+            id="signup-password"
+            label="Password"
+            value={form.password}
+            onChange={(v) => setForm((f) => ({ ...f, password: v }))}
+          />
+          <PasswordField
+            id="signup-confirm"
+            label="Confirm Password"
+            value={form.confirm}
+            onChange={(v) => setForm((f) => ({ ...f, confirm: v }))}
+            placeholder="Repeat your password"
+            showGenerate={false}
+          />
 
           {error && (
             <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">

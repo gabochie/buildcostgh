@@ -18,6 +18,7 @@ import {
   AlertCircle, ArrowRight, Plus, Search, Download, Presentation, Printer, Crosshair, Zap, Target, Globe, Award, Lightbulb, Cpu, Activity, CheckSquare, Sliders, RefreshCw, Pause, Play, Trash2, Building2, Star, BadgeCheck, Briefcase, MapPin, Edit, ChevronDown, Megaphone, Sparkles, Send, X,
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
+import { PasswordField } from "@/components/shared/PasswordField"
 import { fmtGhs } from "@/lib/rates"
 
 type Stats = {
@@ -4805,10 +4806,15 @@ function AdminLogin() {
             <Label htmlFor="login-email" className="text-sm font-medium text-slate-700">Email</Label>
             <Input id="login-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="admin@example.com" required className="h-11" />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="login-password" className="text-sm font-medium text-slate-700">Password</Label>
-            <Input id="login-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter password" required className="h-11" />
-          </div>
+          <PasswordField
+            id="login-password"
+            label="Password"
+            value={password}
+            onChange={setPassword}
+            placeholder="Enter password"
+            autoComplete="current-password"
+            showGenerate={false}
+          />
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">{error}</div>
           )}

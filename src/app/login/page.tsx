@@ -9,6 +9,7 @@ import { Hammer, Loader2, LogIn, AlertCircle } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
+import { PasswordField } from "@/components/shared/PasswordField"
 import { toast } from "sonner"
 
 function safeCallbackUrl(raw: string | null): string {
@@ -82,19 +83,15 @@ function LoginForm() {
               className="h-11"
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="login-password">Password</Label>
-            <Input
-              id="login-password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              required
-              autoComplete="current-password"
-              className="h-11"
-            />
-          </div>
+          <PasswordField
+            id="login-password"
+            label="Password"
+            value={password}
+            onChange={setPassword}
+            placeholder="Enter your password"
+            autoComplete="current-password"
+            showGenerate={false}
+          />
 
           {error && (
             <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">

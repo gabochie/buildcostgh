@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Loader2, UserPlus, Lock, AlertCircle, FileText, MapPin, ShieldCheck } from "lucide-react"
 import { toast } from "sonner"
+import { PasswordField } from "@/components/shared/PasswordField"
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -119,19 +120,12 @@ export function SignupGate({ defaultEmail }: { defaultEmail?: string }) {
             className="h-11"
           />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="gate-password">Password</Label>
-          <Input
-            id="gate-password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="At least 8 characters"
-            required
-            autoComplete="new-password"
-            className="h-11"
-          />
-        </div>
+        <PasswordField
+          id="gate-password"
+          label="Password"
+          value={password}
+          onChange={setPassword}
+        />
 
         {error && (
           <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">
