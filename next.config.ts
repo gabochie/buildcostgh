@@ -26,7 +26,7 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net",
               "img-src 'self' data: blob: https:",
               "font-src 'self' https://fonts.gstatic.com",
-              "connect-src 'self' https://open.er-api.com https://api.coinbase.com https://api.paystack.co https://neon.tech",
+              "connect-src 'self' https://open.er-api.com https://api.coinbase.com https://api.paystack.co https://neon.tech wss://voice.buildcostgh.com",
               "frame-src 'self' https://js.paystack.co",
             ].join("; "),
           },
