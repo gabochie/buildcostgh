@@ -99,6 +99,15 @@ async function callWorkersAI(message: string): Promise<string | null> {
   }
 }
 
+const quickReplies: Record<string, string> = {
+  "hello": "Hello! I'm the BuildCost GH assistant. Ask me anything about construction costs, building materials, or building a house in Ghana.",
+  "hi": "Hi there! How can I help you with your construction project in Ghana? Try asking about costs, materials, or the building process.",
+  "hey": "Hey! I'm here to help with construction costs in Ghana. What would you like to know?",
+  "help": "I can answer questions about: house costs by size, material prices, land prices, regional cost comparisons, building permits, contractor selection, diaspora building, and more. Try asking a specific question!",
+  "thank you": "You're welcome! Feel free to ask if you have more questions about building in Ghana.",
+  "thanks": "You're welcome! Let me know if you need anything else about construction in Ghana.",
+}
+
 export async function POST(request: NextRequest) {
   try {
     const ip = request.headers.get("x-forwarded-for") || "unknown"
@@ -112,6 +121,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ answer: "Please ask a question about construction costs in Ghana." })
     }
 
+    const q = message.toLowerCase().trim()
+    const quickMatch = quickReplies[q]
+    if (quickMatch) {
+      return NextResponse.json({ answer: quickMatch })
+    }
+
     const llmAnswer = await callWorkersAI(message) || await callGroq(message) || await callCerebras(message)
     if (llmAnswer) {
       return NextResponse.json({ answer: llmAnswer })
@@ -122,7 +137,6 @@ export async function POST(request: NextRequest) {
       select: { title: true, excerpt: true, slug: true },
     })
 
-    const q = message.toLowerCase()
     const relevant = posts
       .map((p) => {
         const titleScore = p.title.toLowerCase().includes(q) ? 3 : 0
