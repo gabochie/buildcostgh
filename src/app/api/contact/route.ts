@@ -46,8 +46,7 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({ success: true })
-  } catch (e) {
-    console.error("Contact form error:", e)
+  } catch {
     return NextResponse.json({ error: "Failed to send message" }, { status: 500 })
   }
 }
