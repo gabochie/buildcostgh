@@ -1,5 +1,7 @@
 "use client"
 
+import { useEffect, useCallback } from "react"
+import { useSearchParams } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { Step0BuildingType } from "@/components/calculator/Step0BuildingType"
 import { Step1BasicInfo } from "@/components/calculator/Step1BasicInfo"
@@ -36,9 +38,23 @@ const slideVariants = {
 
 export default function CalculatorPage() {
   const hasHydrated = useHasHydrated()
-  const { step } = useCalculatorStore()
+  const { step, buildingType, setBuildingType, setStep } = useCalculatorStore()
+  const searchParams = useSearchParams()
   const totalSteps = Object.keys(stepComponents).length
   const progress = Math.round(((step + 1) / totalSteps) * 100)
+
+  useEffect(() => {
+    const btParam = searchParams.get("buildingType")
+    if (btParam && !buildingType) {
+      setBuildingType({
+        categorySlug: btParam,
+        categoryName: btParam.replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase()),
+        subtypeSlug: null,
+        subtypeName: null,
+      })
+      setStep(1)
+    }
+  }, [searchParams, buildingType, setBuildingType, setStep])
 
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-gradient-to-b from-gray-50 to-white">
