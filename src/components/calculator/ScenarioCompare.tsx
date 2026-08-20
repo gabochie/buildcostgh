@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { formatCurrency } from "@/lib/utils"
 import { ArrowLeftRight, TrendingUp, TrendingDown, Minus, BarChart3, Loader2 } from "lucide-react"
+import { useCsrfFetch } from "@/hooks/useCsrfFetch"
 
 type EstimateSummary = {
   id: string; projectName: string; buildingType: string; location: string
@@ -19,11 +20,12 @@ export function ScenarioCompare({ estimateIds }: { estimateIds: string[] }) {
   const [loading, setLoading] = useState(true)
   const [estimates, setEstimates] = useState<EstimateSummary[]>([])
   const [error, setError] = useState<string | null>(null)
+  const csrfFetch = useCsrfFetch()
 
   useEffect(() => {
     if (estimateIds.length < 2) return
 
-    fetch("/api/estimates/compare", {
+    csrfFetch("/api/estimates/compare", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ids: estimateIds }),

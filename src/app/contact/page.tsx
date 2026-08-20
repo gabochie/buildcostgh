@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Mail, Phone, MapPin, Loader2, Shield, CheckCircle, Clock, Lock } from "lucide-react"
 import { toast } from "sonner"
 import { EmailText } from "@/components/shared/SafeEmail"
+import { useCsrfFetch } from "@/hooks/useCsrfFetch"
 import { organizationLd, breadcrumbLd } from "@/app/ld"
 import { TurnstileWidget } from "@/components/shared/TurnstileWidget"
 
@@ -18,6 +19,7 @@ export default function ContactPage() {
   const [form, setForm] = useState({ name: "", email: "", phone: "", subject: "", message: "" })
   const [loading, setLoading] = useState(false)
   const [turnstileToken, setTurnstileToken] = useState("")
+  const csrfFetch = useCsrfFetch()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -25,7 +27,7 @@ export default function ContactPage() {
 
     setLoading(true)
     try {
-      const res = await fetch("/api/contact", {
+      const res = await csrfFetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, turnstileToken }),

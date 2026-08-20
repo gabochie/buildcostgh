@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Loader2, UserPlus, Lock, AlertCircle, FileText, MapPin, ShieldCheck } from "lucide-react"
 import { toast } from "sonner"
 import { PasswordField } from "@/components/shared/PasswordField"
+import { useCsrfFetch } from "@/hooks/useCsrfFetch"
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -18,6 +19,7 @@ export function SignupGate({ defaultEmail }: { defaultEmail?: string }) {
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+  const csrfFetch = useCsrfFetch()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -38,7 +40,7 @@ export function SignupGate({ defaultEmail }: { defaultEmail?: string }) {
 
     setLoading(true)
     try {
-      const res = await fetch("/api/register", {
+      const res = await csrfFetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: name.trim(), email: email.trim(), password }),

@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Bookmark, Loader2, CheckCircle } from "lucide-react"
 import { toast } from "sonner"
 import type { EstimateResult } from "@/types"
+import { useCsrfFetch } from "@/hooks/useCsrfFetch"
 
 interface SaveEstimateDialogProps {
   result: EstimateResult
@@ -24,6 +25,7 @@ export function SaveEstimateDialog({ result, inputs, buildingType = "residential
   const [notes, setNotes] = useState("")
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const csrfFetch = useCsrfFetch()
 
   const handleSave = async () => {
     if (!name.trim()) {
@@ -32,7 +34,7 @@ export function SaveEstimateDialog({ result, inputs, buildingType = "residential
     }
     setSaving(true)
     try {
-      const res = await fetch("/api/estimates", {
+      const res = await csrfFetch("/api/estimates", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

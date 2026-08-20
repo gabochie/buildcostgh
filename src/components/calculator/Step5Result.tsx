@@ -16,6 +16,7 @@ import { ProfessionalFees } from "@/components/calculator/ProfessionalFees"
 import { AssumptionsPanel } from "@/components/calculator/AssumptionsPanel"
 import { PermitChecklist } from "@/components/calculator/PermitChecklist"
 import { SaveEstimateDialog } from "@/components/calculator/SaveEstimateDialog"
+import { useCsrfFetch } from "@/hooks/useCsrfFetch"
 
 function AnimatedPrice({ value }: { value: number }) {
   const [display, setDisplay] = useState(0)
@@ -51,13 +52,14 @@ export function Step5Result() {
   const [selectedRegion, setSelectedRegion] = useState(step1.location)
   const [showComparison, setShowComparison] = useState(false)
   const [permitData, setPermitData] = useState<Record<string, unknown> | null>(null)
+  const csrfFetch = useCsrfFetch()
 
   const hasExtended = !!result?.extended
 
   useEffect(() => {
     const fetchEstimate = async () => {
       try {
-        const res = await fetch("/api/calculator", {
+        const res = await csrfFetch("/api/calculator", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -87,7 +89,7 @@ export function Step5Result() {
 
     const fetchPermit = async () => {
       try {
-        const res = await fetch("/api/permit-checklist", {
+        const res = await csrfFetch("/api/permit-checklist", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

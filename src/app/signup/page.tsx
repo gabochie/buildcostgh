@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { PasswordField } from "@/components/shared/PasswordField"
 import { toast } from "sonner"
+import { useCsrfFetch } from "@/hooks/useCsrfFetch"
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -19,6 +20,7 @@ export default function SignupPage() {
   const [form, setForm] = useState({ name: "", email: "", phone: "", password: "", confirm: "" })
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+  const csrfFetch = useCsrfFetch()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -43,7 +45,7 @@ export default function SignupPage() {
 
     setLoading(true)
     try {
-      const res = await fetch("/api/register", {
+      const res = await csrfFetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

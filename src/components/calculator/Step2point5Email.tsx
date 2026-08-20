@@ -7,11 +7,13 @@ import { Label } from "@/components/ui/label"
 import { useCalculatorStore } from "@/store/calculatorStore"
 import { Mail, Lock, Loader2, Shield, CheckCircle } from "lucide-react"
 import { toast } from "sonner"
+import { useCsrfFetch } from "@/hooks/useCsrfFetch"
 
 export function Step2point5Email() {
   const { step1, step2, email, setEmail, setHasEmail, setStep } = useCalculatorStore()
   const [loading, setLoading] = useState(false)
   const [localEmail, setLocalEmail] = useState(email)
+  const csrfFetch = useCsrfFetch()
 
   const handleSubmit = async () => {
     if (!localEmail || !localEmail.includes("@")) {
@@ -22,7 +24,7 @@ export function Step2point5Email() {
     setLoading(true)
 
     try {
-      const res = await fetch("/api/calculator/save-lead", {
+      const res = await csrfFetch("/api/calculator/save-lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         // If the save hangs (slow DB), still advance the user — the catch below proceeds

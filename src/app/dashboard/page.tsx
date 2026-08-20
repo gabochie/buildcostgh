@@ -12,6 +12,7 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 import { ScenarioCompare } from "@/components/calculator/ScenarioCompare"
+import { useCsrfFetch } from "@/hooks/useCsrfFetch"
 
 type SavedEstimate = {
   id: string; projectName: string; buildingType: string; location: string
@@ -27,6 +28,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [showCompare, setShowCompare] = useState(false)
+  const csrfFetch = useCsrfFetch()
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -44,13 +46,13 @@ export default function DashboardPage() {
 
   const deleteEstimate = async (id: string) => {
     if (!confirm("Delete this estimate?")) return
-    await fetch(`/api/estimates/${id}`, { method: "DELETE" })
+    await csrfFetch(`/api/estimates/${id}`, { method: "DELETE" })
     setEstimates(e => e.filter(x => x.id !== id))
     toast.success("Deleted")
   }
 
   const duplicateEstimate = async (id: string) => {
-    const res = await fetch(`/api/estimates/${id}/duplicate`, { method: "POST" })
+    const res = await csrfFetch(`/api/estimates/${id}/duplicate`, { method: "POST" })
     if (res.ok) {
       const dup = await res.json()
       setEstimates(e => [dup, ...e])
@@ -59,7 +61,7 @@ export default function DashboardPage() {
   }
 
   const toggleFavorite = async (id: string, current: boolean) => {
-    const res = await fetch(`/api/estimates/${id}`, {
+    const res = await csrfFetch(`/api/estimates/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ isFavorite: !current }),
