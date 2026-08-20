@@ -534,3 +534,102 @@ model SocialPost {
   @@index([platform, status])
   @@index([draftId])
 }
+
+// ═══════════════════════════════════════════════════════════
+// BUILDING TYPE TAXONOMY & COST PROFILES (Master Upgrade)
+// ═══════════════════════════════════════════════════════════
+
+model BuildingCategory {
+  id          String            @id @default(cuid())
+  name        String            @unique // "Residential", "Commercial", etc.
+  slug        String            @unique
+  description String?
+  icon        String?           // lucide icon name
+  sortOrder   Int               @default(0)
+  isActive    Boolean           @default(true)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  subtypes    BuildingSubtype[]
+  costProfiles CostProfile[]
+}
+
+model BuildingSubtype {
+  id          String            @id @default(cuid())
+  categoryId  String
+  category    BuildingCategory  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  name        String            // "Single-family house", "Office building", etc.
+  slug        String            @unique
+  description String?
+  complexity  String            @default("standard") // low | standard | high | very_high
+  typicalMinFloors Int          @default(1)
+  typicalMaxFloors Int          @default(5)
+  sortOrder   Int               @default(0)
+  isActive    Boolean           @default(true)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  costProfiles CostProfile[]
+
+  @@index([categoryId])
+}
+
+model CostProfile {
+  id          String   @id @default(cuid())
+  categoryId  String
+  category    BuildingCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  subtypeId   String?
+  subtype     BuildingSubtype? @relation(fields: [subtypeId], references: [id], onDelete: SetNull)
+  qualityLevel String  // economy | standard | good | premium | luxury
+
+  // Base cost per sqm (GHS)
+  baseCostPerSqm Decimal @default(0)
+
+  // Elemental breakdown percentages (must sum to ~1.0)
+  substructurePct     Decimal @default(0.12)
+  framePct            Decimal @default(0.18)
+  upperFloorsPct      Decimal @default(0.10)
+  roofPct             Decimal @default(0.10)
+  externalWallsPct    Decimal @default(0.08)
+  windowsDoorsPct     Decimal @default(0.07)
+  internalFinishesPct Decimal @default(0.15)
+  externalFinishesPct Decimal @default(0.04)
+  fittingsPct         Decimal @default(0.03)
+  mechanicalPct       Decimal @default(0.05)
+  electricalPct       Decimal @default(0.05)
+  fireProtectionPct   Decimal @default(0.01)
+
+  // Cost components as % of construction cost
+  externalWorksPct    Decimal @default(0.10)
+  siteDevelopmentPct  Decimal @default(0.05)
+
+  // Professional fees as % of construction cost
+  architectFeePct     Decimal @default(0.08)
+  qsFeePct            Decimal @default(0.04)
+  structuralEngFeePct Decimal @default(0.04)
+  civilEngFeePct      Decimal @default(0.02)
+  mechanicalEngFeePct Decimal @default(0.02)
+  electricalEngFeePct Decimal @default(0.02)
+  geotechFeePct       Decimal @default(0.01)
+  pmFeePct            Decimal @default(0.03)
+
+  // Contingency + escalation
+  contingencyPct      Decimal @default(0.10)
+  escalationPct       Decimal @default(0.05)
+
+  // Range width factor (1.0 = ±15%, 1.5 = ±25%)
+  rangeFactor         Decimal @default(1.0)
+
+  // Data quality
+  confidenceLevel     String  @default("medium") // low | medium | high
+  source              String? // "BuildCostGH 2026", "QS estimate", etc.
+  lastReviewed        DateTime?
+  isActive            Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([categoryId, subtypeId, qualityLevel])
+  @@index([categoryId])
+  @@index([qualityLevel])
+}

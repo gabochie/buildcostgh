@@ -8,11 +8,15 @@ import {
   CATEGORY_SPLITS,
   VALIDATION,
 } from "@/lib/pricing-constants"
+import { calculateCost, type CalculationInput } from "@/lib/calculation-engine"
 
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { bedrooms, location, floorArea, floors, grade, pool, garden, security, solar } = body
+    const {
+      bedrooms, location, floorArea, floors, grade, pool, garden, security, solar,
+      buildingCategorySlug, buildingSubtypeSlug, qualityLevel,
+    } = body
 
     // ── Input validation ──
     const area = Number.parseFloat(floorArea) || VALIDATION.defaultArea
@@ -24,34 +28,90 @@ export async function POST(request: Request) {
     const gradeKey = GRADE_MULTIPLIERS[grade] !== undefined ? grade : "B"
     const locationKey = LOCATION_MULTIPLIERS[location] !== undefined ? location : "Accra"
 
-    // ── Base calculation ──
+    // ── If building type provided, use the new calculation engine ──
+    if (buildingCategorySlug) {
+      const quality = qualityLevel || (grade === "A" ? "premium" : grade === "C" ? "economy" : "standard")
+      const input: CalculationInput = {
+        buildingCategorySlug,
+        buildingSubtypeSlug,
+        location: locationKey,
+        floorArea: clampedArea,
+        floors: floorCount,
+        qualityLevel: quality as CalculationInput["qualityLevel"],
+        bedrooms,
+      }
+
+      const calc = await calculateCost(input)
+
+      // Seasonal adjustment
+      let seasonalMult = 1.0
+      const currentMonth = new Date().getMonth() + 1
+      try {
+        const factors = await prisma.seasonalFactor.findMany({
+          where: { active: true, month: currentMonth, OR: [{ region: locationKey }, { region: null }] },
+        })
+        if (factors.length > 0) {
+          seasonalMult = factors.reduce((sum, f) => sum + f.multiplier, 0) / factors.length
+        }
+      } catch { /* Seasonal factors may not exist */ }
+
+      return NextResponse.json({
+        breakdown: {
+          baseCost: calc.constructionCost,
+          locationMultiplier: LOCATION_MULTIPLIERS[locationKey] ?? 1.0,
+          gradeMultiplier: 1.0,
+          seasonalMultiplier: seasonalMult,
+          addonsCost: calc.externalWorksCost + calc.siteDevelopmentCost,
+          total: calc.totalProjectCost,
+        },
+        categories: {
+          foundation: calc.elementalBreakdown.find(e => e.name === "Substructure")?.amount ?? 0,
+          structure: calc.elementalBreakdown.find(e => e.name === "Frame")?.amount ?? 0,
+          finishing: calc.elementalBreakdown.find(e => e.name === "Internal Finishes")?.amount ?? 0,
+          services: calc.elementalBreakdown.reduce((s, e) =>
+            ["Mechanical (MEP)", "Electrical (MEP)", "Fire Protection"].includes(e.name) ? s + e.amount : s, 0),
+        },
+        regionRates: calc.regionRates,
+        summary: {
+          pricePerSqm: calc.costPerSqm,
+          totalSqm: clampedArea * floorCount,
+          grade: gradeKey,
+          location: locationKey,
+        },
+        // Extended fields for building type intelligence
+        extended: {
+          costRange: calc.costRange,
+          confidenceScore: calc.confidenceScore,
+          elementalBreakdown: calc.elementalBreakdown,
+          professionalFees: calc.professionalFees,
+          totalProfessionalFees: calc.totalProfessionalFees,
+          contingency: calc.contingency,
+          escalation: calc.escalation,
+          assumptions: calc.assumptions,
+          exclusions: calc.exclusions,
+          dataSource: calc.dataSource,
+        },
+      })
+    }
+
+    // ── Legacy residential calculator (backward compatible) ──
     const basePerSqm = (BASE_PRICES[bedrooms] || 180000) / 100
     const locationMult = LOCATION_MULTIPLIERS[locationKey]
     const gradeMult = GRADE_MULTIPLIERS[gradeKey]
 
     let baseCost = basePerSqm * clampedArea * floorCount * locationMult * gradeMult
 
-    // ── Seasonal adjustment (current month, region-specific) ──
+    // ── Seasonal adjustment ──
     let seasonalMult = 1.0
     const currentMonth = new Date().getMonth() + 1
     try {
       const factors = await prisma.seasonalFactor.findMany({
-        where: {
-          active: true,
-          month: currentMonth,
-          OR: [
-            { region: locationKey },
-            { region: null },
-          ],
-        },
+        where: { active: true, month: currentMonth, OR: [{ region: locationKey }, { region: null }] },
       })
       if (factors.length > 0) {
-        // Average all matching factors (region-specific + national)
         seasonalMult = factors.reduce((sum, f) => sum + f.multiplier, 0) / factors.length
       }
-    } catch {
-      // Seasonal factors table may not exist yet — proceed without adjustment
-    }
+    } catch { /* Seasonal factors table may not exist */ }
 
     baseCost *= seasonalMult
 
@@ -76,7 +136,6 @@ export async function POST(request: Request) {
 
     try {
       const slug = locationKey.toLowerCase().replace(/\s+/g, "-")
-      // Map calculator location names to region slugs
       const slugMap: Record<string, string> = {
         accra: "greater-accra", kumasi: "ashanti", tema: "greater-accra",
         takoradi: "western", tamale: "northern", "cape-coast": "central",
@@ -87,9 +146,7 @@ export async function POST(request: Request) {
       }
       const regionSlug = slugMap[slug] || slug
       regionRates = await prisma.regionRate.findUnique({ where: { slug: regionSlug } })
-    } catch {
-      // RegionRate table may not exist yet
-    }
+    } catch { /* RegionRate table may not exist */ }
 
     return NextResponse.json({
       breakdown: {
