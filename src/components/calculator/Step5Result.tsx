@@ -60,7 +60,11 @@ export function Step5Result() {
         const res = await fetch("/api/calculator", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...step1, ...step2, ...step3, ...step4 }),
+          body: JSON.stringify({
+            ...step1, ...step2, ...step3, ...step4,
+            buildingCategorySlug: buildingType?.categorySlug || "residential",
+            buildingSubtypeSlug: buildingType?.subtypeSlug || undefined,
+          }),
         })
         const data = await res.json()
         if (res.ok) {
@@ -75,7 +79,7 @@ export function Step5Result() {
     }
 
     fetchEstimate()
-  }, [step1, step2, step3, step4])
+  }, [step1, step2, step3, step4, buildingType])
 
   // Fetch permit checklist when extended data is available
   useEffect(() => {
@@ -87,7 +91,7 @@ export function Step5Result() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            buildingCategorySlug: "residential",
+            buildingCategorySlug: buildingType?.categorySlug || "residential",
             location: step1.location,
             floorArea: Number(step2.floorArea) || 100,
             floors: step2.floors === "Two Floors" ? 2 : step2.floors === "Three Floors" ? 3 : 1,
@@ -101,7 +105,7 @@ export function Step5Result() {
     }
 
     fetchPermit()
-  }, [hasExtended, result, step1.location, step2.floorArea, step2.floors])
+  }, [hasExtended, result, step1.location, step2.floorArea, step2.floors, buildingType])
 
   if (loading || status === "loading") {
     return (
@@ -115,7 +119,7 @@ export function Step5Result() {
     return (
       <div className="text-center py-12">
         <p className="text-red-500 mb-4">{error || "Something went wrong"}</p>
-        <Button variant="outline" onClick={() => setStep(1)}>
+        <Button variant="outline" onClick={() => setStep(0)}>
           Start Over
         </Button>
       </div>
@@ -151,7 +155,7 @@ export function Step5Result() {
     <div className="space-y-6">
       <div>
         <h2 className="text-xl font-semibold text-gray-900 mb-1">Your Cost Estimate</h2>
-        <p className="text-sm text-gray-500">Step 6 of 6</p>
+        <p className="text-sm text-gray-500">Step 7 of 7</p>
       </div>
 
       {/* ── Cost Range (extended) or Animated Total (legacy) ── */}
