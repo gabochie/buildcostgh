@@ -5,8 +5,8 @@ import { Loader2, Shield, MapPin, FileCheck, ChevronDown, ChevronUp } from "luci
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 
-type PermitReq = { id: string; name: string; description: string | null; category: string; buildingType: string | null; developmentType: string | null; floorAreaMin: number | null; floorAreaMax: number | null; floorsMin: number | null; floorsMax: number | null; required: boolean; conditional: boolean; authority: string | null; source: string | null; notes: string | null }
-type Auth = { id: string; name: string; type: string; region: string | null; mmda: string | null; slug: string }
+type PermitReq = { id: string; name: string; description: string | null; category: string; required: string; appliesTo: Record<string, unknown>; authority: string | null; source: string | null; notes: string | null; sortOrder: number }
+type Auth = { id: string; name: string; type: string; region: string; district: string | null; website: string | null; phone: string | null; email: string | null; isActive: boolean }
 
 const statusColors: Record<string, string> = {
   required: "bg-emerald-100 text-emerald-700",
@@ -32,7 +32,10 @@ export function PermitsAdminTab() {
 
   const toggle = (id: string) => setExpanded(p => ({ ...p, [id]: !p[id] }))
 
-  const requirementsByType = (bt: string) => requirements.filter(r => r.buildingType === bt || r.buildingType === null)
+  const requirementsByType = (bt: string) => requirements.filter(r => {
+    const cats = r.appliesTo?.buildingCategories
+    return !Array.isArray(cats) || (cats as string[]).includes(bt)
+  })
   const authoritiesByType = (t: string) => authorities.filter(a => a.type === t)
 
   if (loading) return <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-emerald-600" /></div>
@@ -75,18 +78,19 @@ export function PermitsAdminTab() {
                             <div>
                               <div className="flex items-center gap-2 flex-wrap">
                                 <span className="text-sm font-medium text-slate-800">{r.name}</span>
-                                <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${statusColors[r.conditional ? "conditional" : r.required ? "required" : "verify"]}`}>
-                                  {r.required ? "Required" : r.conditional ? "Conditional" : "Verify"}
+                                <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${statusColors[r.required] ?? "bg-slate-100 text-slate-700"}`}>
+                                  {r.required}
                                 </span>
-                                {r.buildingType && <span className="text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">{r.buildingType}</span>}
+                                <span className="text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">{r.appliesTo?.buildingCategories ? (r.appliesTo.buildingCategories as string[]).join(", ") : "all"}</span>
                               </div>
                               {r.description && <p className="text-xs text-slate-500 mt-1">{r.description}</p>}
                               {r.authority && <p className="text-[11px] text-slate-400 mt-1">Authority: {r.authority}</p>}
-                              {(r.floorAreaMin || r.floorAreaMax || r.floorsMin || r.floorsMax) && (
+                              {r.appliesTo?.minFloors || r.appliesTo?.maxFloors || r.appliesTo?.minArea || r.appliesTo?.maxArea ? (
                                 <p className="text-[10px] text-slate-400 mt-1">
-                                  Area: {r.floorAreaMin ?? "0"}–{r.floorAreaMax ?? "∞"} m² · Floors: {r.floorsMin ?? "1"}–{r.floorsMax ?? "∞"}
+                                  {r.appliesTo.minArea ? `Min area: ${String(r.appliesTo.minArea)} m²` : ""}
+                                  {r.appliesTo.minFloors ? ` · Floors ≥ ${String(r.appliesTo.minFloors)}` : ""}
                                 </p>
-                              )}
+                              ) : null}
                             </div>
                           </div>
                         </div>

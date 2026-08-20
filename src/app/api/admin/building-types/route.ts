@@ -11,11 +11,12 @@ export async function GET() {
 
   const [categories, subtypes, profiles] = await Promise.all([
     prisma.buildingCategory.findMany({ orderBy: { sortOrder: "asc" } }),
-    prisma.buildingSubtype.findMany({ orderBy: { sortOrder: "asc" } }),
-    prisma.costProfile.findMany({ orderBy: { buildingCategorySlug: "asc" } }),
+    prisma.buildingSubtype.findMany({ orderBy: { sortOrder: "asc" }, include: { category: { select: { slug: true } } } }),
+    prisma.costProfile.findMany({ orderBy: { qualityLevel: "asc" }, include: { category: { select: { slug: true } } } }),
   ])
 
   return NextResponse.json({ categories, subtypes, profiles })
+}
 
 export async function POST(req: NextRequest) {
   const session = await auth()
@@ -52,15 +53,21 @@ export async function DELETE(req: NextRequest) {
   if (!isAdmin(session?.user)) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 
   const body = await req.json()
-  if (!body.type || !body.slug) {
-    return NextResponse.json({ error: "type and slug required" }, { status: 400 })
+  if (!body.type || !body.id) {
+    return NextResponse.json({ error: "type and id required" }, { status: 400 })
   }
 
   try {
     if (body.type === "category") {
-      await prisma.costProfile.deleteMany({ where: { buildingCategorySlug: body.slug } })
-      await prisma.buildingSubtype.deleteMany({ where: { buildingCategorySlug: body.slug } })
-      await prisma.buildingCategory.delete({ where: { slug: body.slug } })
+      const cat = await prisma.buildingCategory.findUnique({ where: { id: body.id } })
+      if (!cat) return NextResponse.json({ error: "Not found" }, { status: 404 })
+      await prisma.costProfile.deleteMany({ where: { categoryId: cat.id } })
+      await prisma.buildingSubtype.deleteMany({ where: { categoryId: cat.id } })
+      await prisma.buildingCategory.delete({ where: { id: cat.id } })
+    } else if (body.type === "subtype") {
+      await prisma.buildingSubtype.delete({ where: { id: body.id } })
+    } else if (body.type === "profile") {
+      await prisma.costProfile.delete({ where: { id: body.id } })
     }
     return NextResponse.json({ ok: true })
   } catch (e) {
