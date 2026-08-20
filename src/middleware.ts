@@ -1,12 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server"
 import { jwtVerify } from "jose"
+import { verifyCsrfFromRequest } from "@/lib/csrf"
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "gabochie@gmail.com"
 
 // ── Route matchers ──
 const dashboardPaths = ["/dashboard"]
 const adminPaths = ["/admin"]
-const apiPaths = ["/api/"]
 
 function matchPaths(pathname: string, paths: string[]): boolean {
   return paths.some(p => pathname === p || pathname.startsWith(p + "/"))
@@ -35,13 +35,34 @@ async function getSessionFromCookie(request: NextRequest): Promise<{ email?: str
 
     const encoder = new TextEncoder()
     const key = encoder.encode(secret)
-
-    // NextAuth v5 uses JWT with HS256 by default
     const { payload } = await jwtVerify(token, key, { algorithms: ["HS256"] })
     return { email: payload.email as string | undefined }
   } catch {
     return null
   }
+}
+
+/**
+ * CSRF check for state-changing API routes (POST/PUT/DELETE/PATCH).
+ * Skips: GET/HEAD/OPTIONS, auth endpoints, webhooks, v1 API (key-auth).
+ */
+function checkCsrf(request: NextRequest): Response | null {
+  const method = request.method.toUpperCase()
+  if (method === "GET" || method === "HEAD" || method === "OPTIONS") return null
+
+  const { pathname } = request.nextUrl
+  if (pathname.startsWith("/api/auth")) return null
+  if (pathname.startsWith("/api/webhook")) return null
+  if (pathname.startsWith("/api/v1")) return null
+
+  if (!verifyCsrfFromRequest(request)) {
+    return new Response(
+      JSON.stringify({ error: "CSRF token invalid or missing. Please refresh the page." }),
+      { status: 403, headers: { "Content-Type": "application/json" } }
+    )
+  }
+
+  return null
 }
 
 export async function middleware(request: NextRequest) {
@@ -51,19 +72,23 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
+  // ── CSRF protection on state-changing API routes ──
+  if (pathname.startsWith("/api/")) {
+    const csrfResult = checkCsrf(request)
+    if (csrfResult) return csrfResult
+  }
+
   const session = await getSessionFromCookie(request)
   const isLoggedIn = !!session
 
   // ── Admin routes ──
   if (matchPaths(pathname, adminPaths)) {
-    // The /admin root is the login page — always allow
     if (pathname === "/admin") return NextResponse.next()
 
     if (!isLoggedIn) {
       return NextResponse.redirect(new URL("/admin", request.url))
     }
 
-    // Verify admin email — regular users cannot access admin
     if (session.email !== ADMIN_EMAIL) {
       return NextResponse.redirect(new URL("/dashboard", request.url))
     }
