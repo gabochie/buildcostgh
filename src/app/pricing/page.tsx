@@ -13,6 +13,7 @@ import { GradientButton } from "@/components/shared"
 import { getClientGhsRate } from "@/lib/currency"
 import { useCalculatorStore } from "@/store/calculatorStore"
 import { pricingFaqs } from "@/lib/seo/faqs"
+import { useLang } from "@/lib/lang-context"
 import Link from "next/link"
 import {
   Accordion,
@@ -197,6 +198,7 @@ export default function PricingPage() {
   const [pricingMode, setPricingMode] = useState<"reports" | "subscriptions">("reports")
   const [rates, setRates] = useState<{ GHS: number }>({ GHS: 15.5 })
   const [rateDate, setRateDate] = useState("")
+  const { t } = useLang()
 
   useEffect(() => {
     getClientGhsRate()
@@ -417,11 +419,10 @@ export default function PricingPage() {
               </div>
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-white mb-4">
-              Find the Right Plan for Your{" "}
-              <span className="text-gradient-gold">Project</span>
+              {t("pricing.title")}
             </h1>
             <p className="text-lg md:text-xl text-emerald-100/70 max-w-2xl mx-auto">
-              Start with a free estimate, then unlock detailed reports and expert tools as your project grows.
+              {t("pricing.subtitle")}
             </p>
           </motion.div>
         </div>
