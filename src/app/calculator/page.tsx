@@ -15,6 +15,7 @@ import { FaqSection } from "@/components/seo/FaqSection"
 import { JsonLd } from "@/components/seo/JsonLd"
 import { calculatorFaqs } from "@/lib/seo/faqs"
 import { useCalculatorStore, useHasHydrated } from "@/store/calculatorStore"
+import { useLang } from "@/lib/lang-context"
 import { Hammer, Loader2 } from "lucide-react"
 
 const stepLabels = ["Building Type", "Basic Info", "Site", "Floor Size", "Save", "Quality", "Add-ons", "Estimate"]
@@ -39,6 +40,7 @@ const slideVariants = {
 export default function CalculatorPage() {
   const hasHydrated = useHasHydrated()
   const { step, buildingType, setBuildingType, setStep } = useCalculatorStore()
+  const { t } = useLang()
   const searchParams = useSearchParams()
   const totalSteps = Object.keys(stepComponents).length
   const progress = Math.round(((step + 1) / totalSteps) * 100)
@@ -76,9 +78,9 @@ export default function CalculatorPage() {
               <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center">
                 <Hammer className="h-6 w-6 text-white" />
               </div>
-              <h1 className="text-3xl font-heading font-bold text-charcoal">Construction Cost Calculator</h1>
+              <h1 className="text-3xl font-heading font-bold text-charcoal">{t("calculator.title")}</h1>
             </div>
-            <p className="text-gray-500">Get instant estimates for your construction project in Ghana</p>
+            <p className="text-gray-500">{t("calculator.subtitle")}</p>
           </div>
 
           {!hasHydrated ? (
@@ -91,8 +93,8 @@ export default function CalculatorPage() {
             <>
               <div className="mb-6">
             <div className="flex justify-between text-sm text-gray-500 mb-2">
-              <span>Step {step + 1} of {totalSteps}</span>
-              <span>{progress}% complete</span>
+              <span>{t("calculator.stepOf", { current: step + 1, total: totalSteps })}</span>
+              <span>{t("calculator.complete", { pct: progress })}</span>
             </div>
             <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
               <motion.div

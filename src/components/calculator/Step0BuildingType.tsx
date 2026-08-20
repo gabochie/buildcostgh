@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { useCalculatorStore } from "@/store/calculatorStore"
 import { Building2, Home, Hotel, Factory, Warehouse, GraduationCap, Heart, Landmark, ArrowRight, ChevronLeft } from "lucide-react"
+import { useLang } from "@/lib/lang-context"
 import type { BuildingTypeSelection } from "@/store/calculatorStore"
 
 interface BuildingCategory {
@@ -39,6 +40,7 @@ const iconMap: Record<string, React.ReactNode> = {
 
 export function Step0BuildingType() {
   const { buildingType, setBuildingType, setStep } = useCalculatorStore()
+  const { t } = useLang()
   const [categories, setCategories] = useState<BuildingCategory[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState<BuildingCategory | null>(null)
@@ -90,8 +92,8 @@ export function Step0BuildingType() {
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-1">Building Type</h2>
-          <p className="text-sm text-gray-500">Step 1 of 8</p>
+          <h2 className="text-xl font-semibold text-gray-900 mb-1">{t("buildingTypes.title")}</h2>
+          <p className="text-sm text-gray-500">{t("calculator.stepOf", { current: 1, total: 8 })}</p>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {Array.from({ length: 6 }).map((_, i) => (
@@ -106,7 +108,7 @@ export function Step0BuildingType() {
     <div className="space-y-6">
       <div>
         <h2 className="text-xl font-semibold text-gray-900 mb-1">Building Type</h2>
-        <p className="text-sm text-gray-500">Step 1 of 8 — What are you building?</p>
+        <p className="text-sm text-gray-500">{t("calculator.stepOf", { current: 1, total: 8 })} — {t("buildingTypes.subtitle")}</p>
       </div>
 
       {!selectedCategory ? (
@@ -181,7 +183,7 @@ export function Step0BuildingType() {
               onClick={handleContinue}
               className="bg-emerald-600 hover:bg-emerald-700"
             >
-              Continue
+              {t("calculator.continue")}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </div>
@@ -195,7 +197,7 @@ export function Step0BuildingType() {
             onClick={() => { setBuildingType(null); setStep(1) }}
             className="text-sm text-gray-400 hover:text-gray-600"
           >
-            Skip — use residential calculator
+            {t("buildingTypes.orSkip")}
           </button>
         </div>
       )}
