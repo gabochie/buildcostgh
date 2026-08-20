@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react"
-import type { Locale } from "@/lib/i18n"
+import { t as translate, type Locale } from "@/lib/i18n"
 
 const LANG_KEY = "buildcost-locale"
 
@@ -26,8 +26,7 @@ export function LangProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(LANG_KEY, l)
   }, [])
 
-  const t = useCallback(async (path: string, params?: Record<string, string | number>) => {
-    const { t: translate } = await import("@/lib/i18n")
+  const t = useCallback((path: string, params?: Record<string, string | number>) => {
     return translate(locale, path, params)
   }, [locale])
 

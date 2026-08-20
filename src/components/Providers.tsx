@@ -5,6 +5,7 @@ import { SessionProvider } from "next-auth/react"
 import { Toaster } from "@/components/ui/sonner"
 import { useEffect, useState } from "react"
 import { useCalculatorStore } from "@/store/calculatorStore"
+import { LangProvider } from "@/lib/lang-context"
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient())
@@ -16,7 +17,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider>
       <QueryClientProvider client={queryClient}>
-        {children}
+        <LangProvider>
+          {children}
+        </LangProvider>
         <Toaster richColors />
       </QueryClientProvider>
     </SessionProvider>

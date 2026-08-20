@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import { Menu, X, Hammer, Phone, LayoutDashboard } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher"
 import { cn } from "@/lib/utils"
 
 const navLinks = [
@@ -58,6 +59,7 @@ export function Header() {
         </nav>
 
         <div className="hidden md:flex items-center gap-4">
+          <LanguageSwitcher />
           <a href="tel:+233539364716" className="flex items-center gap-1.5 text-sm font-medium text-emerald-700 hover:text-emerald-600">
             <Phone className="h-4 w-4" />
             <span>+233 53 936 4716</span>
@@ -123,6 +125,9 @@ export function Header() {
           <Link href="/calculator" onClick={() => setOpen(false)}>
             <Button className="w-full bg-gradient-primary text-white border-0">Start Calculating</Button>
           </Link>
+          <div className="pt-2 border-t border-gray-100">
+            <LanguageSwitcher />
+          </div>
         </nav>
       </div>
     </header>
