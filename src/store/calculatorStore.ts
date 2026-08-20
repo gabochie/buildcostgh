@@ -12,10 +12,22 @@ export type Step4Data = {
   garden: string
   security: string
   solar: string
+  parking: string
+  backupPower: string
+  hvac: string
+  dataInfra: string
+}
+
+export type BuildingTypeSelection = {
+  categorySlug: string
+  categoryName: string
+  subtypeSlug: string | null
+  subtypeName: string | null
 }
 
 interface CalculatorStore {
   step: number
+  buildingType: BuildingTypeSelection | null
   step1: Step1Data
   step2: Step2Data
   step3: Step3Data
@@ -26,6 +38,7 @@ interface CalculatorStore {
   email: string
   sessionId: string | null
   setStep: (step: number) => void
+  setBuildingType: (bt: BuildingTypeSelection | null) => void
   setStep1: (data: Step1Data) => void
   setStep2: (data: Step2Data) => void
   setStep3: (data: Step3Data) => void
@@ -40,10 +53,14 @@ interface CalculatorStore {
 
 const initialState = {
   step: 1,
+  buildingType: null as BuildingTypeSelection | null,
   step1: { bedrooms: "", location: "" },
   step2: { floorArea: "", floors: "Single Floor" },
   step3: { grade: "" },
-  step4: { pool: "No Pool", garden: "No Garden", security: "Basic Security", solar: "No Solar" },
+  step4: {
+    pool: "No Pool", garden: "No Garden", security: "Basic Security", solar: "No Solar",
+    parking: "No Parking", backupPower: "No Backup", hvac: "No HVAC", dataInfra: "No Data",
+  },
   estimate: null,
   result: null,
   hasEmail: false,
