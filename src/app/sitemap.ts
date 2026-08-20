@@ -38,7 +38,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }))
 
   try {
-    const [posts, contractors, rates] = await Promise.all([
+    const [posts, contractors, rates, buildingCategories] = await Promise.all([
       prisma.blogPost.findMany({
         where: { published: true },
         select: { slug: true, updatedAt: true },
@@ -49,6 +49,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }),
       prisma.regionRate.findMany({
         where: { published: true },
+        select: { slug: true, updatedAt: true },
+      }),
+      prisma.buildingCategory.findMany({
+        where: { isActive: true },
         select: { slug: true, updatedAt: true },
       }),
     ])
@@ -74,7 +78,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     }))
 
-    return [...staticPages, ...servicePages, ...blogPages, ...contractorPages, ...regionPages]
+    const buildingTypePages: MetadataRoute.Sitemap = buildingCategories.map((cat) => ({
+      url: `${baseUrl}/building-types/${cat.slug}`,
+      lastModified: cat.updatedAt,
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    }))
+
+    const redirectPages: MetadataRoute.Sitemap = [
+      { url: `${baseUrl}/commercial-building-cost-calculator`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.7 },
+      { url: `${baseUrl}/residential-building-cost-calculator`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.7 },
+      { url: `${baseUrl}/hospital-building-cost-calculator`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.7 },
+      { url: `${baseUrl}/school-building-cost-calculator`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.7 },
+      { url: `${baseUrl}/factory-building-cost-calculator`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.7 },
+      { url: `${baseUrl}/warehouse-building-cost-calculator`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.7 },
+      { url: `${baseUrl}/hotel-building-cost-calculator`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.7 },
+      { url: `${baseUrl}/industrial-building-cost-calculator`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.7 },
+      { url: `${baseUrl}/office-building-cost-calculator`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.7 },
+    ]
+
+    return [...staticPages, ...servicePages, ...buildingTypePages, ...redirectPages, ...blogPages, ...contractorPages, ...regionPages]
   } catch {
     return [...staticPages, ...servicePages]
   }
