@@ -677,3 +677,32 @@ model Authority {
   @@index([type])
   @@index([isActive])
 }
+
+// ═══════════════════════════════════════════════════════════
+// PROJECT SAVING & SCENARIO COMPARISON (Master Upgrade §30-31)
+// ═══════════════════════════════════════════════════════════
+
+model SavedEstimate {
+  id            String   @id @default(cuid())
+  userId        String?
+  email         String?
+  projectName   String
+  buildingType  String   @default("residential")  // "residential" | category slug
+  location      String
+  floorArea     Decimal  @default(0)
+  floors        Int      @default(1)
+  qualityLevel  String   @default("standard")
+  inputs        Json     // full calculator step data
+  result        Json     // full EstimateResult
+  version       Int      @default(1)            // increments when estimate is regenerated
+  groupId       String?  // links scenarios together (same base project, different options)
+  notes         String?
+  isFavorite    Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([userId])
+  @@index([email])
+  @@index([groupId])
+  @@index([createdAt])
+}
