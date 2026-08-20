@@ -5,15 +5,18 @@ import { useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { useCalculatorStore } from "@/store/calculatorStore"
 import { formatCurrency } from "@/lib/utils"
-import { Loader2, TrendingUp, MapPin, Download, Shield } from "lucide-react"
+import { Loader2, TrendingUp, MapPin, Download, Shield, ArrowLeftRight } from "lucide-react"
 import Link from "next/link"
 import type { EstimateResult } from "@/types"
 import { SignupGate } from "@/components/calculator/SignupGate"
 import { LOCATION_MULTIPLIERS, CATEGORY_SPLITS } from "@/lib/pricing-constants"
+import { ElementalBreakdown } from "@/components/calculator/ElementalBreakdown"
+import { CostRangeDisplay } from "@/components/calculator/CostRange"
+import { ProfessionalFees } from "@/components/calculator/ProfessionalFees"
+import { AssumptionsPanel } from "@/components/calculator/AssumptionsPanel"
 
 function AnimatedPrice({ value }: { value: number }) {
   const [display, setDisplay] = useState(0)
-  const ref = useRef<HTMLDivElement>(null)
   const startedRef = useRef(false)
 
   useEffect(() => {
@@ -45,6 +48,8 @@ export function Step5Result() {
   const [error, setError] = useState<string | null>(null)
   const [selectedRegion, setSelectedRegion] = useState(step1.location)
   const [showComparison, setShowComparison] = useState(false)
+
+  const hasExtended = !!result?.extended
 
   useEffect(() => {
     const fetchEstimate = async () => {
@@ -96,7 +101,6 @@ export function Step5Result() {
   const baseMultiplier = LOCATION_MULTIPLIERS[step1.location] || 1.0
   const adjustedTotal = Math.round(result.breakdown.total * (comparisonMultiplier / baseMultiplier))
 
-  // Use grade-dependent category splits from the API response, or compute locally as fallback
   const split = CATEGORY_SPLITS[step3.grade] || CATEGORY_SPLITS.B
   const baseCost = result.breakdown.baseCost
 
@@ -121,18 +125,29 @@ export function Step5Result() {
         <p className="text-sm text-gray-500">Step 6 of 6</p>
       </div>
 
-      <div className="bg-gradient-to-br from-emerald-50 to-white rounded-xl p-6 border border-emerald-200">
-        <div className="text-sm text-gray-500 mb-1 font-medium">Estimated Total Cost</div>
-        <div className="text-4xl md:text-5xl font-bold text-gradient-emerald mb-2">
-          <AnimatedPrice value={result.breakdown.total} />
+      {/* ── Cost Range (extended) or Animated Total (legacy) ── */}
+      {hasExtended && result.extended ? (
+        <CostRangeDisplay
+          low={result.extended.costRange.low}
+          high={result.extended.costRange.high}
+          midpoint={result.breakdown.total}
+          confidence={result.extended.confidenceScore}
+        />
+      ) : (
+        <div className="bg-gradient-to-br from-emerald-50 to-white rounded-xl p-6 border border-emerald-200">
+          <div className="text-sm text-gray-500 mb-1 font-medium">Estimated Total Cost</div>
+          <div className="text-4xl md:text-5xl font-bold text-gradient-emerald mb-2">
+            <AnimatedPrice value={result.breakdown.total} />
+          </div>
+          <div className="text-sm text-gray-600">
+            {step1.bedrooms} Bedroom &middot; {step1.location} &middot; {step2.floorArea} m&sup2; &middot; Grade{" "}
+            {step3.grade}
+          </div>
         </div>
-        <div className="text-sm text-gray-600">
-          {step1.bedrooms} Bedroom &middot; {step1.location} &middot; {step2.floorArea} m&sup2; &middot; Grade{" "}
-          {step3.grade}
-        </div>
-      </div>
+      )}
 
-      <div className="grid grid-cols-2 gap-4">
+      {/* ── Summary Cards ── */}
+      <div className={`grid gap-4 ${hasExtended ? "grid-cols-3" : "grid-cols-2"}`}>
         <div className="p-4 rounded-xl border border-gray-200">
           <div className="text-sm text-gray-500">Price per m&sup2;</div>
           <div className="text-lg font-bold text-gray-900">{formatCurrency(result.summary.pricePerSqm)}</div>
@@ -141,35 +156,84 @@ export function Step5Result() {
           <div className="text-sm text-gray-500">Total Area</div>
           <div className="text-lg font-bold text-gray-900">{result.summary.totalSqm} m&sup2;</div>
         </div>
-      </div>
-
-      <div className="space-y-3">
-        <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-          <TrendingUp className="h-4 w-4 text-emerald-600" /> Cost Breakdown
-        </h3>
-        {breakdownItems.map((item) => (
-          <div key={item.label}>
-            <div className="flex justify-between text-sm mb-1">
-              <span className="text-gray-600">{item.label}</span>
-              <span className="font-medium text-gray-900">{formatCurrency(item.value)}</span>
-            </div>
-            <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
-              <div className="h-full bg-gradient-primary rounded-full" style={{ width: `${item.pct}%` }} />
-            </div>
+        {hasExtended && result.extended && (
+          <div className="p-4 rounded-xl border border-gray-200">
+            <div className="text-sm text-gray-500">Professional Fees</div>
+            <div className="text-lg font-bold text-gray-900">{formatCurrency(result.extended.totalProfessionalFees)}</div>
           </div>
-        ))}
-        <div className="flex justify-between text-sm pt-2 border-t border-gray-200 font-bold">
-          <span>Total</span>
-          <span className="text-emerald-600">{formatCurrency(result.breakdown.total)}</span>
-        </div>
+        )}
       </div>
 
+      {/* ── Elemental Breakdown (extended) or Basic Breakdown (legacy) ── */}
+      {hasExtended && result.extended ? (
+        <ElementalBreakdown
+          items={result.extended.elementalBreakdown}
+          totalCost={result.breakdown.baseCost}
+        />
+      ) : (
+        <div className="space-y-3">
+          <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+            <TrendingUp className="h-4 w-4 text-emerald-600" /> Cost Breakdown
+          </h3>
+          {breakdownItems.map((item) => (
+            <div key={item.label}>
+              <div className="flex justify-between text-sm mb-1">
+                <span className="text-gray-600">{item.label}</span>
+                <span className="font-medium text-gray-900">{formatCurrency(item.value)}</span>
+              </div>
+              <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-primary rounded-full" style={{ width: `${item.pct}%` }} />
+              </div>
+            </div>
+          ))}
+          <div className="flex justify-between text-sm pt-2 border-t border-gray-200 font-bold">
+            <span>Total</span>
+            <span className="text-emerald-600">{formatCurrency(result.breakdown.total)}</span>
+          </div>
+        </div>
+      )}
+
+      {/* ── Professional Fees (extended only) ── */}
+      {hasExtended && result.extended && (
+        <ProfessionalFees
+          fees={result.extended.professionalFees}
+          total={result.extended.totalProfessionalFees}
+          constructionCost={result.breakdown.baseCost}
+        />
+      )}
+
+      {/* ── Contingency + Escalation summary (extended only) ── */}
+      {hasExtended && result.extended && (
+        <div className="grid grid-cols-2 gap-4">
+          <div className="p-4 rounded-xl border border-gray-200">
+            <div className="text-sm text-gray-500">Contingency</div>
+            <div className="text-lg font-bold text-gray-900">{formatCurrency(result.extended.contingency)}</div>
+            <div className="text-xs text-gray-400">10% of subtotal</div>
+          </div>
+          <div className="p-4 rounded-xl border border-gray-200">
+            <div className="text-sm text-gray-500">Escalation Allowance</div>
+            <div className="text-lg font-bold text-gray-900">{formatCurrency(result.extended.escalation)}</div>
+            <div className="text-xs text-gray-400">5% market adjustment</div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Assumptions (extended only) ── */}
+      {hasExtended && result.extended && (
+        <AssumptionsPanel
+          assumptions={result.extended.assumptions}
+          exclusions={result.extended.exclusions}
+          dataSource={result.extended.dataSource}
+        />
+      )}
+
+      {/* ── Region Comparison ── */}
       <div className="space-y-3">
         <button
           onClick={() => setShowComparison(!showComparison)}
           className="flex items-center gap-2 text-emerald-600 font-medium text-sm hover:text-emerald-700"
         >
-          <MapPin className="h-4 w-4" /> Compare costs in different regions
+          <ArrowLeftRight className="h-4 w-4" /> Compare costs in different regions
         </button>
         {showComparison && (
           <div className="p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-3">
@@ -204,11 +268,13 @@ export function Step5Result() {
         )}
       </div>
 
+      {/* ── Disclaimer ── */}
       <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-800">
-        <strong>Note:</strong> This is a preliminary estimate. Actual costs may vary based on site conditions, material
+        <strong>Note:</strong> This is an indicative estimate. Actual costs may vary based on site conditions, material
         prices, and contractor rates. Get a detailed report for accurate planning.
       </div>
 
+      {/* ── CTA ── */}
       <div className="bg-emerald-50 rounded-xl p-5 border border-emerald-200 text-center">
         <p className="text-lg font-bold text-emerald-800 mb-1">Get the Full Detailed Report</p>
         <p className="text-sm text-emerald-600 mb-4">Itemised breakdown, material quantities, contractor contacts & more</p>
