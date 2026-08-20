@@ -173,7 +173,15 @@ export function Step5Result() {
             <AnimatedPrice value={result.breakdown.total} />
           </div>
           <div className="text-sm text-gray-600">
-            {step1.bedrooms} Bedroom &middot; {step1.location} &middot; {step2.floorArea} m&sup2; &middot; Grade{" "}
+            {buildingType ? (
+              <>
+                {buildingType.categoryName}
+                {buildingType.subtypeName && <span> · {buildingType.subtypeName}</span>}
+              </>
+            ) : (
+              <>{step1.bedrooms} Bedroom</>
+            )}
+            {" "}&middot; {step1.location} &middot; {step2.floorArea} m&sup2; &middot; Grade{" "}
             {step3.grade}
           </div>
         </div>
@@ -337,6 +345,7 @@ export function Step5Result() {
         <SaveEstimateDialog
           result={result}
           inputs={{ ...step1, ...step2, ...step3, ...step4 }}
+          buildingType={buildingType?.categorySlug || "residential"}
           location={step1.location}
           floorArea={Number(step2.floorArea) || 0}
           floors={step2.floors === "Two Floors" ? 2 : step2.floors === "Three Floors" ? 3 : 1}

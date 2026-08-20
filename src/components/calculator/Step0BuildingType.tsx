@@ -192,7 +192,7 @@ export function Step0BuildingType() {
         <div className="text-center pt-2">
           <button
             type="button"
-            onClick={() => setBuildingType(null) || setStep(1)}
+            onClick={() => { setBuildingType(null); setStep(1) }}
             className="text-sm text-gray-400 hover:text-gray-600"
           >
             Skip — use residential calculator
