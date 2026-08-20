@@ -196,6 +196,17 @@ export function Footer() {
 
         <div className="mt-8 pt-8 border-t border-gray-800 text-center text-sm">
           <p>&copy; {new Date().getFullYear()} BuildCost GH. All rights reserved.</p>
+          <p className="mt-1 text-gray-500">
+            A product of{" "}
+            <a
+              href="https://gabochie.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-emerald-400 transition-colors"
+            >
+              Gabochie Design
+            </a>
+          </p>
           <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-2">
             <Link href="/privacy" className="hover:text-emerald-400">Privacy Policy</Link>
             <Link href="/terms" className="hover:text-emerald-400">Terms of Service</Link>
