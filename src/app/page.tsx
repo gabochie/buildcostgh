@@ -7,6 +7,7 @@ import { AnimatedCounter, GradientButton, GlassCard, TestimonialCard } from "@/c
 import { FaqSection } from "@/components/seo/FaqSection"
 import { JsonLd } from "@/components/seo/JsonLd"
 import { homepageFaqs } from "@/lib/seo/faqs"
+import { useLang } from "@/lib/lang-context"
 
 const fadeUp = {
   initial: { opacity: 0, y: 30 },
@@ -56,6 +57,7 @@ const steps = [
 ]
 
 export default function HomePage() {
+  const { t } = useLang()
   return (
     <>
       <JsonLd
@@ -94,19 +96,18 @@ export default function HomePage() {
             <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }}>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-emerald-200 text-sm font-medium mb-6 border border-white/10">
                 <Shield className="h-4 w-4 text-emerald-400" />
-                Trusted by 10,000+ Ghanaians &amp; the Global African Diaspora
+                {t("home.trustedBy")}
               </div>
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-heading font-bold text-white leading-tight mb-6">
-                Build or Invest in Ghana with{" "}
-                <span className="text-gradient-gold">Confidence</span>
+                {t("home.heroTitle")}
               </h1>
               <p className="text-lg md:text-xl text-emerald-100/80 mb-8 max-w-xl">
-                Accurate construction cost estimates for Ghanaians and the global African diaspora. Plan your dream home or real estate investment using real Ghana market data.
+                {t("home.heroSubtitle")}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/calculator">
                   <GradientButton variant="gold" size="lg">
-                    Get Your Free Estimate <ArrowRight className="h-5 w-5" />
+                    {t("home.getStarted")} <ArrowRight className="h-5 w-5" />
                   </GradientButton>
                 </Link>
                 <a
