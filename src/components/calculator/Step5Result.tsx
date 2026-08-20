@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { useCalculatorStore } from "@/store/calculatorStore"
 import { formatCurrency } from "@/lib/utils"
-import { Loader2, TrendingUp, Download, Shield, ArrowLeftRight } from "lucide-react"
+import { Loader2, TrendingUp, Download, Shield, ArrowLeftRight, BarChart3 } from "lucide-react"
 import Link from "next/link"
 import type { EstimateResult } from "@/types"
 import { SignupGate } from "@/components/calculator/SignupGate"
@@ -15,6 +15,7 @@ import { CostRangeDisplay } from "@/components/calculator/CostRange"
 import { ProfessionalFees } from "@/components/calculator/ProfessionalFees"
 import { AssumptionsPanel } from "@/components/calculator/AssumptionsPanel"
 import { PermitChecklist } from "@/components/calculator/PermitChecklist"
+import { SaveEstimateDialog } from "@/components/calculator/SaveEstimateDialog"
 
 function AnimatedPrice({ value }: { value: number }) {
   const [display, setDisplay] = useState(0)
@@ -329,6 +330,19 @@ export function Step5Result() {
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3 pt-2">
+        <SaveEstimateDialog
+          result={result}
+          inputs={{ ...step1, ...step2, ...step3, ...step4 }}
+          location={step1.location}
+          floorArea={Number(step2.floorArea) || 0}
+          floors={step2.floors === "Two Floors" ? 2 : step2.floors === "Three Floors" ? 3 : 1}
+          qualityLevel={step3.grade}
+        />
+        <Link href="/dashboard" className="flex-1">
+          <Button variant="outline" className="w-full">
+            <BarChart3 className="h-4 w-4 mr-2" /> My Estimates
+          </Button>
+        </Link>
         <Button variant="outline" onClick={reset} className="flex-1">
           Start New Calculation
         </Button>

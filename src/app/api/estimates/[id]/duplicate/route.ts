@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
+import type { Prisma } from "@prisma/client"
 
 export const dynamic = "force-dynamic"
 
@@ -25,8 +26,8 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
       floorArea: original.floorArea,
       floors: original.floors,
       qualityLevel: original.qualityLevel,
-      inputs: original.inputs,
-      result: original.result,
+      inputs: original.inputs as Prisma.InputJsonValue,
+      result: original.result as Prisma.InputJsonValue,
       groupId,
       notes: null,
     },
