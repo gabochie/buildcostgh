@@ -1,21 +1,20 @@
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Free Construction Cost Calculator - BuildCost GH",
-  description: "Get an instant, accurate construction cost estimate for your Ghana building project. Free to use — no credit card required. Estimate by room, materials, or all-in.",
-  alternates: {
-    canonical: "/calculator",
-  },
+  title: "Building Cost Calculator Ghana — Instant Construction Estimate | BuildCost GH",
+  description:
+    "Calculate your building construction cost in Ghana instantly. Covers all 16 regions, 13 building types, and 3 quality levels. Get elemental breakdown, professional fees, and permit requirements.",
+  keywords: [
+    "building cost calculator Ghana",
+    "construction cost estimate Ghana",
+    "how much does it cost to build in Ghana",
+    "building estimate tool Ghana",
+  ],
+  alternates: { canonical: "/calculator" },
   openGraph: {
-    title: "Free Construction Cost Calculator - BuildCost GH",
-    description: "Get an instant, accurate construction cost estimate for your Ghana building project. Free to use — no credit card required.",
-    images: [{ url: "/assets/og-image.jpg", width: 1200, height: 630 }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Free Construction Cost Calculator - BuildCost GH",
-    description: "Get an instant, accurate construction cost estimate for your Ghana building project. Free to use — no credit card required.",
-    images: ["/assets/og-image.jpg"],
+    title: "Building Cost Calculator Ghana | BuildCost GH",
+    description: "Calculate your building construction cost in Ghana instantly.",
+    type: "website",
   },
 }
 

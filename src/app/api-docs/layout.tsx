@@ -1,21 +1,15 @@
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "API Documentation - BuildCost GH Developer API",
-  description: "Integrate real-time Ghana construction cost estimates into your platform. REST API with authentication, usage tracking, and developer-friendly pricing.",
-  alternates: {
-    canonical: "/api-docs",
-  },
+  title: "Ghana Building Cost Intelligence API — Programmatic Access | BuildCost GH",
+  description:
+    "Access Ghana construction cost data via our REST API. Building types, locations, cost rates, and permit requirements. JSON responses, API key authentication.",
+  keywords: ["Ghana construction API", "building cost API", "construction rates API"],
+  alternates: { canonical: "/api-docs" },
   openGraph: {
-    title: "API Documentation - BuildCost GH",
-    description: "Integrate real-time Ghana construction cost estimates into your platform.",
-    images: [{ url: "/assets/og-image.jpg", width: 1200, height: 630 }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "API Documentation - BuildCost GH",
-    description: "Integrate real-time Ghana construction cost estimates into your platform.",
-    images: ["/assets/og-image.jpg"],
+    title: "BuildCost GH API — Programmatic Access",
+    description: "Access Ghana construction cost data via REST API.",
+    type: "website",
   },
 }
 

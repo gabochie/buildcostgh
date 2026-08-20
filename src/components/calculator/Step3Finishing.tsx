@@ -35,7 +35,7 @@ export function Step3Finishing() {
     <div className="space-y-6">
       <div>
         <h2 className="text-xl font-semibold text-gray-900 mb-1">Finishing Quality</h2>
-        <p className="text-sm text-gray-500">Step 5 of 7</p>
+        <p className="text-sm text-gray-500">Step 6 of 8</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -71,11 +71,11 @@ export function Step3Finishing() {
       </div>
 
       <div className="flex justify-between pt-4">
-        <Button variant="outline" onClick={() => setStep(2)}>
+        <Button variant="outline" onClick={() => setStep(4)}>
           Previous
         </Button>
         <Button
-          onClick={() => setStep(5)}
+          onClick={() => setStep(6)}
           disabled={!step3.grade}
           className="bg-gradient-primary text-white border-0 hover:opacity-90"
         >

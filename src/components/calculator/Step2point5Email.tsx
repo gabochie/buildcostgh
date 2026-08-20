@@ -41,17 +41,17 @@ export function Step2point5Email() {
       if (res.ok) {
         setEmail(localEmail)
         setHasEmail(true)
-        setStep(4)
+        setStep(5)
       } else {
         // Still let them proceed even if save fails
         setEmail(localEmail)
         setHasEmail(true)
-        setStep(4)
+        setStep(5)
       }
     } catch {
       setEmail(localEmail)
       setHasEmail(true)
-      setStep(4)
+      setStep(5)
     } finally {
       setLoading(false)
     }
@@ -97,7 +97,7 @@ export function Step2point5Email() {
       </div>
 
       <div className="flex justify-between pt-2">
-        <Button variant="outline" onClick={() => setStep(2)}>
+        <Button variant="outline" onClick={() => setStep(3)}>
           Previous
         </Button>
         <Button onClick={handleSubmit} disabled={loading || !localEmail} className="bg-gradient-primary text-white border-0 hover:opacity-90">

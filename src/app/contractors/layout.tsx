@@ -1,21 +1,20 @@
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Find Verified Contractors in Ghana - BuildCost GH",
-  description: "Browse and connect with verified contractors across all 16 regions of Ghana. Compare ratings, experience, and specialties to find the right builder for your project.",
-  alternates: {
-    canonical: "/contractors",
-  },
+  title: "Construction Contractors in Ghana — Verified Directory | BuildCost GH",
+  description:
+    "Browse our directory of construction contractors in Ghana. Verified builders, architects, and engineers across all 16 regions.",
+  keywords: [
+    "construction contractors Ghana",
+    "builders in Ghana",
+    "architects Ghana",
+    "building contractors directory",
+  ],
+  alternates: { canonical: "/contractors" },
   openGraph: {
-    title: "Find Verified Contractors in Ghana - BuildCost GH",
-    description: "Browse and connect with verified contractors across all 16 regions of Ghana.",
-    images: [{ url: "/assets/og-image.jpg", width: 1200, height: 630 }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Find Verified Contractors in Ghana - BuildCost GH",
-    description: "Browse and connect with verified contractors across all 16 regions of Ghana.",
-    images: ["/assets/og-image.jpg"],
+    title: "Construction Contractors Directory — BuildCost GH",
+    description: "Browse verified construction contractors across all 16 regions.",
+    type: "website",
   },
 }
 

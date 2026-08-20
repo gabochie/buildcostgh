@@ -157,7 +157,7 @@ export function Step5Result() {
     <div className="space-y-6">
       <div>
         <h2 className="text-xl font-semibold text-gray-900 mb-1">Your Cost Estimate</h2>
-        <p className="text-sm text-gray-500">Step 7 of 7</p>
+        <p className="text-sm text-gray-500">Step 8 of 8</p>
       </div>
 
       {/* ── Cost Range (extended) or Animated Total (legacy) ── */}

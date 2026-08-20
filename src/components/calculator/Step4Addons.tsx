@@ -29,7 +29,7 @@ export function Step4Addons() {
         <h2 className="text-xl font-semibold text-gray-900 mb-1">
           {isResidential ? "Additional Features" : "Building Systems & Features"}
         </h2>
-        <p className="text-sm text-gray-500">Step 5 of 7</p>
+        <p className="text-sm text-gray-500">Step 7 of 8</p>
       </div>
 
       {Object.entries(options).map(([key, values]) => (
@@ -60,10 +60,10 @@ export function Step4Addons() {
       ))}
 
       <div className="flex justify-between pt-4">
-        <Button variant="outline" onClick={() => setStep(4)}>
+        <Button variant="outline" onClick={() => setStep(5)}>
           Previous
         </Button>
-        <Button onClick={() => setStep(6)} className="bg-gradient-primary text-white border-0 hover:opacity-90">
+        <Button onClick={() => setStep(7)} className="bg-gradient-primary text-white border-0 hover:opacity-90">
           Calculate Costs
         </Button>
       </div>

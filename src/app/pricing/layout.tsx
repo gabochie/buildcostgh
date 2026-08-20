@@ -1,41 +1,22 @@
 import type { Metadata } from "next"
-import { JsonLd } from "@/components/seo/JsonLd"
-import { pricingFaqs } from "@/lib/seo/faqs"
 
 export const metadata: Metadata = {
-  title: "Pricing - Construction Cost Reports & Subscriptions | BuildCost GH",
-  description: "Choose from one-time reports or unlimited subscriptions. Free trial available. Pay with card or mobile money. $29 per report or $19/month unlimited.",
-  alternates: {
-    canonical: "/pricing",
-  },
+  title: "Pricing — Ghana Construction Cost Estimates | BuildCost GH",
+  description:
+    "Choose your plan. Basic estimates from $29, Detailed from $79, Premium from $199. Paystack billing in GHS for locals, USD for diaspora.",
+  keywords: [
+    "buildcostgh pricing",
+    "Ghana construction estimate cost",
+    "building cost report price",
+  ],
+  alternates: { canonical: "/pricing" },
   openGraph: {
-    title: "Pricing - BuildCost GH",
-    description: "Choose from one-time reports or unlimited subscriptions. Free trial available. Pay with card or mobile money.",
-    images: [{ url: "/assets/og-image.jpg", width: 1200, height: 630 }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Pricing - BuildCost GH",
-    description: "Choose from one-time reports or unlimited subscriptions. Free trial available. Pay with card or mobile money.",
-    images: ["/assets/og-image.jpg"],
+    title: "Pricing — BuildCost GH",
+    description: "Choose your plan. Basic $29, Detailed $79, Premium $199.",
+    type: "website",
   },
 }
 
 export default function PricingLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <>
-      <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: pricingFaqs.map((f) => ({
-            "@type": "Question",
-            name: f.q,
-            acceptedAnswer: { "@type": "Answer", text: f.a },
-          })),
-        }}
-      />
-      {children}
-    </>
-  )
+  return children
 }

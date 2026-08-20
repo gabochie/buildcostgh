@@ -5,6 +5,7 @@ import { trackEvent } from "@/lib/analytics"
 import type { EstimateResult } from "@/types"
 
 export type Step1Data = { bedrooms: string; location: string }
+export type StepSiteConditions = { terrain: string; access: string; setting: string }
 export type Step2Data = { floorArea: string; floors: string }
 export type Step3Data = { grade: string }
 export type Step4Data = {
@@ -29,6 +30,7 @@ interface CalculatorStore {
   step: number
   buildingType: BuildingTypeSelection | null
   step1: Step1Data
+  siteConditions: StepSiteConditions
   step2: Step2Data
   step3: Step3Data
   step4: Step4Data
@@ -40,6 +42,7 @@ interface CalculatorStore {
   setStep: (step: number) => void
   setBuildingType: (bt: BuildingTypeSelection | null) => void
   setStep1: (data: Step1Data) => void
+  setSiteConditions: (data: StepSiteConditions) => void
   setStep2: (data: Step2Data) => void
   setStep3: (data: Step3Data) => void
   setStep4: (data: Step4Data) => void
@@ -52,9 +55,10 @@ interface CalculatorStore {
 }
 
 const initialState = {
-  step: 1,
+  step: 0,
   buildingType: null as BuildingTypeSelection | null,
   step1: { bedrooms: "", location: "" },
+  siteConditions: { terrain: "", access: "", setting: "" },
   step2: { floorArea: "", floors: "Single Floor" },
   step3: { grade: "" },
   step4: {
@@ -78,15 +82,17 @@ export const useCalculatorStore = create<CalculatorStore>()(
         if (step === 1 && prev === 0) trackEvent("calculator_step_completed", { step: 0 })
         if (step === 2 && prev === 1) trackEvent("calculator_step_completed", { step: 1 })
         if (step === 3 && prev === 2) trackEvent("calculator_step_completed", { step: 2 })
-        if (step === 4 && prev === 3) {
-          trackEvent("calculator_step_completed", { step: 3 })
+        if (step === 4 && prev === 3) trackEvent("calculator_step_completed", { step: 3 })
+        if (step === 5 && prev === 4) {
+          trackEvent("calculator_step_completed", { step: 4 })
           trackEvent("email_captured")
         }
-        if (step === 5 && prev === 4) trackEvent("calculator_step_completed", { step: 4 })
         if (step === 6 && prev === 5) trackEvent("calculator_step_completed", { step: 5 })
+        if (step === 7 && prev === 6) trackEvent("calculator_step_completed", { step: 6 })
       },
       setBuildingType: (bt) => set({ buildingType: bt }),
       setStep1: (data) => { set({ step1: data }); if (get().step === 1) trackEvent("calculator_started") },
+      setSiteConditions: (data) => set({ siteConditions: data }),
       setStep2: (data) => set({ step2: data }),
       setStep3: (data) => set({ step3: data }),
       setStep4: (data) => set({ step4: data }),
@@ -108,6 +114,7 @@ export const useCalculatorStore = create<CalculatorStore>()(
         step: state.step,
         buildingType: state.buildingType,
         step1: state.step1,
+        siteConditions: state.siteConditions,
         step2: state.step2,
         step3: state.step3,
         step4: state.step4,

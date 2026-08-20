@@ -91,7 +91,7 @@ export function Step0BuildingType() {
       <div className="space-y-6">
         <div>
           <h2 className="text-xl font-semibold text-gray-900 mb-1">Building Type</h2>
-          <p className="text-sm text-gray-500">Step 1 of 7</p>
+          <p className="text-sm text-gray-500">Step 1 of 8</p>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {Array.from({ length: 6 }).map((_, i) => (
@@ -106,7 +106,7 @@ export function Step0BuildingType() {
     <div className="space-y-6">
       <div>
         <h2 className="text-xl font-semibold text-gray-900 mb-1">Building Type</h2>
-        <p className="text-sm text-gray-500">Step 1 of 7 — What are you building?</p>
+        <p className="text-sm text-gray-500">Step 1 of 8 — What are you building?</p>
       </div>
 
       {!selectedCategory ? (

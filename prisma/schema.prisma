@@ -717,3 +717,42 @@ model SavedEstimate {
   @@index([groupId])
   @@index([createdAt])
 }
+
+// ═══════════════════════════════════════════════════════════
+// DATA VERSIONING & AUDIT LOG (Master Upgrade §48-49)
+// ═══════════════════════════════════════════════════════════
+
+model DataVersion {
+  id            String   @id @default(cuid())
+  modelName     String   // e.g. "BuildingCategory", "CostProfile", "PermitRequirement"
+  recordId      String   // ID of the record that changed
+  version       Int      @default(1)
+  snapshot      Json     // full record data at this version
+  changeType    String   // "create" | "update" | "delete"
+  changedBy     String?  // userId or "system" or "seed"
+  reason        String?  // why this change was made
+  createdAt     DateTime @default(now())
+
+  @@index([modelName, recordId])
+  @@index([changedBy])
+  @@index([createdAt])
+}
+
+model AuditLog {
+  id            String   @id @default(cuid())
+  userId        String?
+  email         String?
+  action        String   // "estimate_created" | "estimate_deleted" | "admin_update" | "login" | "password_reset" | "rate_limited"
+  resource      String?  // "estimate" | "user" | "building_type" | "permit" | "rates"
+  resourceId    String?  // ID of affected resource
+  details       Json?    // { ...contextual data }
+  ipAddress     String?
+  userAgent     String?
+  createdAt     DateTime @default(now())
+
+  @@index([userId])
+  @@index([email])
+  @@index([action])
+  @@index([resource, resourceId])
+  @@index([createdAt])
+}

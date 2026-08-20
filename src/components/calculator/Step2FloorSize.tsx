@@ -13,7 +13,7 @@ export function Step2FloorSize() {
     <div className="space-y-6">
       <div>
         <h2 className="text-xl font-semibold text-gray-900 mb-1">Floor Size</h2>
-        <p className="text-sm text-gray-500">Step 3 of 7</p>
+        <p className="text-sm text-gray-500">Step 4 of 8</p>
       </div>
 
       <div className="space-y-2">
@@ -50,11 +50,11 @@ export function Step2FloorSize() {
       </div>
 
       <div className="flex justify-between pt-4">
-        <Button variant="outline" onClick={() => setStep(1)}>
+        <Button variant="outline" onClick={() => setStep(2)}>
           Previous
         </Button>
         <Button
-          onClick={() => setStep(3)}
+          onClick={() => setStep(4)}
           disabled={!step2.floorArea}
           className="bg-emerald-600 hover:bg-emerald-700"
         >

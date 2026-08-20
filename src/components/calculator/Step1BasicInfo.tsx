@@ -23,7 +23,7 @@ export function Step1BasicInfo() {
         <h2 className="text-xl font-semibold text-gray-900 mb-1">
           {isResidential ? "Basic Information" : "Project Location"}
         </h2>
-        <p className="text-sm text-gray-500">Step 2 of 7</p>
+        <p className="text-sm text-gray-500">Step 2 of 8</p>
       </div>
 
       {!isResidential && buildingType && (

@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion"
 import { Step0BuildingType } from "@/components/calculator/Step0BuildingType"
 import { Step1BasicInfo } from "@/components/calculator/Step1BasicInfo"
+import { Step2SiteConditions } from "@/components/calculator/Step2SiteConditions"
 import { Step2FloorSize } from "@/components/calculator/Step2FloorSize"
 import { Step2point5Email } from "@/components/calculator/Step2point5Email"
 import { Step3Finishing } from "@/components/calculator/Step3Finishing"
@@ -14,16 +15,17 @@ import { calculatorFaqs } from "@/lib/seo/faqs"
 import { useCalculatorStore, useHasHydrated } from "@/store/calculatorStore"
 import { Hammer, Loader2 } from "lucide-react"
 
-const stepLabels = ["Building Type", "Basic Info", "Floor Size", "Save", "Quality", "Add-ons", "Estimate"]
+const stepLabels = ["Building Type", "Basic Info", "Site", "Floor Size", "Save", "Quality", "Add-ons", "Estimate"]
 
 const stepComponents: Record<number, React.ReactNode> = {
   0: <Step0BuildingType />,
   1: <Step1BasicInfo />,
-  2: <Step2FloorSize />,
-  3: <Step2point5Email />,
-  4: <Step3Finishing />,
-  5: <Step4Addons />,
-  6: <Step5Result />,
+  2: <Step2SiteConditions />,
+  3: <Step2FloorSize />,
+  4: <Step2point5Email />,
+  5: <Step3Finishing />,
+  6: <Step4Addons />,
+  7: <Step5Result />,
 }
 
 const slideVariants = {
