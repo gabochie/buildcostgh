@@ -9,9 +9,13 @@ import {
   VALIDATION,
 } from "@/lib/pricing-constants"
 import { calculateCost, type CalculationInput } from "@/lib/calculation-engine"
+import { apiRateLimit } from "@/lib/rate-limit"
 
 export async function POST(request: Request) {
   try {
+    const rateLimit = await apiRateLimit(request, { maxRequests: 30, path: "calculator" })
+    if (!rateLimit.ok) return rateLimit.response!
+
     const body = await request.json()
     const {
       bedrooms, location, floorArea, floors, grade, pool, garden, security, solar,

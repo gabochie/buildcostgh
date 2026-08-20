@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
       || request.headers.get("x-real-ip")
       || "unknown"
 
-    const rateCheck = await checkRateLimit(ip, { maxAttempts: 10, useDb: false })
+    const rateCheck = await checkRateLimit(ip, { maxAttempts: 10, path: "register" })
     if (!rateCheck.allowed) {
       return NextResponse.json({ error: "Too many attempts. Please try again later." }, { status: 429 })
     }

@@ -22,7 +22,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const ip = request.headers.get("x-forwarded-for") || "unknown"
-    const limit = await checkRateLimit(ip, { maxAttempts: 5, windowMs: 60000, useDb: false })
+    const limit = await checkRateLimit(ip, { maxAttempts: 5, windowMs: 60000, path: "contact" })
     if (!limit.allowed) {
       return NextResponse.json({ error: limit.message || "Too many requests" }, { status: 429 })
     }
