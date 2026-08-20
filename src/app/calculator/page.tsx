@@ -1,6 +1,7 @@
 "use client"
 
 import { motion, AnimatePresence } from "framer-motion"
+import { Step0BuildingType } from "@/components/calculator/Step0BuildingType"
 import { Step1BasicInfo } from "@/components/calculator/Step1BasicInfo"
 import { Step2FloorSize } from "@/components/calculator/Step2FloorSize"
 import { Step2point5Email } from "@/components/calculator/Step2point5Email"
@@ -13,9 +14,10 @@ import { calculatorFaqs } from "@/lib/seo/faqs"
 import { useCalculatorStore, useHasHydrated } from "@/store/calculatorStore"
 import { Hammer, Loader2 } from "lucide-react"
 
-const stepLabels = ["Basic Info", "Floor Size", "Save", "Finishing", "Add-ons", "Estimate"]
+const stepLabels = ["Building Type", "Basic Info", "Floor Size", "Save", "Quality", "Add-ons", "Estimate"]
 
 const stepComponents: Record<number, React.ReactNode> = {
+  0: <Step0BuildingType />,
   1: <Step1BasicInfo />,
   2: <Step2FloorSize />,
   3: <Step2point5Email />,
@@ -34,7 +36,7 @@ export default function CalculatorPage() {
   const hasHydrated = useHasHydrated()
   const { step } = useCalculatorStore()
   const totalSteps = Object.keys(stepComponents).length
-  const progress = Math.round((step / totalSteps) * 100)
+  const progress = Math.round(((step + 1) / totalSteps) * 100)
 
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-gradient-to-b from-gray-50 to-white">
@@ -58,7 +60,7 @@ export default function CalculatorPage() {
               </div>
               <h1 className="text-3xl font-heading font-bold text-charcoal">Construction Cost Calculator</h1>
             </div>
-            <p className="text-gray-500">Get instant estimates for your residential construction project</p>
+            <p className="text-gray-500">Get instant estimates for your construction project in Ghana</p>
           </div>
 
           {!hasHydrated ? (
@@ -71,7 +73,7 @@ export default function CalculatorPage() {
             <>
               <div className="mb-6">
             <div className="flex justify-between text-sm text-gray-500 mb-2">
-              <span>Step {step} of {totalSteps}</span>
+              <span>Step {step + 1} of {totalSteps}</span>
               <span>{progress}% complete</span>
             </div>
             <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
@@ -89,16 +91,16 @@ export default function CalculatorPage() {
               <div key={label} className="flex items-center gap-1">
                 <div
                   className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium transition-colors flex-shrink-0 ${
-                    step > i + 1
+                    step > i - 1
                       ? "bg-emerald-600 text-white"
-                      : step === i + 1
+                      : step === i - 1
                         ? "bg-emerald-600 text-white ring-4 ring-emerald-100"
                         : "bg-gray-200 text-gray-500"
                   }`}
                 >
                   {i + 1}
                 </div>
-                <span className={`text-xs whitespace-nowrap hidden sm:inline ${step === i + 1 ? "font-medium text-gray-900" : "text-gray-400"}`}>
+                <span className={`text-xs whitespace-nowrap hidden sm:inline ${step === i - 1 ? "font-medium text-gray-900" : "text-gray-400"}`}>
                   {label}
                 </span>
                 {i < stepLabels.length - 1 && <div className="w-4 h-px bg-gray-300 hidden sm:block" />}

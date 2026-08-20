@@ -43,7 +43,7 @@ function AnimatedPrice({ value }: { value: number }) {
 }
 
 export function Step5Result() {
-  const { step1, step2, step3, step4, setStep, reset, setResult: persistResult, email } = useCalculatorStore()
+  const { step1, step2, step3, step4, buildingType, setStep, reset, setResult: persistResult, email } = useCalculatorStore()
   const { status } = useSession()
   const [result, setResult] = useState<EstimateResult | null>(null)
   const [loading, setLoading] = useState(true)

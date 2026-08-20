@@ -13,7 +13,7 @@ export function Step2FloorSize() {
     <div className="space-y-6">
       <div>
         <h2 className="text-xl font-semibold text-gray-900 mb-1">Floor Size</h2>
-        <p className="text-sm text-gray-500">Step 2 of 6</p>
+        <p className="text-sm text-gray-500">Step 3 of 7</p>
       </div>
 
       <div className="space-y-2">

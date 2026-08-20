@@ -75,6 +75,7 @@ export const useCalculatorStore = create<CalculatorStore>()(
       setStep: (step) => {
         const prev = get().step
         set({ step })
+        if (step === 1 && prev === 0) trackEvent("calculator_step_completed", { step: 0 })
         if (step === 2 && prev === 1) trackEvent("calculator_step_completed", { step: 1 })
         if (step === 3 && prev === 2) trackEvent("calculator_step_completed", { step: 2 })
         if (step === 4 && prev === 3) {
@@ -84,6 +85,7 @@ export const useCalculatorStore = create<CalculatorStore>()(
         if (step === 5 && prev === 4) trackEvent("calculator_step_completed", { step: 4 })
         if (step === 6 && prev === 5) trackEvent("calculator_step_completed", { step: 5 })
       },
+      setBuildingType: (bt) => set({ buildingType: bt }),
       setStep1: (data) => { set({ step1: data }); if (get().step === 1) trackEvent("calculator_started") },
       setStep2: (data) => set({ step2: data }),
       setStep3: (data) => set({ step3: data }),
@@ -104,6 +106,7 @@ export const useCalculatorStore = create<CalculatorStore>()(
       skipHydration: true,
       partialize: (state) => ({
         step: state.step,
+        buildingType: state.buildingType,
         step1: state.step1,
         step2: state.step2,
         step3: state.step3,
