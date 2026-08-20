@@ -1,0 +1,60 @@
+BuildCostGH — Ghana Building Cost Intelligence Platform
+API Documentation for AI Tools
+Version: v1 (2026)
+
+# Endpoints
+
+POST /api/v1/estimate
+  Get a building cost estimate.
+  Body: { building_type, location, floor_area, floors?, quality?, bedrooms? }
+  Auth: Bearer API key
+
+GET /api/v1/building-types
+  List all building categories and subtypes.
+  Auth: Bearer API key
+
+GET /api/v1/locations
+  List all Ghana regions with cost multipliers.
+  Auth: Bearer API key
+
+GET /api/v1/cost-rates?region=<slug>
+  Get published regional construction cost rates (materials, labour).
+  Auth: Bearer API key
+
+GET /api/v1/permit-requirements?category=<cat>&building_type=<slug>
+  List permit requirements by category and building type.
+  Auth: Bearer API key
+
+POST /api/estimates
+  Save an estimate to a user's dashboard.
+  Body: { projectName, buildingType, location, floorArea, floors, qualityLevel, inputs, result }
+
+POST /api/estimates/compare
+  Compare 2-4 saved estimates side-by-side.
+  Body: { ids: [string, string, ...] }
+
+GET /api/building-types
+  Public: list building categories and subtypes (no auth required).
+
+GET /api/permit-checklist
+  Public: generate permit checklist for a project.
+  Body: { buildingCategorySlug, location, floorArea, floors, developmentType }
+
+# Data Models
+
+Building Categories: residential, commercial, industrial, educational, healthcare, hospitality, religious, agricultural, mixed_use, institutional, recreational, infrastructure, special_purpose
+
+Quality Levels: economy, standard, good, premium, luxury
+
+Locations: All 16 Ghana regions with multipliers (0.75–1.15)
+
+Permit Authorities: 51 MMDAs + 8 sector regulators
+
+# Notes
+
+- All costs are in Ghana Cedis (GHS)
+- Estimates include: elemental breakdown, professional fees, contingency, escalation
+- Building type data covers 13 categories, 125 subtypes, 39+ cost profiles
+- Permit intelligence covers 22 requirement types across 59 authorities
+- The calculation engine is deterministic — AI extracts parameters, the engine computes costs
+- API keys available at https://buildcostgh.com/api-pricing

@@ -1,0 +1,206 @@
+BuildCostGH — Ghana Building Cost Intelligence Platform
+Full API Documentation for AI Tools
+Version: v1 (2026)
+
+# Overview
+
+BuildCostGH is a building cost intelligence platform for Ghana. It provides deterministic cost estimates across 13 building categories, 125 subtypes, 16 regions, and 5 quality levels. All costs are in Ghana Cedis (GHS).
+
+The system uses an AI-readiness architecture: natural language is converted to structured parameters by an LLM, then a deterministic calculation engine produces the cost result. The AI never invents costs.
+
+# Authentication
+
+All v1 endpoints require a Bearer API key:
+  Authorization: Bearer <your-api-key>
+
+Get keys at https://buildcostgh.com/api-pricing
+
+Rate limits apply per key (monthly).
+
+# Endpoints
+
+## POST /api/v1/estimate
+
+Get a building cost estimate.
+
+Request body:
+{
+  "building_type": "residential",        // Required. Category slug.
+  "building_subtype": "detached_house",  // Optional. Specific subtype.
+  "location": "Greater Accra",           // Required. Region name.
+  "floor_area": 200,                     // Required. Square meters.
+  "floors": 2,                           // Optional. Default: 1.
+  "quality": "standard",                 // Optional. Default: "standard".
+  "bedrooms": "4",                       // Optional. Residential only.
+  "terrain": "flat",                     // Optional. flat|sloping|steep.
+  "access": "easy",                      // Optional. easy|moderate|difficult.
+  "setting": "urban"                     // Optional. urban|peri_urban|rural.
+}
+
+Response:
+{
+  "success": true,
+  "data": {
+    "estimate": { "min": 350000, "max": 620000, "currency": "GHS" },
+    "total": 485000,
+    "costPerSqm": 2425,
+    "confidence": "medium",
+    "elementalBreakdown": [
+      { "name": "Substructure", "amount": 58200, "percentage": 0.12, "costPerSqm": 291 },
+      { "name": "Frame", "amount": 87300, "percentage": 0.18, "costPerSqm": 436.5 },
+      ...
+    ],
+    "professionalFees": [
+      { "discipline": "Architect", "amount": 38800, "percentage": 0.08 },
+      ...
+    ],
+    "assumptions": ["Standard site conditions", "Urban location", ...],
+    "exclusions": ["Land cost", "Legal fees", "Furniture", ...],
+    "dataSource": "BuildCostGH 2026 cost database",
+    "details": { ... }
+  },
+  "meta": { "requestedBy": "my-app", "tier": "starter" }
+}
+
+Legacy mode (bedrooms):
+{
+  "bedrooms": "3",
+  "location": "Ashanti",
+  "finishGrade": "premium"
+}
+
+## GET /api/v1/building-types
+
+List all building categories with their subtypes.
+
+Response:
+{
+  "success": true,
+  "data": [
+    {
+      "id": "...",
+      "name": "Residential",
+      "slug": "residential",
+      "icon": "🏠",
+      "subtypes": [
+        { "name": "Detached House", "slug": "detached_house", "complexity": "standard", "typicalMinFloors": 1, "typicalMaxFloors": 3 }
+      ]
+    }
+  ]
+}
+
+## GET /api/v1/locations
+
+List all Ghana regions with cost multipliers.
+
+Response:
+{
+  "success": true,
+  "data": [
+    { "region": "Greater Accra", "slug": "greater-accra", "multiplier": 1.15 },
+    { "region": "Ashanti", "slug": "ashanti", "multiplier": 1.05 },
+    ...
+  ]
+}
+
+## GET /api/v1/cost-rates?region=<slug>
+
+Get published regional construction cost rates.
+
+Query params:
+  region — Optional. Filter by region slug.
+
+Response:
+{
+  "success": true,
+  "data": [
+    {
+      "region": "Greater Accra",
+      "slug": "greater-accra",
+      "capital": "Accra",
+      "multiplier": 1.15,
+      "labourRate": 95,
+      "cementBag": 82,
+      "rebarTon": 9800,
+      "block": 6.5,
+      "sandTrip": 2200,
+      "graniteTrip": 3500,
+      "timber": 1200,
+      "roofingSqm": 180,
+      "dieselLit": 14.5,
+      "paintLit": 42,
+      "source": "BuildCostGH 2026",
+      "lastUpdated": "2026-08-01T00:00:00Z"
+    }
+  ]
+}
+
+## GET /api/v1/permit-requirements?category=<cat>&building_type=<slug>
+
+List permit requirements.
+
+Query params:
+  category — Optional. Filter: universal|structural|utility|environmental|industry|professional|financial
+  building_type — Optional. Filter by building category slug.
+
+Response:
+{
+  "success": true,
+  "data": [
+    {
+      "id": "...",
+      "name": "Building Permit",
+      "description": "Planning and building permit from MMDA",
+      "category": "universal",
+      "required": "required",
+      "appliesTo": { "buildingCategories": ["residential", "commercial"] },
+      "authority": "MMDA",
+      "source": "Building Regulations, 2020 (LI 2442)",
+      "notes": null
+    }
+  ]
+}
+
+## POST /api/estimates
+
+Save an estimate (requires session auth).
+
+## POST /api/estimates/compare
+
+Compare 2-4 estimates (requires session auth).
+
+# Building Categories
+
+residential, commercial, industrial, educational, healthcare, hospitality, religious, agricultural, mixed_use, institutional, recreational, infrastructure, special_purpose
+
+# Quality Levels
+
+economy, standard, good, premium, luxury
+
+# Ghana Regions (16)
+
+Greater Accra, Ashanti, Western, Central, Eastern, Volta, Northern, Upper East, Upper West, Bono, Bono East, Ahafo, Western North, Oti, Savannah, North East
+
+# Cost Data Coverage
+
+- 13 building categories
+- 125 building subtypes
+- 39+ cost profiles (quality level × category)
+- 16 regional cost rates (materials + labour)
+- 22 permit requirement types
+- 59 permit authorities (51 MMDAs + 8 sector)
+
+# AI Integration Architecture
+
+User natural language
+  → AI parameter extraction (LLM)
+  → Validated EstimateRequest (Zod schema)
+  → Deterministic BuildCostGH calculation engine
+  → Cost result (never invented by AI)
+  → AI explanation (contextualized from real data)
+
+# Contact
+
+API support: api@buildcostgh.com
+Platform: https://buildcostgh.com
+Documentation: https://buildcostgh.com/api-pricing
