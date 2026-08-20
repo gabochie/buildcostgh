@@ -5,30 +5,11 @@ import { useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { useCalculatorStore } from "@/store/calculatorStore"
 import { formatCurrency } from "@/lib/utils"
-import { Loader2, ArrowRight, TrendingUp, MapPin, Download, Shield } from "lucide-react"
+import { Loader2, TrendingUp, MapPin, Download, Shield } from "lucide-react"
 import Link from "next/link"
 import type { EstimateResult } from "@/types"
 import { SignupGate } from "@/components/calculator/SignupGate"
-
-const regionMultipliers: Record<string, number> = {
-  Accra: 1.0,
-  Kumasi: 0.85,
-  Tema: 0.9,
-  Takoradi: 0.8,
-  Tamale: 0.7,
-  "Cape Coast": 0.75,
-  Sunyani: 0.72,
-  Ho: 0.68,
-  Koforidua: 0.7,
-  Bolgatanga: 0.65,
-  Wa: 0.67,
-  Goaso: 0.7,
-  Techiman: 0.73,
-  Dambai: 0.69,
-  "Sefwi Wiawso": 0.76,
-  Nalerigu: 0.63,
-  Damongo: 0.66,
-}
+import { LOCATION_MULTIPLIERS, CATEGORY_SPLITS } from "@/lib/pricing-constants"
 
 function AnimatedPrice({ value }: { value: number }) {
   const [display, setDisplay] = useState(0)
@@ -111,16 +92,27 @@ export function Step5Result() {
     return <SignupGate defaultEmail={email} />
   }
 
-  const comparisonMultiplier = regionMultipliers[selectedRegion] || 1.0
-  const baseMultiplier = regionMultipliers[step1.location] || 1.0
+  const comparisonMultiplier = LOCATION_MULTIPLIERS[selectedRegion] || 1.0
+  const baseMultiplier = LOCATION_MULTIPLIERS[step1.location] || 1.0
   const adjustedTotal = Math.round(result.breakdown.total * (comparisonMultiplier / baseMultiplier))
 
-  const breakdownItems = [
-    { label: "Foundation", value: Math.round(result.breakdown.baseCost * 0.18), pct: 18 },
-    { label: "Structure", value: Math.round(result.breakdown.baseCost * 0.34), pct: 34 },
-    { label: "Finishing", value: Math.round(result.breakdown.baseCost * 0.38), pct: 38 },
-    { label: "Services & Add-ons", value: Math.round(result.breakdown.baseCost * 0.1) + result.breakdown.addonsCost, pct: 10 },
-  ]
+  // Use grade-dependent category splits from the API response, or compute locally as fallback
+  const split = CATEGORY_SPLITS[step3.grade] || CATEGORY_SPLITS.B
+  const baseCost = result.breakdown.baseCost
+
+  const breakdownItems = result.categories
+    ? [
+        { label: "Foundation", value: result.categories.foundation, pct: Math.round((result.categories.foundation / result.breakdown.total) * 100) },
+        { label: "Structure", value: result.categories.structure, pct: Math.round((result.categories.structure / result.breakdown.total) * 100) },
+        { label: "Finishing", value: result.categories.finishing, pct: Math.round((result.categories.finishing / result.breakdown.total) * 100) },
+        { label: "Services & Add-ons", value: result.categories.services, pct: Math.round((result.categories.services / result.breakdown.total) * 100) },
+      ]
+    : [
+        { label: "Foundation", value: Math.round(baseCost * split.foundation), pct: Math.round(split.foundation * 100) },
+        { label: "Structure", value: Math.round(baseCost * split.structure), pct: Math.round(split.structure * 100) },
+        { label: "Finishing", value: Math.round(baseCost * split.finishing), pct: Math.round(split.finishing * 100) },
+        { label: "Services & Add-ons", value: Math.round(baseCost * split.services) + result.breakdown.addonsCost, pct: Math.round(split.services * 100) },
+      ]
 
   return (
     <div className="space-y-6">
@@ -187,7 +179,7 @@ export function Step5Result() {
               onChange={(e) => setSelectedRegion(e.target.value)}
               className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
             >
-              {Object.keys(regionMultipliers).map((r) => (
+              {Object.keys(LOCATION_MULTIPLIERS).map((r) => (
                 <option key={r} value={r}>
                   {r}
                 </option>

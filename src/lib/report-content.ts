@@ -55,18 +55,29 @@ function section(title: string, body: string): string {
   return `<h2 style="color:#059669;margin-top:30px;">${title}</h2>${body}`
 }
 
-export function materialQuantityRows(areaSqm: number): MaterialRow[] {
+// National average fallback unit prices (GHS)
+const FALLBACK_RATES = {
+  cement: 100, sand: 150, chippings: 180, block: 14,
+  rebar: 16, roofing: 130, ceiling: 90, tiles: 120, paint: 15,
+}
+
+export function materialQuantityRows(
+  areaSqm: number,
+  regionRates?: EstimateResult["regionRates"] | null,
+): MaterialRow[] {
   const q = (n: number) => Math.max(1, Math.round(n))
+  const r = (key: keyof typeof FALLBACK_RATES, dbField?: number) =>
+    dbField && dbField > 0 ? dbField : FALLBACK_RATES[key]
   return [
-    { material: "Cement (50kg bags)", unit: "bags", qty: q(areaSqm * 2.2), unitPrice: 100, note: "Foundation, blockwork, plaster & screed" },
-    { material: "Sharp sand", unit: "m³", qty: q(areaSqm * 0.12), unitPrice: 150, note: "Concrete & mortar mix" },
-    { material: "Chippings / gravel", unit: "m³", qty: q(areaSqm * 0.08), unitPrice: 180, note: "Concrete aggregate" },
-    { material: "Sandcrete blocks (6-inch)", unit: "blocks", qty: q(areaSqm * 24), unitPrice: 14, note: "External & internal walls" },
-    { material: "Reinforcement steel", unit: "kg", qty: q(areaSqm * 4.5), unitPrice: 16, note: "Foundation, columns, beams & slab" },
-    { material: "Roofing sheets (long-span)", unit: "m²", qty: q(areaSqm * 1.3), unitPrice: 130, note: "Incl. ridge & fascia allowance" },
-    { material: "Ceiling boards & frame", unit: "m²", qty: q(areaSqm * 1.0), unitPrice: 90, note: "PVC / gypsum with framing" },
-    { material: "Floor & wall tiles", unit: "m²", qty: q(areaSqm * 0.95), unitPrice: 120, note: "Standard ceramic range" },
-    { material: "Emulsion paint", unit: "m²", qty: q(areaSqm * 4.5), unitPrice: 15, note: "Walls & ceilings, 2 coats" },
+    { material: "Cement (50kg bags)", unit: "bags", qty: q(areaSqm * 2.2), unitPrice: r("cement", regionRates?.cement), note: "Foundation, blockwork, plaster & screed" },
+    { material: "Sharp sand", unit: "m³", qty: q(areaSqm * 0.12), unitPrice: r("sand", regionRates?.sand), note: "Concrete & mortar mix" },
+    { material: "Chippings / gravel", unit: "m³", qty: q(areaSqm * 0.08), unitPrice: r("chippings", regionRates?.granite), note: "Concrete aggregate" },
+    { material: "Sandcrete blocks (6-inch)", unit: "blocks", qty: q(areaSqm * 24), unitPrice: r("block", regionRates?.block), note: "External & internal walls" },
+    { material: "Reinforcement steel", unit: "kg", qty: q(areaSqm * 4.5), unitPrice: r("rebar", regionRates ? Math.round(regionRates.rebar / 1000) : undefined), note: "Foundation, columns, beams & slab" },
+    { material: "Roofing sheets (long-span)", unit: "m²", qty: q(areaSqm * 1.3), unitPrice: r("roofing", regionRates?.roofing), note: "Incl. ridge & fascia allowance" },
+    { material: "Ceiling boards & frame", unit: "m²", qty: q(areaSqm * 1.0), unitPrice: FALLBACK_RATES.ceiling, note: "PVC / gypsum with framing" },
+    { material: "Floor & wall tiles", unit: "m²", qty: q(areaSqm * 0.95), unitPrice: FALLBACK_RATES.tiles, note: "Standard ceramic range" },
+    { material: "Emulsion paint", unit: "m²", qty: q(areaSqm * 4.5), unitPrice: r("paint", regionRates?.paint), note: "Walls & ceilings, 2 coats" },
   ]
 }
 
@@ -209,7 +220,7 @@ function diyVsContractorSection(): string {
 function materialQuantitiesSection(ctx: ReportContext): string {
   const area = ctx.estimate?.summary.totalSqm ?? (parseFloat(ctx.input?.floorArea ?? "0") || 0)
   if (area <= 0) return ""
-  const rows = materialQuantityRows(area)
+  const rows = materialQuantityRows(area, ctx.estimate?.regionRates)
   const estCost = rows.reduce((sum, r) => sum + r.qty * r.unitPrice, 0)
   return section(
     "Complete Material Quantities",

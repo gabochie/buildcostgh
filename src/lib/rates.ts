@@ -1,8 +1,6 @@
-export const GRADE_BASELINES: Record<string, { min: number; max: number }> = {
-  basic: { min: 400000, max: 650000 },
-  standard: { min: 650000, max: 1000000 },
-  premium: { min: 1000000, max: 1500000 },
-}
+import { GRADE_BASELINES } from "./pricing-constants"
+
+export { GRADE_BASELINES }
 
 const round5k = (n: number) => Math.round(n / 5000) * 5000
 

@@ -15,9 +15,28 @@ export interface EstimateResult {
     baseCost: number
     locationMultiplier: number
     gradeMultiplier: number
+    seasonalMultiplier?: number
     addonsCost: number
     total: number
   }
+  categories?: {
+    foundation: number
+    structure: number
+    finishing: number
+    services: number
+  }
+  regionRates?: {
+    cement: number
+    rebar: number
+    block: number
+    sand: number
+    granite: number
+    timber: number
+    roofing: number
+    diesel: number
+    paint: number
+    labour: number
+  } | null
   summary: {
     pricePerSqm: number
     totalSqm: number
