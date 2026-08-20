@@ -23,16 +23,28 @@ export async function POST(request: Request) {
     const clampedArea = Math.max(VALIDATION.minArea, Math.min(VALIDATION.maxArea, area))
 
     const floorCount =
-      floors === "Single Floor" ? 1 : floors === "Two Floors" ? 2 : floors === "Three Floors" ? 3 : 1
+      floors === "Single Floor" ? 1 : floors === "Two Floors" ? 2 : floors === "Three Floors" ? 3 : Number(floors) || 1
 
     const gradeKey = GRADE_MULTIPLIERS[grade] !== undefined ? grade : "B"
-    const locationKey = LOCATION_MULTIPLIERS[location] !== undefined ? location : "Accra"
+
+    // Resolve location name — support both city names (Accra, Kumasi) and region names (Greater Accra, Ashanti)
+    const regionToCity: Record<string, string> = {
+      "Greater Accra": "Accra", "Ashanti": "Kumasi", "Western": "Takoradi",
+      "Central": "Cape Coast", "Eastern": "Koforidua", "Volta": "Ho",
+      "Northern": "Tamale", "Upper East": "Bolgatanga", "Upper West": "Wa",
+      "Bono": "Sunyani", "Bono East": "Techiman", "Ahafo": "Goaso",
+      "Western North": "Sefwi Wiawso", "Oti": "Dambai", "Savannah": "Damongo",
+      "North East": "Nalerigu",
+    }
+    const resolvedLocation = regionToCity[location] || location
+    const locationKey = LOCATION_MULTIPLIERS[resolvedLocation] !== undefined ? resolvedLocation : "Accra"
 
     // ── If building type provided, use the new calculation engine ──
-    if (buildingCategorySlug) {
+    const categorySlug = buildingCategorySlug || body.buildingCategory
+    if (categorySlug) {
       const quality = qualityLevel || (grade === "A" ? "premium" : grade === "C" ? "economy" : "standard")
       const input: CalculationInput = {
-        buildingCategorySlug,
+        buildingCategorySlug: categorySlug,
         buildingSubtypeSlug,
         location: locationKey,
         floorArea: clampedArea,
