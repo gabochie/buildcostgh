@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
 import { Info, ChevronDown, ChevronUp } from "lucide-react"
 
 interface AssumptionsModalProps {

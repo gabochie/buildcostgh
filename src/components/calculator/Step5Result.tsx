@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { useCalculatorStore } from "@/store/calculatorStore"
 import { formatCurrency } from "@/lib/utils"
-import { Loader2, TrendingUp, MapPin, Download, Shield, ArrowLeftRight } from "lucide-react"
+import { Loader2, TrendingUp, Download, Shield, ArrowLeftRight } from "lucide-react"
 import Link from "next/link"
 import type { EstimateResult } from "@/types"
 import { SignupGate } from "@/components/calculator/SignupGate"
@@ -14,6 +14,7 @@ import { ElementalBreakdown } from "@/components/calculator/ElementalBreakdown"
 import { CostRangeDisplay } from "@/components/calculator/CostRange"
 import { ProfessionalFees } from "@/components/calculator/ProfessionalFees"
 import { AssumptionsPanel } from "@/components/calculator/AssumptionsPanel"
+import { PermitChecklist } from "@/components/calculator/PermitChecklist"
 
 function AnimatedPrice({ value }: { value: number }) {
   const [display, setDisplay] = useState(0)
@@ -48,6 +49,7 @@ export function Step5Result() {
   const [error, setError] = useState<string | null>(null)
   const [selectedRegion, setSelectedRegion] = useState(step1.location)
   const [showComparison, setShowComparison] = useState(false)
+  const [permitData, setPermitData] = useState<Record<string, unknown> | null>(null)
 
   const hasExtended = !!result?.extended
 
@@ -73,6 +75,32 @@ export function Step5Result() {
 
     fetchEstimate()
   }, [step1, step2, step3, step4])
+
+  // Fetch permit checklist when extended data is available
+  useEffect(() => {
+    if (!hasExtended || !result?.extended) return
+
+    const fetchPermit = async () => {
+      try {
+        const res = await fetch("/api/permit-checklist", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            buildingCategorySlug: "residential",
+            location: step1.location,
+            floorArea: Number(step2.floorArea) || 100,
+            floors: step2.floors === "Two Floors" ? 2 : step2.floors === "Three Floors" ? 3 : 1,
+          }),
+        })
+        if (res.ok) {
+          const data = await res.json()
+          setPermitData(data)
+        }
+      } catch { /* Permit fetch is non-critical */ }
+    }
+
+    fetchPermit()
+  }, [hasExtended, result, step1.location, step2.floorArea, step2.floors])
 
   if (loading || status === "loading") {
     return (
@@ -198,7 +226,6 @@ export function Step5Result() {
         <ProfessionalFees
           fees={result.extended.professionalFees}
           total={result.extended.totalProfessionalFees}
-          constructionCost={result.breakdown.baseCost}
         />
       )}
 
@@ -224,6 +251,18 @@ export function Step5Result() {
           assumptions={result.extended.assumptions}
           exclusions={result.extended.exclusions}
           dataSource={result.extended.dataSource}
+        />
+      )}
+
+      {/* ── Permit Intelligence (extended only) ── */}
+      {hasExtended && permitData && (
+        <PermitChecklist
+          location={(permitData as { location: string }).location}
+          region={(permitData as { region: string | null }).region}
+          buildingCategory={(permitData as { buildingCategory: string }).buildingCategory}
+          authority={(permitData as { authority: { name: string; type: string } | null }).authority}
+          requirements={(permitData as { requirements: Array<{ name: string; description: string | null; status: "required" | "likely" | "conditional" | "verify"; authority: string | null; source: string | null; notes: string | null }> }).requirements}
+          disclaimer={(permitData as { disclaimer: string }).disclaimer}
         />
       )}
 

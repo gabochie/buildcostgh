@@ -12,10 +12,9 @@ export interface ProfessionalFeeItem {
 interface ProfessionalFeesProps {
   fees: ProfessionalFeeItem[]
   total: number
-  constructionCost: number
 }
 
-export function ProfessionalFees({ fees, total, constructionCost }: ProfessionalFeesProps) {
+export function ProfessionalFees({ fees, total }: ProfessionalFeesProps) {
   if (!fees.length) return null
 
   return (

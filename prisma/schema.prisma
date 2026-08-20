@@ -633,3 +633,47 @@ model CostProfile {
   @@index([categoryId])
   @@index([qualityLevel])
 }
+
+// ═══════════════════════════════════════════════════════════
+// PERMIT INTELLIGENCE (Master Upgrade §25-28)
+// ═══════════════════════════════════════════════════════════
+
+model PermitRequirement {
+  id          String   @id @default(cuid())
+  name        String   // "Site plan", "Architectural drawings", etc.
+  description String?
+  category    String   // "documentation" | "approval" | "inspection" | "certification"
+  required    String   @default("required") // required | likely | conditional | not_normally | verify
+  appliesTo   Json     // { buildingCategories: ["commercial","industrial"], minFloors: 3, minArea: 500, specialUses: ["healthcare"] }
+  authority   String?  // "MMDA" | "EPA" | "GIFEC" | "Ghana Fire Service" | etc.
+  source      String?  // legal reference / URL
+  notes       String?
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@index([required])
+  @@index([isActive])
+}
+
+model Authority {
+  id            String   @id @default(cuid())
+  name          String   // "Accra Metropolitan Assembly"
+  type          String   // "MMDA" | "National" | "Sector" | "Professional"
+  region        String
+  district      String?
+  website       String?
+  phone         String?
+  email         String?
+  address       String?
+  permitProcess Json?    // { steps: [...], estimatedTimeline: "...", fees: "..." }
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([region])
+  @@index([type])
+  @@index([isActive])
+}
