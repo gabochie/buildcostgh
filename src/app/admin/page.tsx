@@ -20,6 +20,8 @@ import {
 import type { LucideIcon } from "lucide-react"
 import { PasswordField } from "@/components/shared/PasswordField"
 import { fmtGhs } from "@/lib/rates"
+import { BuildingTypesAdminTab } from "@/components/admin/BuildingTypesAdminTab"
+import { PermitsAdminTab } from "@/components/admin/PermitsAdminTab"
 
 type Stats = {
   totalOrders: number; completedOrders: number; pendingOrders: number
@@ -254,6 +256,10 @@ export default function AdminPage() {
     <CommandCenter />
   ) : tab === "cofounder" ? (
     <CofounderTab />
+  ) : tab === "buildingtypes" ? (
+    <BuildingTypesAdminTab />
+  ) : tab === "permits" ? (
+    <PermitsAdminTab />
   ) : null}
     </div>
   )
