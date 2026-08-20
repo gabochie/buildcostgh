@@ -16,7 +16,6 @@ export async function GET() {
   ])
 
   return NextResponse.json({ categories, subtypes, profiles })
-}
 
 export async function POST(req: NextRequest) {
   const session = await auth()
