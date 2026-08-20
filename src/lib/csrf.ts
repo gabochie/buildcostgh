@@ -1,5 +1,4 @@
 import crypto from "crypto"
-import { cookies } from "next/headers"
 
 const CSRF_SECRET = process.env.AUTH_SECRET || process.env.CSRF_SECRET || "buildcostgh-csrf-fallback"
 const COOKIE_NAME = "csrf-token"
@@ -7,10 +6,11 @@ const HEADER_NAME = "x-csrf-token"
 const TOKEN_EXPIRY_MS = 60 * 60 * 1000 // 1 hour
 
 /**
- * Generate a signed CSRF token and set it as an httpOnly cookie.
- * Returns the plain token to send to the client (via header or meta tag).
+ * Generate a signed CSRF token cookie value.
+ * Returns the plain token for the client (include in X-CSRF-Token header).
+ * Set the returned signed value as the csrf-token cookie.
  */
-export async function generateCsrfToken(): Promise<string> {
+export function createCsrfPair(): { plain: string; signed: string } {
   const token = crypto.randomBytes(32).toString("hex")
   const timestamp = Date.now()
   const payload = `${token}:${timestamp}`
@@ -18,38 +18,32 @@ export async function generateCsrfToken(): Promise<string> {
     .createHmac("sha256", CSRF_SECRET)
     .update(payload)
     .digest("hex")
-  const signedToken = `${payload}:${signature}`
-
-  const cookieStore = await cookies()
-  cookieStore.set(COOKIE_NAME, signedToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    path: "/",
-    maxAge: TOKEN_EXPIRY_MS / 1000,
-  })
-
-  return token
+  return { plain: token, signed: `${payload}:${signature}` }
 }
 
 /**
- * Verify a CSRF token from the request header against the signed cookie.
- * Returns true if valid, false otherwise.
+ * Verify a CSRF token from request header against the request cookie.
+ * Edge-compatible: uses raw Request object, no next/headers.
  */
-export async function verifyCsrfToken(request: Request): Promise<boolean> {
-  const cookieStore = await cookies()
-  const signedCookie = cookieStore.get(COOKIE_NAME)?.value
-  if (!signedCookie) return false
-
+export function verifyCsrfFromRequest(request: Request): boolean {
   const headerToken = request.headers.get(HEADER_NAME)
   if (!headerToken) return false
 
-  // Parse the signed cookie: token:timestamp:signature
-  const cookieParts = signedCookie.split(":")
-  if (cookieParts.length !== 3) return false
-  const [cookieToken, cookieTimestamp, cookieSignature] = cookieParts
+  // Parse cookie header manually (Edge-compatible)
+  const cookieHeader = request.headers.get("cookie") || ""
+  const cookies = cookieHeader.split(";").map(c => c.trim())
+  const csrfCookie = cookies.find(c => c.startsWith(`${COOKIE_NAME}=`))
+  if (!csrfCookie) return false
 
-  // Verify the cookie's signature
+  const signedValue = csrfCookie.split("=").slice(1).join("=")
+  if (!signedValue) return false
+
+  // Parse the signed cookie: token:timestamp:signature
+  const parts = signedValue.split(":")
+  if (parts.length !== 3) return false
+  const [cookieToken, cookieTimestamp, cookieSignature] = parts
+
+  // Verify the cookie's HMAC signature
   const payload = `${cookieToken}:${cookieTimestamp}`
   const expectedSignature = crypto
     .createHmac("sha256", CSRF_SECRET)
@@ -61,12 +55,12 @@ export async function verifyCsrfToken(request: Request): Promise<boolean> {
   // Check expiry
   if (Date.now() - Number(cookieTimestamp) > TOKEN_EXPIRY_MS) return false
 
-  // The header token must match the cookie token
+  // Header token must match cookie token
   return timingSafeEqual(headerToken, cookieToken)
 }
 
 /**
- * Timing-safe string comparison to prevent timing attacks.
+ * Timing-safe string comparison.
  */
 function timingSafeEqual(a: string, b: string): boolean {
   if (a.length !== b.length) return false
@@ -76,35 +70,33 @@ function timingSafeEqual(a: string, b: string): boolean {
 }
 
 /**
- * Middleware helper: returns 403 Response if CSRF check fails, null if ok.
- * Skips GET/HEAD/OPTIONS (safe methods) and same-origin requests.
+ * CSRF guard for API routes. Returns Response if blocked, null if ok.
+ * Edge-compatible.
  */
-export async function csrfGuard(request: Request): Promise<Response | null> {
+export function csrfGuard(request: Request): Response | null {
   const method = request.method.toUpperCase()
 
   // Safe methods don't need CSRF protection
-  if (method === "GET" || method === "HEAD" || method === "OPTIONS") {
-    return null
-  }
+  if (method === "GET" || method === "HEAD" || method === "OPTIONS") return null
 
-  // Skip CSRF for NextAuth endpoints (they have their own protection)
+  // Skip for auth endpoints (NextAuth has its own CSRF)
   const url = new URL(request.url)
   if (url.pathname.startsWith("/api/auth")) return null
 
-  // Skip CSRF for webhook endpoints (verified by signature)
+  // Skip for webhooks (verified by HMAC signature)
   if (url.pathname.startsWith("/api/webhook")) return null
 
-  // Verify CSRF token
-  const valid = await verifyCsrfToken(request)
-  if (!valid) {
+  // Skip for API key-authenticated endpoints (v1 API)
+  if (url.pathname.startsWith("/api/v1")) return null
+
+  if (!verifyCsrfFromRequest(request)) {
     return new Response(
       JSON.stringify({ error: "CSRF token invalid or missing. Please refresh the page." }),
-      {
-        status: 403,
-        headers: { "Content-Type": "application/json" },
-      }
+      { status: 403, headers: { "Content-Type": "application/json" } }
     )
   }
 
   return null
 }
+
+export { COOKIE_NAME, HEADER_NAME }
