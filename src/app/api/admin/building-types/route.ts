@@ -47,3 +47,24 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: e instanceof Error ? e.message : "Unknown error" }, { status: 500 })
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  const session = await auth()
+  if (!isAdmin(session?.user)) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+
+  const body = await req.json()
+  if (!body.type || !body.slug) {
+    return NextResponse.json({ error: "type and slug required" }, { status: 400 })
+  }
+
+  try {
+    if (body.type === "category") {
+      await prisma.costProfile.deleteMany({ where: { buildingCategorySlug: body.slug } })
+      await prisma.buildingSubtype.deleteMany({ where: { buildingCategorySlug: body.slug } })
+      await prisma.buildingCategory.delete({ where: { slug: body.slug } })
+    }
+    return NextResponse.json({ ok: true })
+  } catch (e) {
+    return NextResponse.json({ error: e instanceof Error ? e.message : "Unknown error" }, { status: 500 })
+  }
+}
