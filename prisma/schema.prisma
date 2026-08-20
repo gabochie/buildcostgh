@@ -439,6 +439,17 @@ model AdminLoginAttempt {
   @@index([ip, createdAt])
 }
 
+model RateLimitEntry {
+  id        String   @id @default(cuid())
+  key       String   // e.g. "ip:/api/calculator" or "ip:/api/register"
+  count     Int      @default(1)
+  windowStart DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  @@index([key, windowStart])
+  @@unique([key])
+}
+
 model RegionRate {
   id          String   @id @default(cuid())
   name        String   @unique // "Greater Accra"
