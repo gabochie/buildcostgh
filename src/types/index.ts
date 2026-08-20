@@ -43,6 +43,28 @@ export interface EstimateResult {
     grade: string
     location: string
   }
+  // Extended fields from the new calculation engine
+  extended?: {
+    costRange: { low: number; high: number }
+    confidenceScore: "low" | "medium" | "high"
+    elementalBreakdown: {
+      name: string
+      amount: number
+      percentage: number
+      costPerSqm: number
+    }[]
+    professionalFees: {
+      discipline: string
+      amount: number
+      percentage: number
+    }[]
+    totalProfessionalFees: number
+    contingency: number
+    escalation: number
+    assumptions: string[]
+    exclusions: string[]
+    dataSource: string
+  }
 }
 
 export interface Package {
