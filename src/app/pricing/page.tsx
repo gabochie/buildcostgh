@@ -301,7 +301,7 @@ export default function PricingPage() {
 
     setLoading(true)
     try {
-      const res = await fetch("/api/paystack/initialize", {
+      const res = await fetch("/api/payments/momo/initialize", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -320,10 +320,11 @@ export default function PricingPage() {
 
       const data = await res.json()
 
-      if (data.authorizationUrl) {
-        window.location.href = data.authorizationUrl
+      if (data.reference) {
+        toast.success(data.message || "Payment request sent to your phone. Please approve on your MoMo device.")
+        window.location.href = `/order-success?reference=${data.reference}`
       } else {
-        toast.error("Failed to initialize payment. Please try again.")
+        toast.error(data.error || "Failed to initialize payment. Please try again.")
       }
     } catch {
       toast.error("Something went wrong. Please try again.")

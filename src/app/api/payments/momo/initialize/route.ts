@@ -1,0 +1,68 @@
+import { NextRequest, NextResponse } from "next/server"
+import { requestToPay } from "@/lib/momo"
+import { generateReference } from "@/lib/utils"
+import { prisma } from "@/lib/prisma"
+import { validatePackageAmount } from "@/lib/pricing"
+import { auth } from "@/lib/auth"
+import crypto from "crypto"
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json()
+    const { fullName, email, phone, packageName, amount, metadata } = body
+
+    if (!phone || !fullName || !packageName || !amount) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+    }
+
+    const cleanedPhone = phone.replace(/\s/g, "").replace(/^0/, "233")
+    if (!/^233\d{9}$/.test(cleanedPhone)) {
+      return NextResponse.json({ error: "Invalid Ghana phone number" }, { status: 400 })
+    }
+
+    const serverAmount = await validatePackageAmount(String(packageName), Number(amount))
+    if (serverAmount === null) {
+      return NextResponse.json({ error: "Invalid package or amount" }, { status: 400 })
+    }
+
+    const session = await auth()
+    const reference = generateReference()
+    const referenceId = crypto.randomUUID()
+
+    await prisma.order.create({
+      data: {
+        fullName,
+        email: email || "",
+        phone: cleanedPhone,
+        package: packageName,
+        amount: serverAmount,
+        reference,
+        referenceId,
+        metadata: metadata || {},
+        status: "pending",
+        userId: session?.user?.id ?? null,
+      },
+    })
+
+    await requestToPay({
+      referenceId,
+      amount: String(serverAmount),
+      currency: "GHS",
+      phone: cleanedPhone,
+      payerMessage: `Payment for ${packageName} - BuildCostGH`,
+      payeeNote: `Order ${reference}`,
+    })
+
+    return NextResponse.json({
+      reference,
+      referenceId,
+      message: "Payment request sent to your phone. Please approve on your MoMo device.",
+    })
+  } catch (error) {
+    console.error("MoMo init error:", error)
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Payment initialization failed" },
+      { status: 500 }
+    )
+  }
+}

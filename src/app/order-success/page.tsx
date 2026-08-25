@@ -15,7 +15,7 @@ function OrderSuccessContent() {
 
   useEffect(() => {
     if (reference) {
-      fetch(`/api/paystack/verify?reference=${reference}`)
+      fetch(`/api/payments/momo/status?reference=${reference}`)
         .then((r) => r.json())
         .then((data) => {
           if (data.status === "success") setVerified(true)
@@ -71,7 +71,7 @@ function OrderSuccessContent() {
               <a href="tel:+233539364716" className="hover:text-emerald-600">+233 53 936 4716</a>
             </p>
             <div className="flex items-center gap-2 text-xs text-gray-400 mt-2">
-              <Shield className="h-3.5 w-3.5" /> Your payment is secured by Paystack
+              <Shield className="h-3.5 w-3.5" /> Your payment is secured by MTN Mobile Money
             </div>
           </div>
         </div>

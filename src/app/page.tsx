@@ -120,7 +120,7 @@ export default function HomePage() {
                 </a>
               </div>
               <div className="flex items-center gap-6 mt-8 text-sm text-emerald-200/60">
-                <span className="flex items-center gap-1.5"><Lock className="h-3.5 w-3.5" /> Paystack Secure</span>
+                <span className="flex items-center gap-1.5"><Lock className="h-3.5 w-3.5" /> MTN MoMo Secure</span>
                 <span className="flex items-center gap-1.5"><Shield className="h-3.5 w-3.5" /> SSL Encrypted</span>
                 <span className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" /> Ghana Data</span>
               </div>
