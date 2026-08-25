@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 export const metadata: Metadata = {
   title: "Pricing — Ghana Construction Cost Estimates | BuildCost GH",
   description:
-    "Choose your plan. Basic estimates from $29, Detailed from $79, Premium from $199. Paystack billing in GHS for locals, USD for diaspora.",
+    "Choose your plan. Basic estimates from $29, Detailed from $79, Premium from $199. MTN MoMo billing in GHS for locals, USD for diaspora.",
   keywords: [
     "buildcostgh pricing",
     "Ghana construction estimate cost",
