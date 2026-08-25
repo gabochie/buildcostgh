@@ -24,7 +24,7 @@ const steps = [
     step: 3,
     icon: FileText,
     title: "Choose Your Report",
-    desc: "Pick from Free Trial (instant summary), Basic ($29 PDF), Detailed ($79 with Excel), or Premium ($199 with consultation). Pay with card or mobile money via Paystack.",
+    desc: "Pick from Free Trial (instant summary), Basic ($29 PDF), Detailed ($79 with Excel), or Premium ($199 with consultation). Pay with MTN Mobile Money.",
   },
   {
     step: 4,
