@@ -65,7 +65,7 @@ export default function CookiesPage() {
           <h2 className="text-xl font-heading font-bold text-charcoal mt-8">5. Third-Party Cookies</h2>
           <p>We use the following third-party services that may set cookies:</p>
           <ul className="list-disc pl-6 space-y-1">
-            <li><strong>Paystack</strong> — payment processing (session cookies)</li>
+            <li><strong>MTN Mobile Money</strong> — payment processing (session cookies)</li>
             <li><strong>Google Analytics</strong> — usage tracking (analytics cookies)</li>
             <li><strong>YouTube</strong> — embedded videos (may set cookies when you play a video)</li>
           </ul>

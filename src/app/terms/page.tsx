@@ -20,7 +20,7 @@ export default function TermsPage() {
           <p>BuildCost GH provides construction cost estimates and reports. Estimates are based on market data and should be used as guidelines. Actual costs may vary based on site conditions, material prices, and contractor rates.</p>
 
           <h2 className="text-xl font-heading font-bold text-charcoal mt-8">3. Payments and Refunds</h2>
-          <p>All payments are processed through Paystack. We offer a 7-day money-back guarantee on all reports. See our full <a href="/refund" className="text-emerald-600 hover:text-emerald-700 underline">Refund Policy</a> for details.</p>
+          <p>All payments are processed through MTN Mobile Money. We offer a 7-day money-back guarantee on all reports. See our full <a href="/refund" className="text-emerald-600 hover:text-emerald-700 underline">Refund Policy</a> for details.</p>
 
           <h2 className="text-xl font-heading font-bold text-charcoal mt-8">4. Intellectual Property</h2>
           <p>Reports and estimates provided are for personal use. You may not redistribute, resell, or reproduce our reports without permission.</p>

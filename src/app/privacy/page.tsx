@@ -20,7 +20,7 @@ export default function PrivacyPage() {
           <p>We use your information to provide construction cost estimates, process payments, deliver reports, and improve our services. We do not sell your personal information to third parties.</p>
 
           <h2 className="text-xl font-heading font-bold text-charcoal mt-8">3. Payment Processing</h2>
-          <p>Payments are processed securely through Paystack. We do not store your payment card details. Paystack&apos;s privacy policy applies to payment data.</p>
+          <p>Payments are processed securely through MTN Mobile Money. We do not store your payment card details. MTN&apos;s privacy policy applies to payment data.</p>
 
           <h2 className="text-xl font-heading font-bold text-charcoal mt-8">4. Cookies</h2>
           <p>We use cookies and similar technologies to enhance your experience, analyze site traffic, and maintain your session. For detailed information about the cookies we use, please see our <a href="/cookies" className="text-emerald-600 hover:text-emerald-700 underline">Cookie Policy</a>.</p>
