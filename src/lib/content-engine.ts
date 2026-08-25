@@ -108,7 +108,7 @@ async function buildContentContext(): Promise<string> {
     ...postLines,
     "",
     `Business: ${orderCount} orders (GHS ${revenueAgg._sum.amount ?? 0} total), ${leadCount} calculator leads, ${subscriberCount} newsletter subscribers.`,
-    "Products: Basic Report USD 29, Detailed Report USD 79, Premium Report USD 199 (billed in GHS via Paystack, diaspora pays USD).",
+    "Products: Basic Report USD 29, Detailed Report USD 79, Premium Report USD 199 (billed in GHS via MTN MoMo, diaspora pays USD).",
     "Subscriptions: Unlimited at USD 19/mo or USD 99/yr.",
     "App URL: https://buildcostgh.com (calculator at /calculator, regional costs at /costs).",
   ].join("\n")

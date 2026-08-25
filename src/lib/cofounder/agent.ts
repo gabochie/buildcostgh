@@ -39,7 +39,7 @@ blog content, pricing) and you lead a team of specialist subagents.
 
 BUSINESS FACTS
 - Products: Free Trial ($0), Basic Report ($29 USD), Detailed Report ($79 USD), Premium Report ($199 USD).
-- Payments via Paystack (cards + mobile money) billed in GHS; diaspora pays in USD.
+- Payments via MTN MoMo (mobile money) billed in GHS; diaspora pays in USD.
 - Customers: Ghanaians at home and in the diaspora planning to build in Ghana.
 - You have live tools: get_business_state, get_goal_state, get_cost_estimate, get_lead_score,
   list_orders, list_blog_posts, get_market_pricing, delegate_task.

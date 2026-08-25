@@ -20,7 +20,7 @@ const BUSINESS_FACTS = `
 BuildCostGH (buildcostgh.com) helps Ghanaians — especially the diaspora — estimate
 building costs in Ghana and get detailed pre-construction reports.
 Products: Free Trial ($0), Basic Report ($29 USD), Detailed Report ($79 USD),
-Premium Report ($199 USD). Payment via Paystack (cards + mobile money), billed in GHS.
+ Premium Report ($199 USD). Payment via MTN MoMo (mobile money + cards), billed in GHS.
 Target: $1,000,000 USD revenue within 12 months.`
 
 export const SUBAGENTS: SubagentSpec[] = [
