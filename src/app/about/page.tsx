@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 const values = [
   { title: "Real Market Data", desc: "Prices updated regularly from across Ghana" },
   { title: "Mobile Friendly", desc: "Use on any device, anywhere in Ghana" },
-  { title: "Secure Payments", desc: "Paystack integration for safe transactions" },
+  { title: "Secure Payments", desc: "MTN Mobile Money integration for safe transactions" },
   { title: "Expert Support", desc: "Get help from construction experts" },
 ]
 
