@@ -53,7 +53,7 @@ export default function InvestorsPage() {
               { title: "Large Addressable Market", desc: "10M+ diaspora Africans + 5M+ local homeowners needing construction estimates annually." },
               { title: "Recurring Revenue", desc: "Subscription-based reports with expansion into contractor directory, project management, and financing." },
               { title: "First-Mover Advantage", desc: "No direct competitor offers automated, data-driven cost estimation for the Ghana market." },
-              { title: "Scalable Platform", desc: "Built with modern stack (Next.js, Prisma, Paystack) — ready to expand across Africa." },
+              { title: "Scalable Platform", desc: "Built with modern stack (Next.js, Prisma, MTN MoMo) — ready to expand across Africa." },
             ].map((item) => (
               <div key={item.title} className="bg-white rounded-xl border border-gray-200 p-6 shadow-glass">
                 <h3 className="font-bold text-gray-900 mb-2">{item.title}</h3>
