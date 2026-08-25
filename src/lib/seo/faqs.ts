@@ -49,7 +49,7 @@ export const pricingFaqs: Faq[] = [
   },
   {
     q: "Can I pay with Mobile Money?",
-    a: "Yes! Paystack accepts all major Ghanaian mobile money wallets — MTN MoMo, Vodafone Cash, and AirtelTigo Money. You can also pay with Visa and Mastercard. When you click buy, you will be redirected to Paystack where you can choose your preferred payment method.",
+    a: "Yes! We accept MTN Mobile Money payments. When you click buy, you will receive a payment request on your MoMo device. Simply enter your PIN to approve the payment. You can also pay with card or other mobile money providers.",
   },
   {
     q: "Do you offer custom quotes for commercial projects?",
