@@ -11,6 +11,8 @@ const API_BASE =
 const LINK_URL = `${API_BASE}/embed/link`
 const STATUS_URL = `${API_BASE}/open/transact/status`
 
+import { fetchWithTimeout } from "./http"
+
 export const isMoolreConfigured = (): boolean =>
   Boolean(
     process.env.MOOLRE_ACCOUNT_NUMBER &&
@@ -69,7 +71,7 @@ export async function createPaymentLink(
   }
   if (process.env.MOOLRE_PUBLIC_KEY) headers["X-API-PUBKEY"] = process.env.MOOLRE_PUBLIC_KEY
 
-  const response = await fetch(LINK_URL, {
+  const response = await fetchWithTimeout(LINK_URL, {
     method: "POST",
     headers,
     body: JSON.stringify(body),
@@ -120,7 +122,7 @@ export async function verifyTransaction(reference: string): Promise<MoolreVerifi
   }
   if (process.env.MOOLRE_PUBLIC_KEY) headers["X-API-PUBKEY"] = process.env.MOOLRE_PUBLIC_KEY
 
-  const response = await fetch(STATUS_URL, {
+  const response = await fetchWithTimeout(STATUS_URL, {
     method: "POST",
     headers,
     body: JSON.stringify({

@@ -4,8 +4,12 @@ import { generateReference } from "@/lib/utils"
 import { prisma } from "@/lib/prisma"
 import { validatePackageAmount } from "@/lib/pricing"
 import { auth } from "@/lib/auth"
+import { apiRateLimit } from "@/lib/rate-limit"
 
 export async function POST(request: NextRequest) {
+  const rate = await apiRateLimit(request, { maxRequests: 20, path: "paystack-init" })
+  if (!rate.ok && rate.response) return rate.response
+
   try {
     const body = await request.json()
     const { fullName, email, phone, packageName, amount, metadata } = body

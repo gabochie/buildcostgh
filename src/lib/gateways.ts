@@ -126,7 +126,6 @@ export async function createGatewaySession(
         metadata: input.metadata || { orderDesc: input.orderDesc, fullName: input.fullName, phone: input.phone },
       })
       const url = link.data && !Array.isArray(link.data) ? link.data.authorization_url : undefined
-      const ref = link.data && !Array.isArray(link.data) ? link.data.reference : undefined
       if (!url) {
         const msg = Array.isArray(link.message) ? link.message.join(", ") : link.message
         throw new Error(`Moolre failed to initialize: ${msg || link.code || "no authorization url"}`)
@@ -135,11 +134,10 @@ export async function createGatewaySession(
         gateway,
         redirect: url,
         // Moolre verifies by externalref (= our local reference), NOT the
-        // provider's internal `data.reference`. Keep the provider ref for the
-        // callback/webhook and use our reference as the verifiable token.
+        // provider's internal `data.reference`, so use our reference as the
+        // verifiable token.
         providerToken: input.reference,
         reference: input.reference,
-        gatewayRef: ref,
       }
     }
 

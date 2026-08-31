@@ -4,6 +4,7 @@ const MOMO_ENVIRONMENT = process.env.MOMO_ENVIRONMENT || "sandbox"
 const MOMO_CALLBACK_URL = process.env.MOMO_CALLBACK_URL || ""
 
 import crypto from "crypto"
+import { fetchWithTimeout } from "./http"
 
 const BASE_URL =
   MOMO_ENVIRONMENT === "production"
@@ -11,34 +12,44 @@ const BASE_URL =
     : "https://sandbox.momodeveloper.mtn.com"
 
 let cachedToken: { token: string; expiresAt: number } | null = null
+let tokenPromise: Promise<string> | null = null
 
 export async function getMomoAccessToken(): Promise<string> {
   if (cachedToken && Date.now() < cachedToken.expiresAt) {
     return cachedToken.token
   }
 
-  const credentials = Buffer.from(`${MOMO_API_USER}:${MOMO_API_KEY}`).toString("base64")
+  // Reuse the in-flight fetch across concurrent cold-start callers so we don't
+  // issue duplicate token requests for the same instance.
+  if (tokenPromise) return tokenPromise
 
-  const response = await fetch(`${BASE_URL}/collection/token/`, {
-    method: "POST",
-    headers: {
-      Authorization: `Basic ${credentials}`,
-      "Ocp-Apim-Subscription-Key": process.env.MOMO_SUBSCRIPTION_KEY || "",
-    },
+  tokenPromise = (async () => {
+    const credentials = Buffer.from(`${MOMO_API_USER}:${MOMO_API_KEY}`).toString("base64")
+
+    const response = await fetchWithTimeout(`${BASE_URL}/collection/token/`, {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${credentials}`,
+        "Ocp-Apim-Subscription-Key": process.env.MOMO_SUBSCRIPTION_KEY || "",
+      },
+    })
+
+    if (!response.ok) {
+      const text = await response.text()
+      throw new Error(`MoMo token error ${response.status}: ${text}`)
+    }
+
+    const data = await response.json()
+    cachedToken = {
+      token: data.access_token,
+      expiresAt: Date.now() + (data.expires_in - 60) * 1000,
+    }
+    return cachedToken.token
+  })().finally(() => {
+    tokenPromise = null
   })
 
-  if (!response.ok) {
-    const text = await response.text()
-    throw new Error(`MoMo token error ${response.status}: ${text}`)
-  }
-
-  const data = await response.json()
-  cachedToken = {
-    token: data.access_token,
-    expiresAt: Date.now() + (data.expires_in - 60) * 1000,
-  }
-
-  return cachedToken.token
+  return tokenPromise
 }
 
 export async function requestToPay(params: {
@@ -51,7 +62,7 @@ export async function requestToPay(params: {
 }) {
   const token = await getMomoAccessToken()
 
-  const response = await fetch(`${BASE_URL}/v1_0/requesttopay`, {
+  const response = await fetchWithTimeout(`${BASE_URL}/v1_0/requesttopay`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -85,7 +96,7 @@ export async function requestToPay(params: {
 export async function getPaymentStatus(referenceId: string) {
   const token = await getMomoAccessToken()
 
-  const response = await fetch(`${BASE_URL}/v1_0/requesttopay/${referenceId}`, {
+  const response = await fetchWithTimeout(`${BASE_URL}/v1_0/requesttopay/${referenceId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
       "X-Target-Environment": process.env.MOMO_TARGET_ENVIRONMENT || "sandbox",

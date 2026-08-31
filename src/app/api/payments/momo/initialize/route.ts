@@ -4,9 +4,15 @@ import { generateReference } from "@/lib/utils"
 import { prisma } from "@/lib/prisma"
 import { validatePackageAmount } from "@/lib/pricing"
 import { auth } from "@/lib/auth"
+import { apiRateLimit } from "@/lib/rate-limit"
 import crypto from "crypto"
 
 export async function POST(request: NextRequest) {
+  // Each call triggers a real MTN USSD push to a phone number, so it must be
+  // tightly rate-limited per IP to prevent automated MoMo push abuse.
+  const rate = await apiRateLimit(request, { maxRequests: 10, path: "momo-init" })
+  if (!rate.ok && rate.response) return rate.response
+
   try {
     const body = await request.json()
     const { fullName, email, phone, packageName, amount, metadata } = body

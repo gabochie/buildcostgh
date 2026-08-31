@@ -1,6 +1,8 @@
 const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY || ""
 const PAYSTACK_API = "https://api.paystack.co"
 
+import { fetchJson } from "./http"
+
 export async function initializePayment(params: {
   email: string
   amount: number
@@ -11,7 +13,7 @@ export async function initializePayment(params: {
     throw new Error("PAYSTACK_SECRET_KEY is not configured")
   }
 
-  const response = await fetch(`${PAYSTACK_API}/transaction/initialize`, {
+  return fetchJson(`${PAYSTACK_API}/transaction/initialize`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${PAYSTACK_SECRET}`,
@@ -25,16 +27,16 @@ export async function initializePayment(params: {
       currency: "GHS",
     }),
   })
-
-  return response.json()
 }
 
 export async function verifyPayment(reference: string) {
-  const response = await fetch(`${PAYSTACK_API}/transaction/verify/${reference}`, {
+  if (!PAYSTACK_SECRET) {
+    throw new Error("PAYSTACK_SECRET_KEY is not configured")
+  }
+
+  return fetchJson(`${PAYSTACK_API}/transaction/verify/${reference}`, {
     headers: {
       Authorization: `Bearer ${PAYSTACK_SECRET}`,
     },
   })
-
-  return response.json()
 }

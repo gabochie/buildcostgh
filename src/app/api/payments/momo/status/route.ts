@@ -4,8 +4,12 @@ import { prisma } from "@/lib/prisma"
 import { generateReportForOrder, sendReceiptForOrder } from "@/lib/jobs"
 import { logAgentAction } from "@/lib/agent-log"
 import { enqueueJob } from "@/lib/queue"
+import { apiRateLimit } from "@/lib/rate-limit"
 
 export async function GET(request: NextRequest) {
+  const rate = await apiRateLimit(request, { maxRequests: 200, path: "momo-status" })
+  if (!rate.ok && rate.response) return rate.response
+
   try {
     const reference = request.nextUrl.searchParams.get("reference")
     if (!reference) {

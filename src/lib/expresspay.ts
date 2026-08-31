@@ -2,6 +2,8 @@ const EXPRESSPAY_MERCHANT_ID = process.env.EXPRESSPAY_MERCHANT_ID || ""
 const EXPRESSPAY_API_KEY = process.env.EXPRESSPAY_API_KEY || ""
 const EXPRESSPAY_ENV = process.env.EXPRESSPAY_ENV === "production" ? "production" : "sandbox"
 
+import { fetchJson } from "./http"
+
 const BASE_URL =
   EXPRESSPAY_ENV === "production"
     ? "https://expresspaygh.com"
@@ -30,7 +32,7 @@ export type ExpressPayQueryResult = {
 
 function postForm(url: string, fields: Record<string, string>) {
   const body = new URLSearchParams(fields)
-  return fetch(url, {
+  return fetchJson(url, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body,
@@ -63,8 +65,7 @@ export async function submitPayment(params: {
   if (params.email) fields["email"] = params.email
   if (params.phoneNumber) fields["phonenumber"] = params.phoneNumber
 
-  const response = await postForm(SUBMIT_URL, fields)
-  return response.json()
+  return postForm(SUBMIT_URL, fields)
 }
 
 export function getCheckoutUrl(token: string): string {
@@ -72,10 +73,9 @@ export function getCheckoutUrl(token: string): string {
 }
 
 export async function queryPayment(token: string): Promise<ExpressPayQueryResult> {
-  const response = await postForm(QUERY_URL, {
+  return postForm(QUERY_URL, {
     "merchant-id": EXPRESSPAY_MERCHANT_ID,
     "api-key": EXPRESSPAY_API_KEY,
     token,
   })
-  return response.json()
 }
