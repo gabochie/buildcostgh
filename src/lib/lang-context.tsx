@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react"
+import { createContext, useContext, useState, useCallback, type ReactNode } from "react"
 import { t as translate, type Locale } from "@/lib/i18n"
 
 const LANG_KEY = "buildcost-locale"
@@ -13,13 +13,15 @@ interface LangContextValue {
 
 const LangContext = createContext<LangContextValue | null>(null)
 
-export function LangProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>("en")
+function initialLocale(): Locale {
+  // Run only during client initial render (window exists). SSR returns "en".
+  if (typeof window === "undefined") return "en"
+  const saved = window.localStorage.getItem(LANG_KEY) as Locale | null
+  return saved === "en" || saved === "tw" ? saved : "en"
+}
 
-  useEffect(() => {
-    const saved = localStorage.getItem(LANG_KEY) as Locale | null
-    if (saved && (saved === "en" || saved === "tw")) setLocaleState(saved)
-  }, [])
+export function LangProvider({ children }: { children: ReactNode }) {
+  const [locale, setLocaleState] = useState<Locale>(initialLocale)
 
   const setLocale = useCallback((l: Locale) => {
     setLocaleState(l)
