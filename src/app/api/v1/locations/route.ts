@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server"
-import { authenticateApiKey } from "@/lib/api-auth"
+import { authenticateApiKey, apiKeyErrorResponse } from "@/lib/api-auth"
 import { LOCATION_MULTIPLIERS } from "@/lib/pricing-constants"
 
 export const dynamic = "force-dynamic"
 
 export async function GET(req: NextRequest) {
   const auth = await authenticateApiKey(req)
-  if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
+  if (!auth.ok) return apiKeyErrorResponse(auth)
 
   const locations = Object.entries(LOCATION_MULTIPLIERS).map(([region, multiplier]) => ({
     region,

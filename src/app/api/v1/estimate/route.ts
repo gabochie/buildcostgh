@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { authenticateApiKey } from "@/lib/api-auth"
+import { authenticateApiKey, apiKeyErrorResponse } from "@/lib/api-auth"
 import {
   LOCATION_SLUG_MULTIPLIERS,
   V1_GRADE_MULTIPLIERS,
@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic"
 export async function POST(req: NextRequest) {
   const auth = await authenticateApiKey(req)
   if (!auth.ok) {
-    return NextResponse.json({ error: auth.error }, { status: auth.status })
+    return apiKeyErrorResponse(auth)
   }
 
   let body: {

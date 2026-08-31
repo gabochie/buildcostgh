@@ -3,6 +3,8 @@ const MOMO_API_KEY = process.env.MOMO_API_KEY || ""
 const MOMO_ENVIRONMENT = process.env.MOMO_ENVIRONMENT || "sandbox"
 const MOMO_CALLBACK_URL = process.env.MOMO_CALLBACK_URL || ""
 
+import crypto from "crypto"
+
 const BASE_URL =
   MOMO_ENVIRONMENT === "production"
     ? "https://proxy.momoapi.mtn.com"
@@ -100,6 +102,5 @@ export async function getPaymentStatus(referenceId: string) {
 }
 
 export function generateMomoReference(): string {
-  const crypto = require("crypto")
   return crypto.randomUUID()
 }

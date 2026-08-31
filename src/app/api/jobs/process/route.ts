@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getQueueStats, processJobQueue } from "@/lib/queue"
+import { processExpiredSubscriptions } from "@/lib/subscriptions"
 import { secureEqual } from "@/lib/secure-compare"
 
 export const dynamic = "force-dynamic"
@@ -30,10 +31,15 @@ export async function GET(req: NextRequest) {
     const processed = await processJobQueue(5)
     const stats = await getQueueStats()
 
+    // Daily subscription maintenance: expire lapsed "active" subscriptions and
+    // nudge non-cancelled members to renew.
+    const subs = await processExpiredSubscriptions()
+
     return NextResponse.json({
       ok: true,
       processed,
       queue: stats,
+      subscriptions: subs,
       ts: new Date().toISOString(),
     })
   } catch (err) {

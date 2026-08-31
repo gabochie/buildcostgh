@@ -5,14 +5,18 @@ const COOKIE_NAME = "csrf-token"
 const HEADER_NAME = "x-csrf-token"
 const TOKEN_EXPIRY_MS = 60 * 60 * 1000 // 1 hour
 
-// The CSRF token is only as strong as its signing secret. Refuse to run in
-// production with a missing/fallback secret rather than silently using a
-// hardcoded value that would let anyone forge tokens.
-if (!CSRF_SECRET) {
-  if (process.env.NODE_ENV === "production") {
-    throw new Error("CSRF signing secret missing. Set AUTH_SECRET (or CSRF_SECRET).")
+// The CSRF token is only as strong as its signing secret. Refuse to issue
+// tokens in production with a missing/fallback secret rather than silently
+// using a hardcoded value that would let anyone forge tokens.
+function getCsrfSecret(): string {
+  if (!CSRF_SECRET) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("CSRF signing secret missing. Set AUTH_SECRET (or CSRF_SECRET).")
+    }
+    console.warn("[csrf] No AUTH_SECRET/CSRF_SECRET set — CSRF protection is disabled.")
+    return "dev-insecure-csrf-secret"
   }
-  console.warn("[csrf] No AUTH_SECRET/CSRF_SECRET set — CSRF protection is disabled.")
+  return CSRF_SECRET
 }
 
 /**

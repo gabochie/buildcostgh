@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { authenticateApiKey } from "@/lib/api-auth"
+import { authenticateApiKey, apiKeyErrorResponse } from "@/lib/api-auth"
 
 export const dynamic = "force-dynamic"
 
 export async function GET(req: NextRequest) {
   const auth = await authenticateApiKey(req)
-  if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
+  if (!auth.ok) return apiKeyErrorResponse(auth)
 
   const category = req.nextUrl.searchParams.get("category")
   const buildingType = req.nextUrl.searchParams.get("building_type")
