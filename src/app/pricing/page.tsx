@@ -380,6 +380,11 @@ export default function PricingPage() {
           window.location.assign(data.redirect)
           return
         }
+        if (data.duplicate && data.reference) {
+          toast.info("Payment already initiated. Check order status.")
+          window.location.assign(`/order-success?reference=${data.reference}`)
+          return
+        }
         throw new Error(data.error || "Failed to initialize payment. Please try again.")
       }
 
