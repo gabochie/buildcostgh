@@ -7,10 +7,25 @@ const sha256 = (input: string) => crypto.createHash("sha256").update(input).dige
 
 export const ADMIN_EMAIL = process.env.ADMIN_EMAIL || ""
 
-export type SessionUser = { id?: string | null; name?: string | null; email?: string | null } | undefined
+export type SessionUser = {
+  id?: string | null
+  name?: string | null
+  email?: string | null
+  role?: string | null
+} | undefined
+
+/**
+ * The environment-variable admin account is always treated as a super-admin
+ * (the bootstrap account). Database-backed admins are promoted by setting the
+ * User.role to "admin" or "super_admin".
+ */
+export function isSuperAdmin(user: SessionUser): boolean {
+  return !!user?.email && user.email === ADMIN_EMAIL || user?.role === "super_admin"
+}
 
 export function isAdmin(user: SessionUser): boolean {
-  return !!user?.email && user.email === ADMIN_EMAIL
+  if (isSuperAdmin(user)) return true
+  return user?.role === "admin"
 }
 
 export type ApiAuthResult = { ok: true; key: { id: string; tier: string; label: string }; retryAfter?: number } | { ok: false; error: string; status: number; retryAfter?: number }
