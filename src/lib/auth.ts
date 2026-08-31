@@ -40,7 +40,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           const valid = passwordValid
           await recordAttempt(ip, email, valid)
           if (!valid) return null
-          return { id: "1", name: "Admin", email: ADMIN_EMAIL }
+          return { id: "1", name: "Admin", email: ADMIN_EMAIL, role: "super_admin" }
         }
 
         const user = await prisma.user.findUnique({ where: { email } })
@@ -53,7 +53,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         await recordAttempt(ip, email, valid)
         if (!valid) return null
 
-        return { id: user.id, name: user.name || user.email || "", email: user.email || "" }
+        return { id: user.id, name: user.name || user.email || "", email: user.email || "", role: user.role || "customer" }
       },
     }),
   ],
@@ -62,11 +62,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   callbacks: {
     async jwt({ token, user }) {
-      if (user) token.id = user.id
+      if (user) {
+        token.id = user.id
+        token.role = (user as { role?: string }).role || "customer"
+      }
       return token
     },
     async session({ session, token }) {
-      if (session.user) session.user.id = token.id as string
+      if (session.user) {
+        session.user.id = token.id as string
+        session.user.role = (token.role as string) || "customer"
+      }
       return session
     },
   },
