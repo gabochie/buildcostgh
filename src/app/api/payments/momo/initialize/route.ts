@@ -13,6 +13,11 @@ export async function POST(request: NextRequest) {
   const rate = await apiRateLimit(request, { maxRequests: 10, path: "momo-init" })
   if (!rate.ok && rate.response) return rate.response
 
+  const idempotencyKey = request.headers.get("Idempotency-Key")
+  if (!idempotencyKey) {
+    return NextResponse.json({ error: "Missing Idempotency-Key header" }, { status: 400 })
+  }
+
   try {
     const body = await request.json()
     const { fullName, email, phone, packageName, amount, metadata } = body
@@ -35,6 +40,16 @@ export async function POST(request: NextRequest) {
     const reference = generateReference()
     const referenceId = crypto.randomUUID()
 
+    const existing = await prisma.order.findUnique({ where: { idempotencyKey } })
+    if (existing) {
+      return NextResponse.json({
+        reference: existing.reference,
+        referenceId: existing.referenceId || referenceId,
+        duplicate: true,
+        message: "Payment already initiated.",
+      })
+    }
+
     await prisma.order.create({
       data: {
         fullName,
@@ -46,6 +61,7 @@ export async function POST(request: NextRequest) {
         referenceId,
         metadata: metadata || {},
         status: "pending",
+        idempotencyKey,
         userId: session?.user?.id ?? null,
       },
     })

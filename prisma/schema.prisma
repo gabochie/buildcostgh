@@ -90,6 +90,7 @@ model Order {
   gatewayRef    String?
   metadata      Json?
   reportUrl     String?
+  idempotencyKey String?  @unique
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   user          User?    @relation(fields: [userId], references: [id])
@@ -293,6 +294,7 @@ model Subscription {
   gatewayRef            String?
   cancelAtPeriodEnd     Boolean  @default(false)
   canceledAt            DateTime?
+  idempotencyKey         String?  @unique
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 

@@ -5,12 +5,21 @@ import { logAgentAction } from "@/lib/agent-log"
 import { generateReference } from "@/lib/utils"
 import { validatePackageAmount, validateSubscriptionAmount } from "@/lib/pricing"
 import { createGatewaySession, getGateway, getAvailableGateways } from "@/lib/gateways"
+import { apiRateLimit } from "@/lib/rate-limit"
 import { APP_URL, GatewayId } from "@/lib/payments/types"
 import crypto from "crypto"
 
 export const dynamic = "force-dynamic"
 
 export async function POST(request: NextRequest) {
+  const rate = await apiRateLimit(request, { maxRequests: 20, path: "checkout" })
+  if (!rate.ok && rate.response) return rate.response
+
+  const idempotencyKey = request.headers.get("Idempotency-Key")
+  if (!idempotencyKey) {
+    return NextResponse.json({ error: "Missing Idempotency-Key header" }, { status: 400 })
+  }
+
   try {
     const body = await request.json()
     const {
@@ -73,6 +82,13 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "Invalid package or amount" }, { status: 400 })
       }
 
+      // Idempotency: a retried checkout with the same key must not create a
+      // duplicate order (which could enable double-charging).
+      const existing = await prisma.order.findUnique({ where: { idempotencyKey } })
+      if (existing) {
+        return NextResponse.json({ reference: existing.reference, duplicate: true, redirect: null })
+      }
+
       const order = await prisma.order.create({
         data: {
           fullName,
@@ -85,6 +101,7 @@ export async function POST(request: NextRequest) {
           paymentGateway: gid,
           metadata: metadata || {},
           status: "pending",
+          idempotencyKey,
           userId: session?.user?.id ?? null,
         },
       })
@@ -156,6 +173,7 @@ export async function POST(request: NextRequest) {
         amount: serverAmount,
         currentPeriodEnd: periodEnd,
         paymentGateway: gid,
+        idempotencyKey,
         userId: session?.user?.id ?? null,
       },
     })
