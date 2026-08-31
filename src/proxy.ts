@@ -88,10 +88,10 @@ export default async function proxy(req: NextRequest) {
   // Admin subpages: require an authenticated super-admin
   if (matchPaths(pathname, adminPaths) && pathname !== "/admin") {
     if (!token) {
-      return NextResponse.redirect(new URL("/admin", request.url))
+      return NextResponse.redirect(new URL("/admin", req.url))
     }
     if (token.email && token.email !== ADMIN_EMAIL) {
-      return NextResponse.redirect(new URL("/dashboard", request.url))
+      return NextResponse.redirect(new URL("/dashboard", req.url))
     }
     return NextResponse.next()
   }

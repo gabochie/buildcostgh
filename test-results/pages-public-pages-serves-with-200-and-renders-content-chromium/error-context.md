@@ -6,8 +6,8 @@
 
 # Test info
 
-- Name: navigation.spec.ts >> site navigation >> homepage renders and header nav links are present
-- Location: e2e\navigation.spec.ts:13:7
+- Name: pages.spec.ts >> public pages >> serves / with 200 and renders content
+- Location: e2e\pages.spec.ts:15:9
 
 # Error details
 
@@ -19,7 +19,7 @@ Error: expect(received).toEqual(expected) // deep equality
 
 - Array []
 + Array [
-+   "Loading the script 'https://challenges.cloudflare.com/turnstile/v0/api.js' violates the following Content Security Policy directive: \"script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.paystack.co https://www.googletagmanager.com https://cdn.jsdelivr.net\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked.",
++   "Invalid or unexpected token",
 + ]
 ```
 
@@ -328,7 +328,6 @@ Error: expect(received).toEqual(expected) // deep equality
   - button "Open chat" [ref=e394]
   - region "Notifications alt+T"
   - button "Open Next.js Dev Tools" [ref=e402] [cursor=pointer]
-  - alert [ref=e406]
 ```
 
 # Test source
@@ -336,61 +335,44 @@ Error: expect(received).toEqual(expected) // deep equality
 ```ts
   1  | import { test, expect } from "@playwright/test"
   2  | 
-  3  | const navLinks = [
-  4  |   { href: "/", label: "Home" },
-  5  |   { href: "/calculator", label: "Calculator" },
-  6  |   { href: "/costs", label: "Costs by Region" },
-  7  |   { href: "/building-types/residential", label: "Building Types" },
-  8  |   { href: "/pricing", label: "Pricing" },
-  9  |   { href: "/services", label: "Services" },
-  10 | ]
-  11 | 
-  12 | test.describe("site navigation", () => {
-  13 |   test("homepage renders and header nav links are present", async ({ page }) => {
-  14 |     const errors: string[] = []
-  15 |     page.on("console", (msg) => {
-  16 |       if (msg.type() === "error") errors.push(msg.text())
-  17 |     })
-  18 |     page.on("pageerror", (err) => errors.push(err.message))
-  19 | 
-  20 |     await page.goto("/")
-  21 |     await expect(page).toHaveTitle(/BuildCost/i)
-  22 | 
-  23 |     // Brand + primary CTA in the header
-  24 |     await expect(page.getByRole("link", { name: /BuildCost GH/i }).first()).toBeVisible()
-  25 | 
-  26 |     // Primary nav links resolve to the right hrefs
-  27 |     for (const link of navLinks) {
-  28 |       const el = page.getByRole("link", { name: link.label }).first()
-  29 |       await expect(el).toBeVisible()
-  30 |       await expect(el).toHaveAttribute("href", link.href)
-  31 |     }
-  32 | 
-  33 |     // Header CTA wired to the calculator
-  34 |     await expect(page.getByRole("link", { name: /Start Calculating/i }).first()).toBeVisible()
-  35 | 
-> 36 |     expect(errors).toEqual([])
-     |                    ^ Error: expect(received).toEqual(expected) // deep equality
-  37 |   })
-  38 | 
-  39 |   test("clicking the Calculator nav link navigates to /calculator", async ({ page }) => {
-  40 |     await page.goto("/")
-  41 |     await page.getByRole("link", { name: "Calculator" }).first().click()
-  42 |     await expect(page).toHaveURL(/\/calculator/)
-  43 |   })
-  44 | 
-  45 |   test("clicking Pricing nav link navigates to /pricing", async ({ page }) => {
-  46 |     await page.goto("/")
-  47 |     await page.getByRole("link", { name: "Pricing" }).first().click()
-  48 |     await expect(page).toHaveURL(/\/pricing/)
-  49 |   })
-  50 | 
-  51 |   test("footer renders key informational links", async ({ page }) => {
-  52 |     await page.goto("/")
-  53 |     // A footer is present if there is at least one standard informational link
-  54 |     const footerLink = page.locator("footer a").first()
-  55 |     await expect(footerLink).toBeVisible()
-  56 |   })
-  57 | })
-  58 | 
+  3  | const PUBLIC_PAGES: { path: string; heading: RegExp }[] = [
+  4  |   { path: "/", heading: /BuildCost|Building Cost|Estimate/i },
+  5  |   { path: "/calculator", heading: /Building Type|Calculator/i },
+  6  |   { path: "/pricing", heading: /Pricing|Plans/i },
+  7  |   { path: "/how-it-works", heading: /How It Works|Steps/i },
+  8  |   { path: "/services", heading: /Services/i },
+  9  |   { path: "/login", heading: /Welcome Back|Sign In/i },
+  10 |   { path: "/costs", heading: /Cost|Region/i },
+  11 | ]
+  12 | 
+  13 | test.describe("public pages", () => {
+  14 |   for (const { path, heading } of PUBLIC_PAGES) {
+  15 |     test(`serves ${path} with 200 and renders content`, async ({ page, request }) => {
+  16 |       const res = await request.get(path)
+  17 |       expect(res.status()).toBe(200)
+  18 | 
+  19 |       const pageErrors: string[] = []
+  20 |       page.on("pageerror", (err) => pageErrors.push(err.message))
+  21 | 
+  22 |       await page.goto(path)
+  23 |       // Landing content is present (the page did not render a fatal error/blank).
+  24 |       await expect(page.locator("body")).not.toBeEmpty()
+  25 |       // A heading matching the expected content is visible.
+  26 |       await expect(page.getByRole("heading", { name: heading }).first()).toBeVisible()
+  27 | 
+> 28 |       expect(pageErrors).toEqual([])
+     |                          ^ Error: expect(received).toEqual(expected) // deep equality
+  29 |     })
+  30 |   }
+  31 | 
+  32 |   test("order-success shell serves 200 without requiring a DB reference", async ({ page, request }) => {
+  33 |     // Without a ?reference the page shows its verification spinner (no DB hit),
+  34 |     // so we only assert the shell loads and is not a raw error page.
+  35 |     const res = await request.get("/order-success")
+  36 |     expect(res.status()).toBe(200)
+  37 |     await page.goto("/order-success")
+  38 |     await expect(page.locator("body")).not.toBeEmpty()
+  39 |   })
+  40 | })
+  41 | 
 ```

@@ -19,7 +19,8 @@ export default defineConfig({
   // (Neon is not available in local/CI dev), so we serve the app via the dev
   // server rather than a production build.
   webServer: {
-    command: "npm run dev",
+    command: `npm run dev -- --port ${PORT}`,
+    env: { PORT: String(PORT) },
     url: BASE_URL,
     reuseExistingServer: !process.env.CI,
     timeout: 240_000,
