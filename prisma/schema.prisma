@@ -15,6 +15,7 @@ model User {
   image         String?
   phone         String?
   passwordHash  String?
+  role          String    @default("customer") // customer | admin | super_admin
   accounts      Account[]
   sessions      Session[]
   orders        Order[]

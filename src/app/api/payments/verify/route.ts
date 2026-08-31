@@ -16,24 +16,41 @@ export const dynamic = "force-dynamic"
 export async function GET(request: NextRequest) {
   try {
     const gateway = (request.nextUrl.searchParams.get("gateway") || "expresspay") as GatewayId
-    const reference = request.nextUrl.searchParams.get("reference") || request.nextUrl.searchParams.get("order-id")
-    const token = request.nextUrl.searchParams.get("token") || request.nextUrl.searchParams.get("externalref")
+    // Provider query params. For Moolre, `externalref` (and `reference`) carry
+    // our local reference; for ExpressPay, `order-id` carries it. The bare
+    // `reference`/`token` fallback keeps us robust if a provider only returns
+    // its internal id — we match against all of our own id fields.
+    const externalRef = request.nextUrl.searchParams.get("externalref")
+    const orderId = request.nextUrl.searchParams.get("order-id")
+    const refParam = request.nextUrl.searchParams.get("reference")
+    const token = request.nextUrl.searchParams.get("token")
+
+    const candidates = [externalRef, orderId, refParam, token]
+      .filter((v): v is string => Boolean(v))
+      .filter((v, i, arr) => arr.indexOf(v) === i)
 
     const cfg = getGateway(gateway)
     if (!cfg) {
       return NextResponse.redirect(`${APP_URL}/pricing?payment=error`)
     }
 
-    const lookup = reference || token
-    if (!lookup) {
+    if (candidates.length === 0) {
       return NextResponse.redirect(`${APP_URL}/pricing?payment=missing`)
     }
 
     const order = await prisma.order.findFirst({
-      where: { OR: [{ reference: lookup }, { referenceId: lookup }, { gatewayRef: lookup }] },
+      where: {
+        OR: candidates.flatMap((c) => [
+          { reference: c },
+          { referenceId: c },
+          { gatewayRef: c },
+        ]),
+      },
     })
     const subscription = await prisma.subscription.findFirst({
-      where: { OR: [{ reference: lookup }, { gatewayRef: lookup }] },
+      where: {
+        OR: candidates.flatMap((c) => [{ reference: c }, { gatewayRef: c }]),
+      },
     })
 
     // Already finalised — redirect straight to success.

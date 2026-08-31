@@ -134,8 +134,12 @@ export async function createGatewaySession(
       return {
         gateway,
         redirect: url,
-        providerToken: ref || input.reference,
+        // Moolre verifies by externalref (= our local reference), NOT the
+        // provider's internal `data.reference`. Keep the provider ref for the
+        // callback/webhook and use our reference as the verifiable token.
+        providerToken: input.reference,
         reference: input.reference,
+        gatewayRef: ref,
       }
     }
 
