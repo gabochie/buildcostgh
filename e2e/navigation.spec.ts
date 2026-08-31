@@ -20,8 +20,8 @@ test.describe("site navigation", () => {
     await page.goto("/")
     await expect(page).toHaveTitle(/BuildCost/i)
 
-    // Brand + primary CTA in the header
-    await expect(page.getByRole("link", { name: /BuildCost GH/i }).first()).toBeVisible()
+    // Brand link in the header
+    await expect(page.getByRole("link", { name: /BuildCost/i }).first()).toBeVisible()
 
     // Primary nav links resolve to the right hrefs
     for (const link of navLinks) {
