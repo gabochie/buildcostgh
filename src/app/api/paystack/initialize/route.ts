@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
       metadata: { fullName, phone, package: packageName, ...(metadata || {}) },
     })
 
-    if (!response.status) {
+    if (!response.status || !response.data?.authorization_url) {
       throw new Error(response.message || "Payment initialization failed")
     }
 
