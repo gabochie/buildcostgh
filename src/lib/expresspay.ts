@@ -30,9 +30,9 @@ export type ExpressPayQueryResult = {
   "date-processed"?: string
 }
 
-function postForm(url: string, fields: Record<string, string>) {
+function postForm<T = unknown>(url: string, fields: Record<string, string>): Promise<T> {
   const body = new URLSearchParams(fields)
-  return fetchJson(url, {
+  return fetchJson<T>(url, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body,
@@ -65,7 +65,7 @@ export async function submitPayment(params: {
   if (params.email) fields["email"] = params.email
   if (params.phoneNumber) fields["phonenumber"] = params.phoneNumber
 
-  return postForm(SUBMIT_URL, fields)
+  return postForm<ExpressPaySubmitResponse>(SUBMIT_URL, fields)
 }
 
 export function getCheckoutUrl(token: string): string {
