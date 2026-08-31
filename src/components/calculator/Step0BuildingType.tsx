@@ -52,29 +52,28 @@ export function Step0BuildingType() {
         const res = await fetch("/api/building-types")
         if (res.ok) {
           const data = await res.json()
-          setCategories(data.categories || [])
+          const list: BuildingCategory[] = data.categories || []
+          setCategories(list)
+
+          // Apply a pre-selected building type (e.g. ?buildingType=... URL
+          // param) once the fetched category list is available. This state
+          // update is driven by the async fetch resolution, so it is not a
+          // synchronous effect-cascade.
+          if (buildingType?.categorySlug) {
+            const cat = list.find(c => c.slug === buildingType.categorySlug)
+            if (cat) {
+              setSelectedCategory(cat)
+              setSelectedSubtype(buildingType.subtypeSlug)
+            }
+          }
         }
       } catch { /* fallback to static */ } finally {
         setLoading(false)
       }
     }
     load()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  // Apply a pre-selected building type (e.g. from ?buildingType=... URL param)
-  // once the category list finishes loading. State updates here happen after
-  // the async fetch resolves, so they don't cause synchronous effect-cascades.
-  useEffect(() => {
-    if (!buildingType?.categorySlug) return
-    let cancelled = false
-    if (categories.length === 0) return
-    const cat = categories.find(c => c.slug === buildingType.categorySlug)
-    if (cat && !cancelled) {
-      setSelectedCategory(cat)
-      setSelectedSubtype(buildingType.subtypeSlug)
-    }
-    return () => { cancelled = true }
-  }, [buildingType?.categorySlug, buildingType?.subtypeSlug, categories])
 
   const handleCategorySelect = (cat: BuildingCategory) => {
     setSelectedCategory(cat)
