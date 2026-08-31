@@ -21,11 +21,12 @@ if (!CSRF_SECRET) {
  * Set the returned signed value as the csrf-token cookie.
  */
 export function createCsrfPair(): { plain: string; signed: string } {
+  const secret = getCsrfSecret()
   const token = crypto.randomBytes(32).toString("hex")
   const timestamp = Date.now()
   const payload = `${token}:${timestamp}`
   const signature = crypto
-    .createHmac("sha256", CSRF_SECRET)
+    .createHmac("sha256", secret)
     .update(payload)
     .digest("hex")
   return { plain: token, signed: `${payload}:${signature}` }
@@ -36,6 +37,9 @@ export function createCsrfPair(): { plain: string; signed: string } {
  * Edge-compatible: uses raw Request object, no next/headers.
  */
 export function verifyCsrfFromRequest(request: Request): boolean {
+  const secret = CSRF_SECRET
+  if (!secret) return false
+
   const headerToken = request.headers.get(HEADER_NAME)
   if (!headerToken) return false
 
@@ -56,7 +60,7 @@ export function verifyCsrfFromRequest(request: Request): boolean {
   // Verify the cookie's HMAC signature
   const payload = `${cookieToken}:${cookieTimestamp}`
   const expectedSignature = crypto
-    .createHmac("sha256", CSRF_SECRET)
+    .createHmac("sha256", secret)
     .update(payload)
     .digest("hex")
 

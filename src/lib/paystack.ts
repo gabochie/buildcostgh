@@ -1,4 +1,4 @@
-const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY!
+const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY || ""
 const PAYSTACK_API = "https://api.paystack.co"
 
 export async function initializePayment(params: {
@@ -7,6 +7,10 @@ export async function initializePayment(params: {
   reference: string
   metadata?: Record<string, unknown>
 }) {
+  if (!PAYSTACK_SECRET) {
+    throw new Error("PAYSTACK_SECRET_KEY is not configured")
+  }
+
   const response = await fetch(`${PAYSTACK_API}/transaction/initialize`, {
     method: "POST",
     headers: {
