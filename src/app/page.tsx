@@ -1,9 +1,10 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { motion } from "framer-motion"
-import { ArrowRight, Play, Shield, Lock, MapPin, ChevronRight } from "lucide-react"
-import { AnimatedCounter, GradientButton, GlassCard, TestimonialCard } from "@/components/shared"
+import { ArrowRight, Play, Shield, Lock, MapPin } from "lucide-react"
+import { AnimatedCounter, GradientButton, TestimonialCard } from "@/components/shared"
 import { FaqSection } from "@/components/seo/FaqSection"
 import { JsonLd } from "@/components/seo/JsonLd"
 import { homepageFaqs } from "@/lib/seo/faqs"
@@ -130,36 +131,18 @@ export default function HomePage() {
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="hidden lg:block"
+              className="relative"
             >
-              <GlassCard className="p-8">
-                <div className="text-sm text-gray-500 mb-2 font-medium">Sample Cost Estimate</div>
-                <div className="text-4xl font-bold text-gradient-emerald mb-1">GHS 250,000</div>
-                <div className="text-gray-500 text-sm mb-6">3 Bedroom &middot; Accra &middot; 200 m&sup2; &middot; Grade B</div>
-                <div className="space-y-3">
-                  {[
-                    { label: "Foundation", value: "GHS 45,000", pct: 18 },
-                    { label: "Structure", value: "GHS 85,000", pct: 34 },
-                    { label: "Finishing", value: "GHS 95,000", pct: 38 },
-                    { label: "Services", value: "GHS 25,000", pct: 10 },
-                  ].map((item) => (
-                    <div key={item.label}>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="text-gray-600">{item.label}</span>
-                        <span className="font-medium text-gray-900">{item.value}</span>
-                      </div>
-                      <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                        <div className="h-full bg-gradient-primary rounded-full" style={{ width: `${item.pct}%` }} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-6 pt-4 border-t border-gray-100">
-                  <Link href="/calculator" className="text-emerald-600 hover:text-emerald-700 text-sm font-medium flex items-center gap-1">
-                    Get your personalized estimate <ChevronRight className="h-3.5 w-3.5" />
-                  </Link>
-                </div>
-              </GlassCard>
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-black/20 border border-white/10">
+                <Image
+                  src="/brand/hero.png"
+                  alt="BuildCostGh — construction professionals using the platform on site"
+                  width={1536}
+                  height={1024}
+                  className="w-full h-auto object-cover"
+                  priority
+                />
+              </div>
             </motion.div>
           </div>
         </div>

@@ -1,9 +1,10 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { useState, useRef, useEffect } from "react"
 import { useSession } from "next-auth/react"
-import { Menu, X, Hammer, Phone, LayoutDashboard } from "lucide-react"
+import { Menu, X, Phone, LayoutDashboard } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher"
 import { cn } from "@/lib/utils"
@@ -37,13 +38,15 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/20 glass">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-lg bg-gradient-primary flex items-center justify-center">
-            <Hammer className="h-5 w-5 text-white" />
-          </div>
-          <span className="font-heading font-bold text-xl text-charcoal">
-            Build<span className="text-emerald-600">Cost</span> GH
-          </span>
+        <Link href="/" className="flex items-center">
+          <Image
+            src="/brand/logo.png"
+            alt="BuildCostGh"
+            width={48}
+            height={48}
+            className="h-10 w-auto"
+            priority
+          />
         </Link>
 
         <nav className="hidden md:flex items-center gap-6">
