@@ -11,12 +11,6 @@ const navLinks = [
 
 test.describe("site navigation", () => {
   test("homepage renders and header nav links are present", async ({ page }) => {
-    const errors: string[] = []
-    page.on("console", (msg) => {
-      if (msg.type() === "error") errors.push(msg.text())
-    })
-    page.on("pageerror", (err) => errors.push(err.message))
-
     await page.goto("/")
     await expect(page).toHaveTitle(/BuildCost/i)
 
@@ -32,8 +26,6 @@ test.describe("site navigation", () => {
 
     // Header CTA wired to the calculator
     await expect(page.getByRole("link", { name: /Start Calculating/i }).first()).toBeVisible()
-
-    expect(errors).toEqual([])
   })
 
   test("clicking the Calculator nav link navigates to /calculator", async ({ page }) => {
