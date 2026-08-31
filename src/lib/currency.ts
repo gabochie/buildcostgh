@@ -16,7 +16,13 @@ export interface RateResult {
   date: string
 }
 
-const DEFAULT_RATE = 15.5
+// Fallback rate used ONLY if every upstream rate source is unreachable.
+// Configurable via the USD_GHS_FALLBACK_RATE env var so ops can keep it
+// current. A stale hardcoded rate silently distorts payment amounts, so the
+// fallback also logs a loud warning for production.
+const DEFAULT_RATE = Number(process.env.USD_GHS_FALLBACK_RATE) > 0
+  ? Number(process.env.USD_GHS_FALLBACK_RATE)
+  : 15.5
 const CACHE_MS = 5 * 60 * 1000
 
 let cached: RateResult | null = null
@@ -67,6 +73,10 @@ export async function fetchGhsRate(): Promise<RateResult> {
     } catch {
       // try next source
     }
+  }
+
+  if (!cached && process.env.NODE_ENV === "production") {
+    console.warn(`[currency] All live USD→GHS rate sources unreachable; falling back to configured default (${DEFAULT_RATE}). Set USD_GHS_FALLBACK_RATE to keep this current.`)
   }
 
   return cached ?? { rate: DEFAULT_RATE, date: "" }
