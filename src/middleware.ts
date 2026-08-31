@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server"
 import { jwtVerify } from "jose"
 import { verifyCsrfFromRequest } from "@/lib/csrf"
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "gabochie@gmail.com"
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || ""
 
 // ── Route matchers ──
 const dashboardPaths = ["/dashboard"]

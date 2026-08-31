@@ -3,7 +3,7 @@ import { prisma } from "./prisma"
 
 const sha256 = (input: string) => crypto.createHash("sha256").update(input).digest("hex")
 
-export const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "gabochie@gmail.com"
+export const ADMIN_EMAIL = process.env.ADMIN_EMAIL || ""
 
 export type SessionUser = { id?: string | null; name?: string | null; email?: string | null } | undefined
 
