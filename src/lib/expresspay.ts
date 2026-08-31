@@ -73,7 +73,7 @@ export function getCheckoutUrl(token: string): string {
 }
 
 export async function queryPayment(token: string): Promise<ExpressPayQueryResult> {
-  return postForm(QUERY_URL, {
+  return postForm<ExpressPayQueryResult>(QUERY_URL, {
     "merchant-id": EXPRESSPAY_MERCHANT_ID,
     "api-key": EXPRESSPAY_API_KEY,
     token,
