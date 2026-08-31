@@ -47,3 +47,6 @@ next-env.d.ts
 
 # agent harness state (not part of the app)
 .omo/
+
+# generated report files (private — served only via authenticated download route)
+/reports-storage

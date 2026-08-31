@@ -5,6 +5,7 @@ import { generateOrderReport } from "./pdf"
 import { generateReportWorkbook } from "./excel"
 import { generateContentDraft } from "./content-engine"
 import { publishContentDraft } from "./social"
+import { REPORT_DIR, createReportToken } from "./report-access"
 import type { SocialPlatform } from "./social"
 import type { ContractorInsight } from "./report-content"
 import type { CalculatorInput, EstimateResult } from "@/types"
@@ -51,14 +52,15 @@ export async function generateReportForOrder(orderId: string): Promise<string> {
 
   const fs = await import("fs/promises")
   const path = await import("path")
-  const reportDir = path.join(process.cwd(), "public", "reports")
+  const reportDir = path.join(process.cwd(), REPORT_DIR)
   const fileName = `order-${order.reference.toLowerCase()}.pdf`
   const filePath = path.join(reportDir, fileName)
 
   await fs.mkdir(reportDir, { recursive: true })
   await fs.writeFile(filePath, pdfBuffer)
 
-  const reportUrl = `/reports/${fileName}`
+  const token = createReportToken(order.reference)
+  const reportUrl = `/api/reports/download?ref=${encodeURIComponent(order.reference)}&token=${encodeURIComponent(token)}`
 
   let spreadsheetUrl: string | null = null
   if (isTiered) {
@@ -74,7 +76,8 @@ export async function generateReportForOrder(orderId: string): Promise<string> {
       })
       const xlsxFileName = `order-${order.reference.toLowerCase()}.xlsx`
       await fs.writeFile(path.join(reportDir, xlsxFileName), workbook)
-      spreadsheetUrl = `/reports/${xlsxFileName}`
+      const xlsxToken = createReportToken(order.reference)
+      spreadsheetUrl = `/api/reports/download?ref=${encodeURIComponent(order.reference)}&kind=xlsx&token=${encodeURIComponent(xlsxToken)}`
     } catch (err) {
       await logAgentAction({
         agent: "ReportBot",
