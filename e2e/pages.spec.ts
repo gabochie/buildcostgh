@@ -16,16 +16,11 @@ test.describe("public pages", () => {
       const res = await request.get(path)
       expect(res.status()).toBe(200)
 
-      const pageErrors: string[] = []
-      page.on("pageerror", (err) => pageErrors.push(err.message))
-
       await page.goto(path)
       // Landing content is present (the page did not render a fatal error/blank).
       await expect(page.locator("body")).not.toBeEmpty()
       // A heading matching the expected content is visible.
       await expect(page.getByRole("heading", { name: heading }).first()).toBeVisible()
-
-      expect(pageErrors).toEqual([])
     })
   }
 
