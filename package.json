@@ -9,6 +9,8 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint",
     "test": "tsx --test src/lib/*.test.ts",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
     "db:migrate": "npx prisma migrate dev",
     "db:seed": "npx tsx prisma/seed.ts",
     "db:studio": "npx prisma studio",
