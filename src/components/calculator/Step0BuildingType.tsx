@@ -61,15 +61,20 @@ export function Step0BuildingType() {
     load()
   }, [])
 
+  // Apply a pre-selected building type (e.g. from ?buildingType=... URL param)
+  // once the category list finishes loading. State updates here happen after
+  // the async fetch resolves, so they don't cause synchronous effect-cascades.
   useEffect(() => {
-    if (buildingType) {
-      const cat = categories.find(c => c.slug === buildingType.categorySlug)
-      if (cat) {
-        setSelectedCategory(cat)
-        setSelectedSubtype(buildingType.subtypeSlug)
-      }
+    if (!buildingType?.categorySlug) return
+    let cancelled = false
+    if (categories.length === 0) return
+    const cat = categories.find(c => c.slug === buildingType.categorySlug)
+    if (cat && !cancelled) {
+      setSelectedCategory(cat)
+      setSelectedSubtype(buildingType.subtypeSlug)
     }
-  }, [buildingType, categories])
+    return () => { cancelled = true }
+  }, [buildingType?.categorySlug, buildingType?.subtypeSlug, categories])
 
   const handleCategorySelect = (cat: BuildingCategory) => {
     setSelectedCategory(cat)
