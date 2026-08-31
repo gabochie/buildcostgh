@@ -85,6 +85,8 @@ model Order {
   reference     String   @unique
   referenceId   String?
   transactionId String?
+  paymentGateway String?
+  gatewayRef    String?
   metadata      Json?
   reportUrl     String?
   createdAt     DateTime @default(now())
@@ -94,6 +96,7 @@ model Order {
   @@index([status])
   @@index([reference])
   @@index([referenceId])
+  @@index([paymentGateway])
 }
 
 model ApiKey {
@@ -285,6 +288,8 @@ model Subscription {
   expresspayToken       String?
   transactionId         String?
   paystackSubscriptionCode String?
+  paymentGateway        String?
+  gatewayRef            String?
   cancelAtPeriodEnd     Boolean  @default(false)
   canceledAt            DateTime?
   createdAt             DateTime @default(now())

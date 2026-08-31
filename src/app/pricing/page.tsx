@@ -7,7 +7,7 @@ import { organizationLd, faqLd, breadcrumbLd } from "@/app/ld"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { CheckCircle, Loader2, Shield, Star, ChevronRight, Smartphone, CreditCard, Zap, FileText, BarChart3, MapPin, Table2, Calendar, Users, PhoneCall, RefreshCw, Mail, MessageSquare, Hammer, Cpu, Repeat } from "lucide-react"
+import { CheckCircle, Loader2, Shield, Star, ChevronRight, Smartphone, CreditCard, Zap, FileText, BarChart3, MapPin, Table2, Calendar, Users, PhoneCall, RefreshCw, Mail, MessageSquare, Hammer, Cpu, Repeat, Wallet, Landmark } from "lucide-react"
 import { toast } from "sonner"
 import { GradientButton } from "@/components/shared"
 import { getClientGhsRate } from "@/lib/currency"
@@ -44,6 +44,15 @@ const featureIcons: Record<string, typeof CheckCircle> = {
 }
 
 type Deliverable = { type: "PDF" | "XLSX" | "CALL"; label: string }
+
+type GatewayOption = {
+  id: string
+  name: string
+  shortName: string
+  description: string
+  icon: string
+  kind: "push" | "redirect" | "manual"
+}
 
 type PricingPackage = {
   id: string
@@ -236,7 +245,9 @@ export default function PricingPage() {
   const [form, setForm] = useState({ fullName: "", email: "", phone: "", notes: "" })
   const [loading, setLoading] = useState(false)
   const [formVisible, setFormVisible] = useState<string | null>(null)
-  const [payMethod, setPayMethod] = useState<"online" | "momo">("online")
+  const [gateways, setGateways] = useState<GatewayOption[]>([])
+  const [selectedGateway, setSelectedGateway] = useState<string>("expresspay")
+  const [manualMode, setManualMode] = useState(false)
   const [manualForm, setManualForm] = useState({ transactionRef: "", payerPhone: "", notes: "" })
   const [manualLoading, setManualLoading] = useState(false)
   const [manualSubmitted, setManualSubmitted] = useState<{ reference: string; amount: number } | null>(null)
@@ -256,9 +267,37 @@ export default function PricingPage() {
     }
     setSelected(pkgId)
     setFormVisible(pkgId)
-    setPayMethod("online")
+    if (gateways.length) setSelectedGateway(gateways[0].id)
     setManualSubmitted(null)
     setManualForm({ transactionRef: "", payerPhone: "", notes: "" })
+  }
+
+  useEffect(() => {
+    fetch("/api/payments/gateways")
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data.gateways) && data.gateways.length) {
+          const list = data.gateways as GatewayOption[]
+          setGateways(list)
+          setSelectedGateway((prev) => (list.some((g) => g.id === prev) ? prev : list[0].id))
+        }
+      })
+      .catch(() => {})
+  }, [])
+
+  const gatewayById = (id: string) => gateways.find((g) => g.id === id)
+  const selectedGatewayObj = gatewayById(selectedGateway)
+
+  const gatewayIconMap: Record<string, typeof Smartphone> = {
+    Smartphone,
+    Wallet,
+    Landmark,
+    CreditCard,
+    Receipt: FileText,
+  }
+  const renderGatewayIcon = (name: string) => {
+    const Icon = gatewayIconMap[name] || Smartphone
+    return <Icon className="h-3.5 w-3.5" />
   }
 
   const planSlugFor = (id: string) => (id === "annual" ? "annual-unlimited" : "monthly-unlimited")
@@ -267,12 +306,17 @@ export default function PricingPage() {
     e.preventDefault()
     if (!subForm.fullName || !subForm.email) return
 
+    const gw = selectedGatewayObj
+    const gateway = gw && (gw.id === "expresspay" || gw.id === "moolre") ? gw.id : "expresspay"
+
     setSubLoading(true)
     try {
-      const res = await fetch("/api/subscriptions/checkout", {
+      const res = await fetch("/api/payments/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          type: "subscription",
+          gateway,
           fullName: subForm.fullName,
           email: subForm.email,
           phone: subForm.phone,
@@ -283,8 +327,8 @@ export default function PricingPage() {
 
       const data = await res.json()
 
-      if (data.checkoutUrl) {
-        window.location.assign(data.checkoutUrl)
+      if (data.redirect) {
+        window.location.assign(data.redirect)
       } else {
         toast.error(data.error || "Failed to initialize payment. Please try again.")
       }
@@ -298,36 +342,76 @@ export default function PricingPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!formVisible || !form.fullName || !form.email) return
+    const gw = selectedGatewayObj
+    if (!gw) {
+      toast.error("Please select a payment method.")
+      return
+    }
 
     setLoading(true)
     try {
-      const res = await fetch("/api/payments/momo/initialize", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          fullName: form.fullName,
-          email: form.email,
-          phone: form.phone,
-          packageName: selectedPackage!.name,
-          amount: Math.round(selectedPackage!.price * rate),
-          metadata: {
-            notes: form.notes,
-            calculatorInputs: { ...step1, ...step2, ...step3, ...step4 },
-            estimate: result,
-          },
-        }),
-      })
-
-      const data = await res.json()
-
-      if (data.reference) {
-        toast.success(data.message || "Payment request sent to your phone. Please approve on your MoMo device.")
-        window.location.href = `/order-success?reference=${data.reference}`
-      } else {
-        toast.error(data.error || "Failed to initialize payment. Please try again.")
+      const baseBody = {
+        fullName: form.fullName,
+        email: form.email,
+        phone: form.phone,
+        packageName: selectedPackage!.name,
+        amount: Math.round(selectedPackage!.price * rate),
+        metadata: {
+          notes: form.notes,
+          calculatorInputs: { ...step1, ...step2, ...step3, ...step4 },
+          estimate: result,
+        },
       }
-    } catch {
-      toast.error("Something went wrong. Please try again.")
+
+      // Hosted redirect gateways (Moolre, ExpressPay)
+      if (gw.id === "expresspay" || gw.id === "moolre") {
+        const res = await fetch("/api/payments/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...baseBody, gateway: gw.id, type: "package" }),
+        })
+        const data = await res.json()
+        if (data.redirect) {
+          window.location.assign(data.redirect)
+          return
+        }
+        throw new Error(data.error || "Failed to initialize payment. Please try again.")
+      }
+
+      // Card via Paystack
+      if (gw.id === "card") {
+        const res = await fetch("/api/paystack/initialize", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(baseBody),
+        })
+        const data = await res.json()
+        if (data.authorizationUrl) {
+          window.location.assign(data.authorizationUrl)
+          return
+        }
+        throw new Error(data.error || "Failed to initialize payment. Please try again.")
+      }
+
+      // Direct MTN MoMo USSD push
+      if (gw.id === "momo") {
+        const res = await fetch("/api/payments/momo/initialize", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(baseBody),
+        })
+        const data = await res.json()
+        if (data.reference) {
+          toast.success(data.message || "Payment request sent to your phone. Please approve on your MoMo device.")
+          window.location.assign(`/order-success?reference=${data.reference}`)
+          return
+        }
+        throw new Error(data.error || "Failed to initialize payment. Please try again.")
+      }
+
+      throw new Error("Please select a valid payment method.")
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Something went wrong. Please try again.")
     } finally {
       setLoading(false)
     }
@@ -819,32 +903,40 @@ export default function PricingPage() {
                           />
                         </div>
 
-                        <div className="grid grid-cols-2 gap-2">
-                          <button
-                            type="button"
-                            onClick={() => setPayMethod("online")}
-                            className={`inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-semibold transition-all ${
-                              payMethod === "online"
-                                ? "border-emerald-500 bg-emerald-50 text-emerald-700"
-                                : "border-gray-200 bg-white text-gray-500 hover:border-gray-300"
-                            }`}
-                          >
-                            <CreditCard className="h-3.5 w-3.5" /> Pay Online
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setPayMethod("momo")}
-                            className={`inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-semibold transition-all ${
-                              payMethod === "momo"
-                                ? "border-emerald-500 bg-emerald-50 text-emerald-700"
-                                : "border-gray-200 bg-white text-gray-500 hover:border-gray-300"
-                            }`}
-                          >
-                            <Smartphone className="h-3.5 w-3.5" /> Pay Manually (MoMo)
-                          </button>
-                        </div>
+                        {gateways.length > 0 && (
+                          <div className="space-y-1.5">
+                            <Label className="text-xs">Pay with</Label>
+                            <div className="grid grid-cols-2 gap-2">
+                              {gateways.map((g) => (
+                                <button
+                                  key={g.id}
+                                  type="button"
+                                  onClick={() => { setSelectedGateway(g.id); setManualMode(false) }}
+                                  className={`inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-semibold transition-all ${
+                                    selectedGateway === g.id && !manualMode
+                                      ? "border-emerald-500 bg-emerald-50 text-emerald-700"
+                                      : "border-gray-200 bg-white text-gray-500 hover:border-gray-300"
+                                  }`}
+                                >
+                                  {renderGatewayIcon(g.icon)} {g.shortName}
+                                </button>
+                              ))}
+                              <button
+                                type="button"
+                                onClick={() => setManualMode(true)}
+                                className={`inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-semibold transition-all ${
+                                  manualMode
+                                    ? "border-emerald-500 bg-emerald-50 text-emerald-700"
+                                    : "border-gray-200 bg-white text-gray-500 hover:border-gray-300"
+                                }`}
+                              >
+                                {renderGatewayIcon("Receipt")} MoMo Transfer
+                              </button>
+                            </div>
+                          </div>
+                        )}
 
-                        {payMethod === "online" ? (
+                        {!manualMode ? (
                           <Button
                             type="submit"
                             disabled={loading || !form.fullName || !form.email}
@@ -856,8 +948,8 @@ export default function PricingPage() {
                               </>
                             ) : (
                               <>
-                                <Smartphone className="h-4 w-4" />
-                                Pay {fmtBtnLabel(pkg.price)} — Card &amp; Mobile Money
+                                {selectedGatewayObj ? renderGatewayIcon(selectedGatewayObj.icon) : <Smartphone className="h-4 w-4" />}
+                                Pay {fmtBtnLabel(pkg.price)} with {selectedGatewayObj?.shortName || "selected method"}
                               </>
                             )}
                           </Button>
