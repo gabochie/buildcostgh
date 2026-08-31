@@ -68,23 +68,27 @@ export async function GET(request: NextRequest) {
 
     if (order) {
       if (result.status === "success") {
-        await prisma.order.update({
-          where: { id: order.id },
+        // Atomic transition: only the first verifier flips pending -> completed,
+        // preventing a concurrent callback/webhook from double-generating report/receipt.
+        const transition = await prisma.order.updateMany({
+          where: { id: order.id, status: "pending" },
           data: { status: "completed", transactionId: result.transactionId || order.transactionId },
         })
-        await logAgentAction({
-          agent: "PaymentBot",
-          action: `${gateway}_payment_verified`,
-          entityType: "order",
-          entityId: order.id,
-          level: "success",
-          details: { reference: order.reference, gateway },
-        })
-        try { await generateReportForOrder(order.id) } catch {
-          await enqueueJob("generate_report", { orderId: order.id })
-        }
-        try { await sendReceiptForOrder(order.id) } catch {
-          await enqueueJob("send_receipt", { orderId: order.id })
+        if (transition.count > 0) {
+          await logAgentAction({
+            agent: "PaymentBot",
+            action: `${gateway}_payment_verified`,
+            entityType: "order",
+            entityId: order.id,
+            level: "success",
+            details: { reference: order.reference, gateway },
+          })
+          try { await generateReportForOrder(order.id) } catch {
+            await enqueueJob("generate_report", { orderId: order.id })
+          }
+          try { await sendReceiptForOrder(order.id) } catch {
+            await enqueueJob("send_receipt", { orderId: order.id })
+          }
         }
         return NextResponse.redirect(`${APP_URL}/order-success?reference=${order.reference}`)
       }
@@ -107,15 +111,17 @@ export async function GET(request: NextRequest) {
 
     if (subscription) {
       if (result.status === "success") {
-        await prisma.subscription.update({
-          where: { id: subscription.id },
+        const transition = await prisma.subscription.updateMany({
+          where: { id: subscription.id, status: "pending" },
           data: { status: "active", transactionId: result.transactionId || subscription.transactionId },
         })
-        await logAgentAction({
-          agent: "PaymentBot", action: "subscription_activated",
-          entityType: "subscription", entityId: subscription.id, level: "success",
-          details: { reference: subscription.reference, gateway },
-        })
+        if (transition.count > 0) {
+          await logAgentAction({
+            agent: "PaymentBot", action: "subscription_activated",
+            entityType: "subscription", entityId: subscription.id, level: "success",
+            details: { reference: subscription.reference, gateway },
+          })
+        }
         return NextResponse.redirect(`${APP_URL}/pricing?payment=success`)
       }
       if (result.status === "failed") {

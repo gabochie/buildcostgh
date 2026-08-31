@@ -70,11 +70,13 @@ export async function POST(_request: NextRequest, ctx: Ctx) {
     }
 
     if (order) {
-      if (order.status !== "completed") {
-        await prisma.order.update({
-          where: { id: order.id },
-          data: { status: "completed", transactionId: result.transactionId || order.transactionId },
-        })
+      // Atomic transition guards against concurrent post-url webhooks (and the
+      // verify redirect) double-generating the report/receipt.
+      const transition = await prisma.order.updateMany({
+        where: { id: order.id, status: "pending" },
+        data: { status: "completed", transactionId: result.transactionId || order.transactionId },
+      })
+      if (transition.count > 0) {
         await logAgentAction({
           agent: "PaymentBot", action: `${gateway}_union_payment_received`,
           entityType: "order", entityId: order.id, level: "success",
@@ -87,16 +89,18 @@ export async function POST(_request: NextRequest, ctx: Ctx) {
           await enqueueJob("send_receipt", { orderId: order.id })
         }
       }
-    } else if (subscription && subscription.status !== "active") {
-      await prisma.subscription.update({
-        where: { id: subscription.id },
+    } else if (subscription) {
+      const transition = await prisma.subscription.updateMany({
+        where: { id: subscription.id, status: "pending" },
         data: { status: "active", transactionId: result.transactionId || subscription.transactionId },
       })
-      await logAgentAction({
-        agent: "PaymentBot", action: "subscription_activated",
-        entityType: "subscription", entityId: subscription.id, level: "success",
-        details: { reference: subscription.reference, gateway },
-      })
+      if (transition.count > 0) {
+        await logAgentAction({
+          agent: "PaymentBot", action: "subscription_activated",
+          entityType: "subscription", entityId: subscription.id, level: "success",
+          details: { reference: subscription.reference, gateway },
+        })
+      }
     }
 
     return NextResponse.json({ ok: true, status: "success" })

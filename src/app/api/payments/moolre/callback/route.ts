@@ -54,33 +54,37 @@ export async function POST(request: NextRequest) {
     }
 
     if (order) {
-      if (order.status === "completed") return NextResponse.json({ ok: true })
-      await prisma.order.update({
-        where: { id: order.id },
+      // Atomic transition: only the first callback flips pending -> completed so
+      // a concurrent webhook/verify can never double-generate the report/receipt.
+      const transition = await prisma.order.updateMany({
+        where: { id: order.id, status: "pending" },
         data: { status: "completed", transactionId: data?.transactionid || order.transactionId || null },
       })
-      await logAgentAction({
-        agent: "PaymentBot", action: "moolre_payment_received",
-        entityType: "order", entityId: order.id, level: "success",
-        details: { reference: order.reference, transactionId: data?.transactionid },
-      })
-      try { await generateReportForOrder(order.id) } catch {
-        await enqueueJob("generate_report", { orderId: order.id })
-      }
-      try { await sendReceiptForOrder(order.id) } catch {
-        await enqueueJob("send_receipt", { orderId: order.id })
+      if (transition.count > 0) {
+        await logAgentAction({
+          agent: "PaymentBot", action: "moolre_payment_received",
+          entityType: "order", entityId: order.id, level: "success",
+          details: { reference: order.reference, transactionId: data?.transactionid },
+        })
+        try { await generateReportForOrder(order.id) } catch {
+          await enqueueJob("generate_report", { orderId: order.id })
+        }
+        try { await sendReceiptForOrder(order.id) } catch {
+          await enqueueJob("send_receipt", { orderId: order.id })
+        }
       }
     } else if (subscription) {
-      if (subscription.status === "active") return NextResponse.json({ ok: true })
-      await prisma.subscription.update({
-        where: { id: subscription.id },
+      const transition = await prisma.subscription.updateMany({
+        where: { id: subscription.id, status: "pending" },
         data: { status: "active", transactionId: data?.transactionid || subscription.transactionId || null },
       })
-      await logAgentAction({
-        agent: "PaymentBot", action: "moolre_subscription_activated",
-        entityType: "subscription", entityId: subscription.id, level: "success",
-        details: { reference: subscription.reference, transactionId: data?.transactionid },
-      })
+      if (transition.count > 0) {
+        await logAgentAction({
+          agent: "PaymentBot", action: "moolre_subscription_activated",
+          entityType: "subscription", entityId: subscription.id, level: "success",
+          details: { reference: subscription.reference, transactionId: data?.transactionid },
+        })
+      }
     }
 
     return NextResponse.json({ ok: true, status: "success" })

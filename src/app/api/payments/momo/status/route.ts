@@ -32,48 +32,52 @@ export async function GET(request: NextRequest) {
     const momoStatus = await getPaymentStatus(order.referenceId)
 
     if (momoStatus.status === "SUCCESSFUL") {
-      await prisma.order.update({
-        where: { id: order.id },
+      // Atomic transition: only the first caller flips pending -> completed, so
+      // concurrent verifies/callbacks can never double-generate the report/receipt.
+      const transition = await prisma.order.updateMany({
+        where: { id: order.id, status: "pending" },
         data: {
           status: "completed",
           transactionId: momoStatus.financialTransactionId || null,
         },
       })
 
-      await logAgentAction({
-        agent: "PaymentBot",
-        action: "momo_payment_verified",
-        entityType: "order",
-        entityId: order.id,
-        level: "success",
-        details: {
-          reference: order.reference,
-          amount: order.amount,
-          package: order.package,
-        },
-      })
-
-      try {
-        await generateReportForOrder(order.id)
-      } catch (reportError) {
+      if (transition.count > 0) {
         await logAgentAction({
-          agent: "ReportBot",
-          action: "report_generation_failed",
+          agent: "PaymentBot",
+          action: "momo_payment_verified",
           entityType: "order",
           entityId: order.id,
-          level: "error",
+          level: "success",
           details: {
             reference: order.reference,
-            error: reportError instanceof Error ? reportError.message : String(reportError),
+            amount: order.amount,
+            package: order.package,
           },
         })
-        await enqueueJob("generate_report", { orderId: order.id })
-      }
 
-      try {
-        await sendReceiptForOrder(order.id)
-      } catch {
-        await enqueueJob("send_receipt", { orderId: order.id })
+        try {
+          await generateReportForOrder(order.id)
+        } catch (reportError) {
+          await logAgentAction({
+            agent: "ReportBot",
+            action: "report_generation_failed",
+            entityType: "order",
+            entityId: order.id,
+            level: "error",
+            details: {
+              reference: order.reference,
+              error: reportError instanceof Error ? reportError.message : String(reportError),
+            },
+          })
+          await enqueueJob("generate_report", { orderId: order.id })
+        }
+
+        try {
+          await sendReceiptForOrder(order.id)
+        } catch {
+          await enqueueJob("send_receipt", { orderId: order.id })
+        }
       }
 
       return NextResponse.json({ status: "success", reference })
