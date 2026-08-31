@@ -302,6 +302,11 @@ export default function PricingPage() {
 
   const planSlugFor = (id: string) => (id === "annual" ? "annual-unlimited" : "monthly-unlimited")
 
+  // A fresh idempotency key per checkout attempt tells the server to reuse an
+  // existing order instead of creating a duplicate when a request is retried
+  // (network retry, double-click), preventing double-charging.
+  const newIdempotencyKey = () => crypto.randomUUID()
+
   const handleSubscribe = async (e: React.FormEvent, plan: (typeof subscriptionPlans)[number]) => {
     e.preventDefault()
     if (!subForm.fullName || !subForm.email) return
@@ -313,7 +318,7 @@ export default function PricingPage() {
     try {
       const res = await fetch("/api/payments/checkout", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "Idempotency-Key": newIdempotencyKey() },
         body: JSON.stringify({
           type: "subscription",
           gateway,
@@ -367,7 +372,7 @@ export default function PricingPage() {
       if (gw.id === "expresspay" || gw.id === "moolre") {
         const res = await fetch("/api/payments/checkout", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "Idempotency-Key": newIdempotencyKey() },
           body: JSON.stringify({ ...baseBody, gateway: gw.id, type: "package" }),
         })
         const data = await res.json()
@@ -382,12 +387,17 @@ export default function PricingPage() {
       if (gw.id === "card") {
         const res = await fetch("/api/paystack/initialize", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "Idempotency-Key": newIdempotencyKey() },
           body: JSON.stringify(baseBody),
         })
         const data = await res.json()
         if (data.authorizationUrl) {
           window.location.assign(data.authorizationUrl)
+          return
+        }
+        if (data.duplicate && data.reference) {
+          toast.info("Payment already initiated. Check order status.")
+          window.location.assign(`/order-success?reference=${data.reference}`)
           return
         }
         throw new Error(data.error || "Failed to initialize payment. Please try again.")
@@ -397,7 +407,7 @@ export default function PricingPage() {
       if (gw.id === "momo") {
         const res = await fetch("/api/payments/momo/initialize", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "Idempotency-Key": newIdempotencyKey() },
           body: JSON.stringify(baseBody),
         })
         const data = await res.json()
