@@ -1,16 +1,30 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { getPaymentStatus } from "@/lib/momo"
 import { logAgentAction } from "@/lib/agent-log"
 import { enqueueJob } from "@/lib/queue"
 import { generateReportForOrder, sendReceiptForOrder } from "@/lib/jobs"
 
 export const dynamic = "force-dynamic"
 
+/**
+ * MTN MoMo callback.
+ *
+ * SECURITY: The MoMo callback body is treated ONLY as a trigger to look up the
+ * order — never as authoritative payment confirmation. MTN's callback does not
+ * carry a signature we can verify here, so an attacker could POST
+ * `{ externalId: <order.referenceId>, status: "SUCCESSFUL" }` directly to this
+ * endpoint and get a free report.
+ *
+ * Instead we poll MTN's own API (`getPaymentStatus`) using the order's stored
+ * `referenceId`, which is authenticated to MTN with our merchant credentials.
+ * Only a genuine MTN-confirmed status flips the order to "completed".
+ */
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
 
-    const { externalId, status, financialTransactionId } = body
+    const { externalId } = body
 
     if (!externalId) {
       return NextResponse.json({ error: "Missing externalId" }, { status: 400 })
@@ -27,7 +41,7 @@ export async function POST(req: NextRequest) {
         entityType: "order",
         entityId: externalId,
         level: "error",
-        details: { externalId, status },
+        details: { externalId },
       })
       return NextResponse.json({ error: "Order not found" }, { status: 404 })
     }
@@ -36,12 +50,27 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Already processed" })
     }
 
-    if (status === "SUCCESSFUL" || status === "successful") {
+    if (!order.referenceId) {
+      await logAgentAction({
+        agent: "PaymentBot",
+        action: "momo_callback_no_reference_id",
+        entityType: "order",
+        entityId: order.id,
+        level: "warning",
+        details: { reference: order.reference },
+      })
+      return NextResponse.json({ message: "Ignored" })
+    }
+
+    // Authoritative check: confirm the real status against MTN, not the request body.
+    const momoStatus = await getPaymentStatus(order.referenceId)
+
+    if (momoStatus.status === "SUCCESSFUL") {
       await prisma.order.update({
         where: { id: order.id },
         data: {
           status: "completed",
-          transactionId: financialTransactionId || null,
+          transactionId: momoStatus.financialTransactionId || null,
         },
       })
 
@@ -55,7 +84,7 @@ export async function POST(req: NextRequest) {
           reference: order.reference,
           amount: order.amount,
           package: order.package,
-          financialTransactionId,
+          financialTransactionId: momoStatus.financialTransactionId,
         },
       })
 
@@ -81,7 +110,7 @@ export async function POST(req: NextRequest) {
       } catch {
         await enqueueJob("send_receipt", { orderId: order.id })
       }
-    } else {
+    } else if (momoStatus.status === "FAILED") {
       await prisma.order.update({
         where: { id: order.id },
         data: { status: "failed" },
@@ -93,7 +122,18 @@ export async function POST(req: NextRequest) {
         entityType: "order",
         entityId: order.id,
         level: "warning",
-        details: { reference: order.reference, status, externalId },
+        details: { reference: order.reference, status: momoStatus.status, externalId },
+      })
+    } else {
+      // Still pending at MTN — the callback fired before settlement. Leave
+      // the order pending; the client polls /api/payments/momo/status to finish.
+      await logAgentAction({
+        agent: "PaymentBot",
+        action: "momo_callback_still_pending",
+        entityType: "order",
+        entityId: order.id,
+        level: "info",
+        details: { reference: order.reference, status: momoStatus.status },
       })
     }
 
