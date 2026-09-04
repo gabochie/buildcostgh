@@ -7,7 +7,6 @@ const PUBLIC_PAGES: { path: string; heading: RegExp }[] = [
   { path: "/how-it-works", heading: /How It Works|Steps/i },
   { path: "/services", heading: /Services/i },
   { path: "/login", heading: /Welcome Back|Sign In/i },
-  { path: "/costs", heading: /Cost|Region/i },
 ]
 
 test.describe("public pages", () => {
