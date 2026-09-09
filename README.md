@@ -63,21 +63,26 @@ openssl rand -base64 32   # AUTH_SECRET, CRON_SECRET
 Set the environment variables documented in `.env.example`. Scheduled jobs run via `vercel.json` crons:
 
 - `/api/jobs/process` — daily queue + subscription expiry/renewal maintenance (3:00 AM).
-- `/api/content/scheduled` — content generation scheduler (3:30 AM). Reads the 1-year plan from `content/content-plan.json` and fills upcoming slots (up to `CONTENT_PLAN_DRAFTS_PER_RUN` drafts per run) until the week is complete; falls back to the legacy cadence engine if the plan file is absent.
+- `/api/content/scheduled` — content generation scheduler (Sundays 3:30 AM). Reads the 1-year plan from `content/content-plan.json` and batch-fills up to `CONTENT_PLAN_DRAFTS_PER_RUN` pending slots (default 5) using a multi-post LLM call (`CONTENT_PLAN_BATCH_SIZE` slots per call, default 3). Blog-type slots also get a `published:false` BlogPost draft ready for the blog editor. Falls back to the legacy cadence engine if the plan file is absent. Drafts are never auto-published.
 
-Both are protected by the `CRON_SECRET` bearer token. Env guards: set `CONTENT_CRON_ENABLED=true` + `OPENAI_API_KEY` to run the content engine; connect Facebook/X/LinkedIn keys to auto-publish approved drafts.
+Both are protected by the `CRON_SECRET` bearer token. Env guards:
+
+- Generation: `CONTENT_CRON_ENABLED=true` + `OPENAI_API_KEY`.
+- Social images: `CONTENT_GENERATE_IMAGES=enabled` (default: on automatically when Facebook/Instagram/TikTok credentials exist; `disabled` turns it off). Rendered to `/content-images/*`.
+- Auto-publish: Facebook (`FACEBOOK_ACCESS_TOKEN`, `FACEBOOK_PAGE_ID`), X (`X_BEARER_TOKEN`), LinkedIn (`LINKEDIN_ACCESS_TOKEN`, `LINKEDIN_URN`), Instagram (`FACEBOOK_ACCESS_TOKEN`, `INSTAGRAM_BUSINESS_ACCOUNT_ID` — needs an image on the draft; TikTok stays manual).
+- Batch publish: `POST /api/content/publish` publishes every approved draft in one call (or pass `{ "draftIds": [...] }`); the admin Content Marketing tab has a "Publish all approved" button.
 
 ## Project layout
 
 ```
 ├── content/                  # 1-year content plan JSON (edited here; mirrored to Desktop)
 ├── prisma/                  # schema + migrations + seed
-├── public/                  # static assets (reports are NOT stored here)
+├── public/                  # static assets (reports are NOT stored here); /content-images holds AI social graphics
 ├── reports-storage/         # generated PDF/XLSX (gitignored, outside public/)
 └── src/
     ├── app/                 # App Router pages + API routes
     ├── components/          # UI + calculator components
-    ├── lib/                 # engines, auth, queues, payments, content planner, i18n
+    ├── lib/                 # engines, auth, queues, payments, content planner + batch/output/media, i18n
     └── store/               # Zustand client state
 ```
 

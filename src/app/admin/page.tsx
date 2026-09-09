@@ -5112,6 +5112,7 @@ function ContentMarketingTab() {
   const [generating, setGenerating] = useState(false)
   const [planning, setPlanning] = useState(false)
   const [publishingId, setPublishingId] = useState<string | null>(null)
+  const [batchPublishing, setBatchPublishing] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -5217,6 +5218,28 @@ function ContentMarketingTab() {
     }
   }
 
+  const publishAll = async () => {
+    setBatchPublishing(true)
+    try {
+      const res = await fetch("/api/content/publish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      })
+      const data = await res.json()
+      if (res.ok) {
+        await refresh()
+        toast.success(`Batch published: ${data.results?.length ?? 0} draft(s), ${data.published ?? 0} platform post(s)`)
+      } else {
+        toast.error(data.error || "Batch publish failed")
+      }
+    } catch {
+      toast.error("Batch publish failed")
+    } finally {
+      setBatchPublishing(false)
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex justify-center py-20">
@@ -5262,9 +5285,16 @@ function ContentMarketingTab() {
             <span className="text-2xl font-bold text-slate-800">{drafts.filter((d) => d.status === "published").length}</span>
             <span className="ml-2 text-slate-600 font-medium">published</span>
           </div>
+          <Button
+            onClick={publishAll}
+            disabled={batchPublishing || drafts.filter((d) => d.status === "approved").length === 0}
+            className="rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-2.5 text-sm font-semibold text-emerald-700 hover:bg-emerald-100"
+          >
+            {batchPublishing ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Publishing...</> : `Publish all approved (${drafts.filter((d) => d.status === "approved").length})`}
+          </Button>
           <div className="rounded-xl bg-amber-50 border border-amber-200 px-4 py-2.5">
             <span className="text-sm text-amber-900">
-              Auto-publish needs Facebook, X and/or LinkedIn credentials in env vars. Instagram/TikTok are manual.
+              Auto-publish needs Facebook, X and/or LinkedIn credentials in env vars. Instagram needs an image (CONTENT_GENERATE_IMAGES) + INSTAGRAM_BUSINESS_ACCOUNT_ID. TikTok stays manual.
             </span>
           </div>
         </div>

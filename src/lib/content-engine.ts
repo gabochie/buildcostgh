@@ -161,7 +161,8 @@ RETURN ONLY a single JSON object, no markdown, no commentary:
     return { draft: null, error: message }
   }
 
-  const parsed = parseDraftOutput(text)
+  const parsedList = parseDraftOutputsCore(text)
+  const parsed = parsedList ? parsedList[0] : null
   if (!parsed || !parsed.title || !parsed.caption) {
     await logAgentAction({
       agent: CONTENT_AGENT,
@@ -237,12 +238,6 @@ async function uniqueBlogSlug(title: string): Promise<string> {
     candidate = `${base}-${n++}`
   }
   return candidate
-}
-
-function estimateReadTime(body: string | null): number {
-  if (!body) return 0
-  const words = body.split(/\s+/).length
-  return Math.max(1, Math.round(words / 200))
 }
 
 /**
@@ -406,7 +401,7 @@ RETURN ONLY a single JSON ARRAY with EXACTLY ${chunk.length} objects, in the sam
       return { drafts, error: message }
     }
 
-    const parsed = parseDraftOutputs(text)
+    const parsed = parseDraftOutputsCore(text)
     if (!parsed) {
       await logAgentAction({
         agent: CONTENT_AGENT,
@@ -433,7 +428,6 @@ RETURN ONLY a single JSON ARRAY with EXACTLY ${chunk.length} objects, in the sam
         continue
       }
 
-      const draftPlatforms = item.platforms.length ? item.platforms : slot.platforms
       const draft = await prisma.contentDraft.create({
         data: {
           kind: slot.kind,

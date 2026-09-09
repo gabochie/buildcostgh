@@ -71,6 +71,23 @@ function singleObjectToDraftOutput(text: string): DraftOutput | null {
   return toDraftOutput(obj as Record<string, unknown>)
 }
 
+function tryParseArray(text: string): DraftOutput[] | null {
+  const arrayStart = text.indexOf("[")
+  const arrayEnd = text.lastIndexOf("]")
+  if (arrayStart === -1 || arrayEnd <= arrayStart) return null
+  let raw: unknown
+  try {
+    raw = JSON.parse(text.slice(arrayStart, arrayEnd + 1))
+  } catch {
+    return null
+  }
+  if (!Array.isArray(raw)) return null
+  const out = raw
+    .map((item) => (item && typeof item === "object" ? toDraftOutput(item as Record<string, unknown>) : null))
+    .filter((r): r is DraftOutput => r !== null)
+  return out.length ? out : null
+}
+
 /**
  * Parse the LLM content output. Handles both a JSON array (batch) and a
  * single JSON object (legacy). Returns the posts in order, normalized.
@@ -79,20 +96,10 @@ function singleObjectToDraftOutput(text: string): DraftOutput | null {
 export function parseDraftOutputs(text: string): DraftOutput[] | null {
   const trimmed = text.trim()
 
-  const arrayStart = trimmed.indexOf("[")
-  const arrayEnd = trimmed.lastIndexOf("]")
-  if (arrayStart !== -1 && arrayEnd > arrayStart) {
-    try {
-      const raw = JSON.parse(trimmed.slice(arrayStart, arrayEnd + 1))
-      if (!Array.isArray(raw)) return null
-      const out = raw
-        .map((item) => (item && typeof item === "object" ? toDraftOutput(item as Record<string, unknown>) : null))
-        .filter((r): r is DraftOutput => r !== null)
-      return out.length ? out : null
-    } catch {
-      return null
-    }
-  }
+  // Arrays only count when they actually contain post-shaped items — a single
+  // legacy object with `"platforms":["x"]` must not be misread as a batch.
+  const asArray = tryParseArray(trimmed)
+  if (asArray) return asArray
 
   const single = singleObjectToDraftOutput(trimmed)
   return single ? [single] : null
