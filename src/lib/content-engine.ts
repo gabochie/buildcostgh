@@ -6,11 +6,20 @@ import { logAgentAction } from "./agent-log"
 import { getConfiguredPlatforms, type SocialPlatform } from "./social"
 import { CONTENT_AGENT } from "./agent-constants"
 import { generatePostImage, imageGenerationEnabled } from "./media"
+import {
+  parseDraftOutputs as parseDraftOutputsCore,
+  slugifyTitle,
+  blogCategoryFor,
+  estimateReadTime,
+  type DraftOutput,
+  type DraftOffer,
+} from "./content-output"
 
 export { CONTENT_AGENT }
+export { parseDraftOutputsCore as parseDraftOutputs }
+export { slugifyTitle, blogCategoryFor, estimateReadTime, type DraftOutput, type DraftOffer }
 
-import type { PlannedSlot } from "./content-plan"
-import type { DraftKind } from "./content-plan"
+import type { PlannedSlot, DraftKind } from "./content-plan"
 
 /**
  * Content Marketing Engine.
@@ -25,99 +34,6 @@ import type { DraftKind } from "./content-plan"
  * for that exact slot (pillar, topic, keyword, offer, platforms) and stored with a
  * `content-plan:<dateKey>:<pillar>:<index>` source for dedupe/rotation.
  */
-
-type DraftOffer = {
-  headline: string
-  detail: string
-  expiresInDays: number
-  cta: string
-}
-
-type DraftOutput = {
-  kind: "social" | "blog"
-  title: string
-  caption: string
-  body: string | null
-  offer: DraftOffer
-  platforms: SocialPlatform[]
-  imagePrompt?: string
-  tags?: string[]
-  category?: string
-}
-
-function stripQuotes(value: string): string {
-  const v = value.trim()
-  if (v.length >= 2 && ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'")))) {
-    return v.slice(1, -1)
-  }
-  return v
-}
-
-function toDraftOutput(record: Record<string, unknown>): DraftOutput {
-  const offer = (record.offer ?? {}) as Record<string, unknown>
-  const platforms = Array.isArray(record.platforms) ? record.platforms.filter((p): p is SocialPlatform => typeof p === "string") : []
-  const tags = Array.isArray(record.tags) ? record.tags.filter((t): t is string => typeof t === "string").slice(0, 8) : []
-
-  return {
-    kind: record.kind === "blog" ? "blog" : "social",
-    title: stripQuotes(String(record.title ?? "")),
-    caption: stripQuotes(String(record.caption ?? "")),
-    body: record.body ? String(record.body) : null,
-    offer: {
-      headline: stripQuotes(String(offer.headline ?? "")),
-      detail: stripQuotes(String(offer.detail ?? "")),
-      expiresInDays: Number(offer.expiresInDays ?? 7),
-      cta: stripQuotes(String(offer.cta ?? "Get your estimate")),
-    },
-    platforms,
-    imagePrompt: typeof record.imagePrompt === "string" && record.imagePrompt.trim() ? record.imagePrompt.trim() : undefined,
-    tags,
-    category: typeof record.category === "string" && record.category.trim() ? record.category.trim() : undefined,
-  }
-}
-
-/**
- * Parse the LLM batch response. Accepts either a JSON array of posts (batch)
- * or a single JSON object (legacy single-draft call) and returns the posts
- * in order, normalized. Never throws — returns null when unparseable.
- */
-export function parseDraftOutputs(text: string): DraftOutput[] | null {
-  const trimmed = text.trim()
-
-  const arrayStart = trimmed.indexOf("[")
-  const arrayEnd = trimmed.lastIndexOf("]")
-  if (arrayStart !== -1 && arrayEnd > arrayStart) {
-    try {
-      const raw = JSON.parse(trimmed.slice(arrayStart, arrayEnd + 1))
-      if (!Array.isArray(raw)) return null
-      const out = raw
-        .map((item) => (item && typeof item === "object" ? toDraftOutput(item as Record<string, unknown>) : null))
-        .filter((r): r is DraftOutput => r !== null)
-      return out.length ? out : null
-    } catch {
-      return null
-    }
-  }
-
-  const single = parseDraftOutput(trimmed)
-  return single ? [single] : null
-}
-
-function parseDraftOutput(text: string): DraftOutput | null {
-  const start = text.indexOf("{")
-  const end = text.lastIndexOf("}")
-  if (start === -1 || end === -1 || end <= start) return null
-
-  let obj: unknown
-  try {
-    obj = JSON.parse(text.slice(start, end + 1))
-  } catch {
-    return null
-  }
-
-  if (!obj || typeof obj !== "object" || Array.isArray(obj)) return null
-  return toDraftOutput(obj as Record<string, unknown>)
-}
 
 async function buildContentContext(): Promise<string> {
   const [rates, recentPosts, postCount, orderCount, leadCount, subscriberCount, revenueAgg] = await Promise.all([
@@ -312,26 +228,6 @@ export type BatchGeneratedDraft = {
 const BLOG_AUTHOR = "BuildCostGH"
 const BLOG_AUTHOR_BIO =
   "BuildCostGH is Ghana's construction cost estimation platform, helping Ghanaians at home and in the diaspora plan and budget building projects from market-verified rates."
-
-/**
- * Map a plan pillar key to a blog category (schema default is "uncategorized").
- */
-export function blogCategoryFor(pillarKey: string): string {
-  return pillarKey.replace(/-/g, "-")
-}
-
-/**
- * ASCII slug from a post title, e.g. "How Much Does a 4-Bedroom House Cost in Ghana?"
- * → "how-much-does-a-4-bedroom-house-cost-in-ghana".
- */
-export function slugifyTitle(title: string): string {
-  const base = title
-    .toLowerCase()
-    .replace(/['’]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-  return base || "post"
-}
 
 async function uniqueBlogSlug(title: string): Promise<string> {
   const base = slugifyTitle(title)
