@@ -131,13 +131,11 @@ export async function POST(req: NextRequest) {
           }
         }
       } else if (subscription) {
-        const meta = (subscription.metadata as Record<string, unknown> | null) || EMPTY_METADATA
         const transition = await prisma.subscription.updateMany({
           where: { id: subscription.id, status: "pending" },
           data: {
             status: "active",
             transactionId: txHash || subscription.transactionId,
-            metadata: { ...meta, cryptoTxHash: txHash, cryptoNetwork: network },
           },
         })
         if (transition.count > 0) {
