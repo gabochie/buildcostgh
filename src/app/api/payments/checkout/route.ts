@@ -189,6 +189,7 @@ export async function POST(request: NextRequest) {
       redirectUrl: `${APP_URL}/api/payments/verify`,
       postUrl: `${APP_URL}/api/payments/${gid}/post-url`,
       metadata: metadata || undefined,
+      localPriceUsd: gid === "crypto" ? getSubscriptionPriceUsd(String(planSlug)) : undefined,
     })
 
     const providerToken = inited.providerToken
