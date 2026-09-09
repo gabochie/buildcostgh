@@ -1,5 +1,6 @@
 import { isMoolreConfigured, createPaymentLink, verifyTransaction as verifyMoolre, isMoolreSuccess } from "@/lib/moolre"
 import { submitPayment, getCheckoutUrl, queryPayment } from "@/lib/expresspay"
+import { createCoinbaseCharge, getCoinbaseCharge, isCoinbaseConfigured } from "@/lib/coinbase"
 import { APP_URL, GatewayId, GatewayInitResult, GatewayVerifyOutput, GatewaySessionInput, PaymentGatewayConfig } from "@/lib/payments/types"
 
 export const PAYMENT_GATEWAY = "PAYMENT_GATEWAY"
@@ -43,6 +44,16 @@ const GATEWAY_CONFIGS: Record<GatewayId, PaymentGatewayConfig> = {
     icon: "CreditCard",
     kind: "redirect",
     isConfigured: () => Boolean(process.env.PAYSTACK_SECRET_KEY),
+    hidden: false,
+  },
+  crypto: {
+    id: "crypto",
+    name: "Crypto & DeFi",
+    shortName: "Crypto",
+    description: "Pay with USDC, USDT, ETH, BTC and 100+ cryptocurrencies via Coinbase Commerce hosted checkout.",
+    icon: "Bitcoin",
+    kind: "redirect",
+    isConfigured: () => isCoinbaseConfigured(),
     hidden: false,
   },
   manual_momo: {
@@ -146,6 +157,24 @@ export async function createGatewaySession(
       throw new Error("Card gateway is handled by /api/paystack/initialize")
     }
 
+    case "crypto": {
+      const charge = await createCoinbaseCharge({
+        reference: input.reference,
+        name: input.orderDesc,
+        description: input.orderDesc,
+        localPriceUsd: input.localPriceUsd ?? input.amount,
+        redirectUrl: `${APP_URL}/api/payments/verify?gateway=crypto`,
+        cancelUrl: `${APP_URL}/pricing?payment=cancelled`,
+        metadata: input.metadata || undefined,
+      })
+      return {
+        gateway,
+        redirect: charge.hostedUrl,
+        providerToken: charge.code,
+        reference: input.reference,
+      }
+    }
+
     default:
       throw new Error(`Gateway "${gateway}" does not support hosted sessions`)
   }
@@ -192,6 +221,16 @@ export async function verifyGatewayPayment(
         return { status: "failed", provider: "moolre", details: v }
       }
       return { status: "pending", provider: "moolre", details: v }
+    }
+
+    case "crypto": {
+      const q = await getCoinbaseCharge(token)
+      return {
+        status: q.status,
+        provider: "crypto",
+        transactionId: q.transactionId,
+        details: { network: q.network, local: { amount: q.localAmount, currency: q.localCurrency } },
+      }
     }
 
     default:

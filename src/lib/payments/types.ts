@@ -3,6 +3,7 @@ export type GatewayId =
   | "expresspay"
   | "moolre"
   | "card"
+  | "crypto"
   | "manual_momo"
 
 export const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://buildcostgh.com"
@@ -30,6 +31,8 @@ export interface GatewaySessionInput {
   redirectUrl?: string
   postUrl?: string
   metadata?: Record<string, unknown>
+  /** USD reference price used by crypto gateways (Coinbase charges in USD). */
+  localPriceUsd?: number
 }
 
 export interface GatewayInitResult {

@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
 import { logAgentAction } from "@/lib/agent-log"
 import { generateReference } from "@/lib/utils"
-import { validatePackageAmount, validateSubscriptionAmount } from "@/lib/pricing"
+import { validatePackageAmount, validateSubscriptionAmount, getPackagePriceUsd, getSubscriptionPriceUsd } from "@/lib/pricing"
 import { createGatewaySession, getGateway, getAvailableGateways } from "@/lib/gateways"
 import { apiRateLimit } from "@/lib/rate-limit"
 import { APP_URL, GatewayId } from "@/lib/payments/types"
@@ -116,6 +116,7 @@ export async function POST(request: NextRequest) {
         redirectUrl: `${APP_URL}/api/payments/verify`,
         postUrl: `${APP_URL}/api/payments/${gid}/post-url`,
         metadata: metadata || undefined,
+        localPriceUsd: gid === "crypto" ? getPackagePriceUsd(String(packageName)) : undefined,
       })
 
       const providerToken = inited.providerToken
