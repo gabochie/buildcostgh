@@ -7,7 +7,7 @@ import { organizationLd, faqLd, breadcrumbLd } from "@/app/ld"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { CheckCircle, Loader2, Shield, Star, ChevronRight, Smartphone, CreditCard, Zap, FileText, BarChart3, MapPin, Table2, Calendar, Users, PhoneCall, RefreshCw, Mail, MessageSquare, Hammer, Cpu, Repeat, Wallet, Landmark } from "lucide-react"
+import { CheckCircle, Loader2, Shield, Star, ChevronRight, Smartphone, CreditCard, Zap, FileText, BarChart3, MapPin, Table2, Calendar, Users, PhoneCall, RefreshCw, Mail, MessageSquare, Hammer, Cpu, Repeat, Wallet, Landmark, Bitcoin } from "lucide-react"
 import { toast } from "sonner"
 import { GradientButton } from "@/components/shared"
 import { getClientGhsRate } from "@/lib/currency"
@@ -293,6 +293,7 @@ export default function PricingPage() {
     Wallet,
     Landmark,
     CreditCard,
+    Bitcoin,
     Receipt: FileText,
   }
   const renderGatewayIcon = (name: string) => {
@@ -368,8 +369,8 @@ export default function PricingPage() {
         },
       }
 
-      // Hosted redirect gateways (Moolre, ExpressPay)
-      if (gw.id === "expresspay" || gw.id === "moolre") {
+      // Hosted redirect gateways (Moolre, ExpressPay, Crypto via Coinbase)
+      if (gw.id === "expresspay" || gw.id === "moolre" || gw.id === "crypto") {
         const res = await fetch("/api/payments/checkout", {
           method: "POST",
           headers: { "Content-Type": "application/json", "Idempotency-Key": newIdempotencyKey() },
@@ -502,7 +503,7 @@ export default function PricingPage() {
                 <Shield className="h-3.5 w-3.5 text-gold" /> 7-Day Money-Back Guarantee
               </div>
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 text-emerald-200 text-xs font-medium border border-white/10">
-                <Smartphone className="h-3.5 w-3.5" /> Pay with Card or Mobile Money
+                <Smartphone className="h-3.5 w-3.5" /> Pay with Card, Mobile Money, or Crypto
               </div>
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 text-emerald-200 text-xs font-medium border border-white/10">
                 <span className={`${currency === "GHS" ? "text-white font-semibold" : "text-emerald-300/60"}`}>GHS</span>
@@ -1199,6 +1200,7 @@ export default function PricingPage() {
               <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-emerald-200/50">
                 <span className="flex items-center gap-1.5"><CreditCard className="h-3.5 w-3.5" /> Visa &amp; Mastercard</span>
                 <span className="flex items-center gap-1.5"><Smartphone className="h-3.5 w-3.5" /> MTN, Vodafone &amp; AirtelTigo MoMo</span>
+                <span className="flex items-center gap-1.5"><Bitcoin className="h-3.5 w-3.5" /> USDC, USDT, ETH, BTC</span>
                 <span className="flex items-center gap-1.5"><RefreshCw className="h-3.5 w-3.5" /> 7-Day Refund</span>
               </div>
             </div>

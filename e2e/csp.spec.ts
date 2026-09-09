@@ -11,6 +11,7 @@ const REQUIRED_CONNECT_SRC = [
   "https://www.google.com",
   "https://*.googletagmanager.com",
   "https://api.paystack.co",
+  "https://api.coinbase.com",
 ]
 const REQUIRED_FRAME_SRC = ["https://challenges.cloudflare.com", "https://js.paystack.co"]
 

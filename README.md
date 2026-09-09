@@ -9,7 +9,7 @@ Built with **Next.js 16 (App Router)**, **Prisma + PostgreSQL**, **NextAuth v5 (
 - **Cost estimator** — 8-step calculator with elemental cost breakdown, professional fees, permit intelligence, and FX-aware currency output.
 - **Building types** — catalog of residential / commercial / industrial categories with subtypes and indicative cost ranges.
 - **Reports** — PDF and XLSX reports delivered under a signed, time-limited download URL (protected by report-access tokens).
-- **Payments** — MTN Mobile Money (USSD push), Moolre, ExpressPay (accepts Mobile Money, Ghana Pay, and cards), and Paystack cards. A customer-facing gateway selector lets users pick at checkout, and callbacks/redirects are always re-verified server-side against the provider (never trusted from the raw body).
+- **Payments** — MTN Mobile Money (USSD push), Moolre, ExpressPay (accepts Mobile Money, Ghana Pay, and cards), Paystack cards, and crypto via Coinbase Commerce (USDC, USDT, ETH, BTC and 100+ coins). A customer-facing gateway selector lets users pick at checkout, and callbacks/redirects are always re-verified server-side against the provider (never trusted from the raw body).
 - **Subscription plans** — one-time report purchases plus optional subscription plans with a nightly expiry/renewal maintenance cron.
 - **Public V1 API** — estimate, building-types, locations, cost-rates, and permit-requirements endpoints with API-key quotas and per-key rate limiting (`Retry-After`).
 - **Admin dashboard** — content management, orders, API keys, queue inspection.

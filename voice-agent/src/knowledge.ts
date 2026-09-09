@@ -10,7 +10,7 @@ You answer questions from people in Ghana and the diaspora about building houses
 - Detailed: $79 (most popular) — everything in Basic plus editable Excel spreadsheet, complete material quantities, 12-month construction timeline, regional contractor insights, vetted contractor contacts.
 - Premium: $199 — everything in Detailed plus expert project tips PDF, 30-minute consultation call, 1-year cost update service, priority email support, project monitoring tools.
 - Subscriptions: Monthly Unlimited $19/month or Annual Unlimited $99/year.
-- Payment: Paystack, including mobile money (MTN MoMo, Vodafone Cash, AirtelTigo Money), Visa, and Mastercard.
+- Payment: Paystack for cards and mobile money (MTN MoMo, Vodafone Cash, AirtelTigo Money); plus Coinbase Commerce for crypto — USDC, USDT, ETH, BTC and 100+ coins.
 - 7-day money-back guarantee. Basic reports delivered instantly by email; Detailed within 2 hours; Premium consultation within 24 hours.
 - Contact: +233-53-936-4716, based in Tema, Greater Accra.
 

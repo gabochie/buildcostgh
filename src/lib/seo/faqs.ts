@@ -52,6 +52,10 @@ export const pricingFaqs: Faq[] = [
     a: "Yes! We accept MTN Mobile Money payments. When you click buy, you will receive a payment request on your MoMo device. Simply enter your PIN to approve the payment. You can also pay with card or other mobile money providers.",
   },
   {
+    q: "Can I pay with Bitcoin or other cryptocurrency?",
+    a: "Yes! Pay securely with USDC, USDT, ETH, BTC and 100+ cryptocurrencies through our Coinbase Commerce checkout. Prices are fixed in USD at checkout, so you always pay the exact listed amount — no volatility surprises. Great for diaspora customers sending from abroad.",
+  },
+  {
     q: "Do you offer custom quotes for commercial projects?",
     a: "Yes! Contact us directly for commercial construction cost estimation. Our team can handle multi-unit developments, commercial buildings, and industrial projects.",
   },

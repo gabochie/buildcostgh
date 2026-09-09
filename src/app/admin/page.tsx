@@ -713,10 +713,12 @@ function SettingsTab({ session }: { session: { user?: { name?: string | null; em
       <div className="rounded-2xl border bg-amber-50/50 p-6">
         <h3 className="font-semibold text-slate-900 mb-2">Environment Variables</h3>
         <p className="text-sm text-slate-500 mb-4">
-          Production API keys for Paystack, Resend, UploadThing, and Google Auth are not configured.
+          Production API keys for Paystack, Coinbase Commerce, Resend, UploadThing, and Google Auth are not configured.
         </p>
         <div className="text-xs text-slate-400 space-y-1 font-mono">
           <p>PAYSTACK_SECRET_KEY <span className="text-amber-500 ml-2">not set</span></p>
+          <p>COINBASE_COMMERCE_API_KEY <span className="text-amber-500 ml-2">not set</span></p>
+          <p>COINBASE_COMMERCE_WEBHOOK_SECRET <span className="text-amber-500 ml-2">not set</span></p>
           <p>RESEND_API_KEY <span className="text-amber-500 ml-2">not set</span></p>
           <p>UPLOADTHING_SECRET <span className="text-amber-500 ml-2">not set</span></p>
         </div>
@@ -872,6 +874,7 @@ function StrategyTab() {
           heading: "Payment Infrastructure",
           items: [
             "Paystack for cards, mobile money (MTN, Vodafone, AirtelTigo), and bank transfers",
+            "Coinbase Commerce for crypto (USDC, USDT, ETH, BTC) — USD-fixed checkout for diaspora",
             "Multi-currency pricing: USD for diaspora, GHS for local users",
             "Automatic receipt and invoice generation on successful payment",
           ],
