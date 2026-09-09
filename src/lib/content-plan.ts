@@ -134,7 +134,6 @@ export function computeWindowSlots(
 ): PlannedSlot[] {
   const base = new Date(from.getFullYear(), from.getMonth(), from.getDate())
   const slots: PlannedSlot[] = []
-  const nextCounts = { ...counts }
 
   for (let offset = 0; offset < horizonDays; offset++) {
     const date = new Date(base.getTime() + offset * DAY_MS)
@@ -151,13 +150,13 @@ export function computeWindowSlots(
     const hasDraft = existingDateKeys.has(`content-plan:${dateKey}:`)
 
     const pillar = plan.pillars[pillarKey]
-    const consumed = nextCounts[pillarKey] ?? 0
+    const consumed = counts[pillarKey] ?? 0
 
     /**
      * A slot already drafted has already consumed its topic; only advance the
      * counter for slots that still need a new draft so rotation stays correct.
      */
-    if (!hasDraft) nextCounts[pillarKey] = consumed + 1
+    if (!hasDraft) counts[pillarKey] = consumed + 1
 
     const topic = pillar.topicPool[consumed % pillar.topicPool.length]
     const keyword = slot.kind === "blog" ? pillar.blogKeywords[consumed % pillar.blogKeywords.length] : undefined

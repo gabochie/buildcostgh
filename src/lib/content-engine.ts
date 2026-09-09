@@ -243,6 +243,7 @@ RETURN ONLY a single JSON object, no markdown, no commentary:
       title: parsed.title,
       platforms: slot ? slot.platforms : draftPlatforms,
       source,
+    },
   })
 
   return { draft }
