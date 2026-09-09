@@ -5076,10 +5076,43 @@ const CONTENT_STATUS_STYLES: Record<string, string> = {
   published: "bg-indigo-100 text-indigo-700",
 }
 
+type PlanSlotView = {
+  date: string
+  weekday: number
+  kind: string
+  platforms: string[]
+  pillar: string
+  pillarTitle: string
+  topic: string
+  keyword: string | null
+  offer: string
+  status: "drafted" | "planned"
+}
+
+type PlanView = {
+  meta: {
+    title: string
+    rollingStart: string
+    rollingMonths: number
+    postsPerWeek: number
+    language: string
+    publishingMode: string
+    batchMode: string
+  }
+  totalSlots: number
+  draftedSlots: number
+  slots: PlanSlotView[]
+}
+
+const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+
 function ContentMarketingTab() {
   const [drafts, setDrafts] = useState<ContentDraftItem[]>([])
+  const [plan, setPlan] = useState<PlanView | null>(null)
+  const [planError, setPlanError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [generating, setGenerating] = useState(false)
+  const [planning, setPlanning] = useState(false)
   const [publishingId, setPublishingId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -5089,11 +5122,43 @@ function ContentMarketingTab() {
       .then((data: ContentDraftItem[]) => setDrafts(data))
       .catch(() => setDrafts([]))
       .finally(() => setLoading(false))
+    fetch("/api/content/plan")
+      .then((r) => r.json())
+      .then((data: PlanView) => setPlan(data))
+      .catch(() => setPlanError("Could not load the Content Plan"))
   }, [])
 
   const refresh = async () => {
     const res = await fetch("/api/content")
     if (res.ok) setDrafts(await res.json())
+    const planRes = await fetch("/api/content/plan")
+    if (planRes.ok) setPlan(await planRes.json())
+  }
+
+  const fillPlan = async () => {
+    setPlanning(true)
+    setPlanError(null)
+    try {
+      const res = await fetch("/api/content", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: true }),
+      })
+      const data = await res.json()
+      if (res.ok && data.plan) {
+        const generated = Array.isArray(data.drafts) ? data.drafts.length : data.generated ?? 0
+        toast.success(`${generated} plan draft${generated === 1 ? "" : "s"} generated — review in the queue`)
+        await refresh()
+      } else {
+        toast.error(data.error || "Plan batch failed")
+        setPlanError(data.error || "Plan batch failed")
+      }
+    } catch {
+      toast.error("Plan batch failed")
+      setPlanError("Plan batch failed")
+    } finally {
+      setPlanning(false)
+    }
   }
 
   const generate = async () => {

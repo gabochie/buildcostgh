@@ -2,6 +2,11 @@ import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
   outputFileTracingRoot: import.meta.dirname,
+  outputFileTracingIncludes: {
+    "/api/content": ["./content/content-plan.json"],
+    "/api/content/scheduled": ["./content/content-plan.json"],
+    "/api/content/plan": ["./content/content-plan.json"],
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
