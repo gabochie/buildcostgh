@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
 import { isAdmin } from "@/lib/api-auth"
 import { generateContentDraft } from "@/lib/content-engine"
+import { runPlanBatch } from "@/lib/content-planner"
 import type { SocialPlatform } from "@/lib/social"
 
 export const dynamic = "force-dynamic"
@@ -28,6 +29,21 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json().catch(() => null)
+
+  // Manual trigger of the Content Plan batch (keeps the 1-year plan filled).
+  if (body?.plan === true) {
+    const result = await runPlanBatch()
+    if (result.error) {
+      return NextResponse.json({ error: result.error }, { status: 500 })
+    }
+    return NextResponse.json({
+      plan: true,
+      generated: result.generated,
+      pending: result.pending,
+      drafts: result.slots.map((s) => ({ date: s.dateKey, kind: s.kind, pillar: s.pillarKey, topic: s.topic })),
+    })
+  }
+
   const platforms = (body?.platforms ?? []) as SocialPlatform[]
 
   const result = await generateContentDraft({ platforms })
