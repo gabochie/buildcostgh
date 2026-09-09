@@ -4,6 +4,7 @@ import { runSubagent } from "./cofounder/agent"
 import { getSubagent } from "./cofounder/subagents"
 import { logAgentAction } from "./agent-log"
 import { getConfiguredPlatforms, type SocialPlatform } from "./social"
+import type { PlannedSlot } from "./content-plan"
 
 export const CONTENT_AGENT = "ContentBot"
 
@@ -15,6 +16,10 @@ export const CONTENT_AGENT = "ContentBot"
  * themed post + an irresistible offer. Drafts are NEVER published automatically —
  * they land in the admin Content Marketing queue for founder approval, honoring the
  * cofounder's "everything external requires founder approval" rule.
+ *
+ * When a `slot` from the 1-year Content Plan is provided, the draft is generated
+ * for that exact slot (pillar, topic, keyword, offer, platforms) and stored with a
+ * `content-plan:<dateKey>:<pillar>:<index>` source for dedupe/rotation.
  */
 
 type DraftOffer = {
