@@ -1,0 +1,315 @@
+{
+  "schemaVersion": 1,
+  "meta": {
+    "title": "BuildCostGH — Automated Content Plan (rolling 12 months)",
+    "description": "Deterministic, adjustable 1-year content calendar. Edit this file, commit, and the Content Planner on the next cron run generates the upcoming slots exactly as specified. Topics rotate round-robin through each pillar's pool; rejected drafts don't block future slots.",
+    "rollingStart": "2026-09-09",
+    "rollingMonths": 12,
+    "postsPerWeek": 5,
+    "language": "en",
+    "publishingMode": "founder-approval",
+    "batchMode": "fill-ahead-weekly"
+  },
+  "schedule": [
+    {
+      "weekday": 1,
+      "kind": "social",
+      "slotIndex": 0,
+      "platforms": ["facebook", "linkedin"],
+      "formatHint": "Regional cost insight: anchor on the published region-rate database (cheapest vs priciest region today), tie to a real location, end with a click to /costs or /calculator."
+    },
+    {
+      "weekday": 3,
+      "kind": "social",
+      "slotIndex": 1,
+      "platforms": ["facebook"],
+      "formatHint": "Cost comparison post: X vs Y (storey vs single, build vs buy, roofing systems, flooring options). One clear winner for the reader's budget, honest trade-offs."
+    },
+    {
+      "weekday": 5,
+      "kind": "social",
+      "slotIndex": 2,
+      "platforms": ["x", "linkedin"],
+      "formatHint": "Diaspora / financing / crypto post: paying from abroad, MTN MoMo vs cards vs crypto (USDC/USDT/ETH/BTC via Coinbase Commerce), exchange-rate reality for budgeting a build."
+    },
+    {
+      "weekday": 6,
+      "kind": "social",
+      "slotIndex": 3,
+      "platforms": ["facebook"],
+      "formatHint": "Materials / community post: cement-sand-steel prices, bulk buying, seasonal price moves, a savings tip, or a builder community question. Conversational, shares well."
+    },
+    {
+      "weekday": 0,
+      "kind": "blog",
+      "slotIndex": null,
+      "platforms": ["facebook", "x", "linkedin"],
+      "formatHint": "Long-form SEO blog post built around the slot keyword: structured sections, a real cost table or range, FAQ-style closing, and a promo caption snippet. Body becomes the blog draft; caption is the social promo."
+    }
+  ],
+  "socialRotation": [
+    "cost-guides",
+    "cost-comparisons",
+    "financing-crypto",
+    "materials-prices",
+    "region-pricing",
+    "stage-budgets",
+    "contractor-legal",
+    "safety-security",
+    "brand-evergreen"
+  ],
+  "blogRotation": [
+    "region-pricing",
+    "cost-guides",
+    "materials-prices",
+    "stage-budgets",
+    "financing-crypto",
+    "cost-comparisons",
+    "contractor-legal",
+    "safety-security",
+    "brand-evergreen"
+  ],
+  "offers": [
+    {
+      "headline": "Free 5-minute estimate",
+      "detail": "Run the free calculator and get a first ballpark for your build in Ghana in minutes.",
+      "expiresInDays": 7,
+      "cta": "Start free estimate"
+    },
+    {
+      "headline": "Diaspora starter pack",
+      "detail": "Calculator plus regional pricing overview for anyone building from abroad.",
+      "expiresInDays": 7,
+      "cta": "Get the starter pack"
+    },
+    {
+      "headline": "Detailed Report bundle",
+      "detail": "The USD 79 report includes material quantities, stage budgets, and regional notes.",
+      "expiresInDays": 14,
+      "cta": "Get the Detailed Report"
+    },
+    {
+      "headline": "Premium Report deep dive",
+      "detail": "The USD 199 Premium report covers full stage-by-stage budgets plus a contractor checklist.",
+      "expiresInDays": 14,
+      "cta": "Go Premium"
+    },
+    {
+      "headline": "Pay from abroad in crypto",
+      "detail": "Pay for any report in USDC, USDT, ETH or BTC via Coinbase Commerce — no bank queues.",
+      "expiresInDays": 7,
+      "cta": "Pay with crypto"
+    },
+    {
+      "headline": "Unlimited builder pass",
+      "detail": "Unlimited estimates all month for USD 19/mo when you subscribe now.",
+      "expiresInDays": 3,
+      "cta": "Start Unlimited"
+    },
+    {
+      "headline": "Step-by-step build workbook",
+      "detail": "Free stage-by-stage budget workbook when you order any paid report.",
+      "expiresInDays": 7,
+      "cta": "Get the workbook"
+    },
+    {
+      "headline": "Refer a diaspora builder",
+      "detail": "Share BuildCostGH with a friend and you both get 10% off your next report.",
+      "expiresInDays": 30,
+      "cta": "Refer a builder"
+    }
+  ],
+  "pillars": {
+    "cost-guides": {
+      "title": "Cost Guides",
+      "description": "Definitive, budget-framed cost breakdowns for common builds in Ghana.",
+      "topicPool": [
+        "How much does a 3-bedroom house really cost in Ghana in 2026?",
+        "5-bedroom house budget: luxury vs standard finishes breakdown",
+        "Storey vs single-storey house: which costs more to build and run?",
+        "Complete 1-bedroom apartment cost guide for first-time builders",
+        "Guest house / boys quarters construction cost in Ghana",
+        "The real cost of building a house in Ghana from abroad, step by step",
+        "How land plus building costs combine in Accra, Kumasi and Tamale",
+        "Budget range for a 2-bedroom house across all 16 regions",
+        "What a 4-bedroom duplex really costs with premium finishes",
+        "House cost inflation in Ghana: what changed in the last two years",
+        "Cost to complete an unfinished building in Ghana",
+        "How to turn a rough estimate into a buildable budget in one weekend"
+      ],
+      "blogKeywords": [
+        "cost of building a house in ghana 2026",
+        "3 bedroom house cost ghana",
+        "building a house in ghana from abroad cost"
+      ]
+    },
+    "cost-comparisons": {
+      "title": "Cost Comparisons",
+      "description": "Head-to-head cost decisions: options, winners, and honest trade-offs.",
+      "topicPool": [
+        "Building vs buying a house in Ghana: which costs more in 2026?",
+        "Self-managed build vs contractor: where you really save money",
+        "Sandcrete vs landcrete vs red blocks: lifetime cost comparison",
+        "Reinforced concrete slab vs prestressed: roof slab cost comparison",
+        "Tile vs terrazzo vs grey cement flooring: full cost breakdown",
+        "Buying land on installments vs outright: which is cheaper?",
+        "Mono-pitch vs gable roof: cost per square metre in Ghana",
+        "Cost of building in Accra vs Kumasi vs Tamale in 2026",
+        "Aluminium vs wood vs PVC windows: price and lifespan",
+        "Renting vs building for retirement in Ghana: numbers that matter"
+      ],
+      "blogKeywords": [
+        "building vs buying house ghana",
+        "self build vs contractor ghana",
+        "cost of building in accra vs kumasi"
+      ]
+    },
+    "region-pricing": {
+      "title": "Regional Pricing",
+      "description": "How location changes the price of everything, grounded in the 16-region rate database.",
+      "topicPool": [
+        "Why building in Tamale costs less (or more) than you think",
+        "Accra vs Kumasi construction cost per square metre in 2026",
+        "How to use regional cost multipliers when you live abroad",
+        "Cost of housing in the Volta Region: market realities",
+        "Northern Ghana building costs: cement, labour and seasonality",
+        "Western and coastal towns: how the sea moves construction prices",
+        "The cheapest and most expensive regions to build in Ghana",
+        "Land prices vs build costs per region: data walkthrough",
+        "Regional multipliers explained: what 1.2x vs 0.9x actually means",
+        "Building in Sekondi-Takoradi vs Cape Coast: full cost guide"
+      ],
+      "blogKeywords": [
+        "cost of building a house in accra",
+        "regional construction costs ghana",
+        "cost of building in kumasi 2026"
+      ]
+    },
+    "stage-budgets": {
+      "title": "Stage-by-Stage Budgets",
+      "description": "Breakdowns of every construction phase so builders can plan cash-flow, phase by phase.",
+      "topicPool": [
+        "Foundation cost in Ghana: from excavation to concrete slab",
+        "Block work budget: how many blocks does a bedroom really need?",
+        "Roofing costs in Ghana: trusses, purlins and sheeting compared",
+        "Electrical and plumbing rough-in costs before finishes",
+        "Finishing costs: paint, doors, tiles, toilets and kitchen",
+        "Windows and doors: where the finishing budget really goes",
+        "How to budget the last 20% of a build (everyone forgets it)",
+        "Stage-by-stage payment plan for a contractor in Ghana",
+        "How the rainy season changes your build schedule and costing",
+        "Costs nobody quotes: clearing, scaffolding, formwork, hauling"
+      ],
+      "blogKeywords": [
+        "foundation cost ghana",
+        "roofing cost ghana 2026",
+        "stage by stage building budget ghana"
+      ]
+    },
+    "materials-prices": {
+      "title": "Materials & Prices",
+      "description": "Live-feeling, practical pricing intelligence for the materials that move budgets.",
+      "topicPool": [
+        "Cement price in Ghana: what contractors are really paying this quarter",
+        "Sand and gravel: why aggregate prices spike in the rainy season",
+        "Steel reinforcement price tracker for Ghanaian builders",
+        "Retailer vs wholesaler: where to buy materials for less",
+        "How transport distance quietly inflates your material bill",
+        "Cheaper blocks, higher cost: quality vs price in Ghana",
+        "The silent 10%: materials waste eating your budget",
+        "Buying in bulk vs as-you-build: cashflow and price math",
+        "When to buy cement before a price hike: signals that work",
+        "Cost-saving alternative materials gaining ground in Ghana"
+      ],
+      "blogKeywords": [
+        "cement price ghana 2026",
+        "building materials prices ghana",
+        "steel price ghana"
+      ]
+    },
+    "contractor-legal": {
+      "title": "Contractors & Legal",
+      "description": "Choosing and managing builders and the paperwork that protects a build.",
+      "topicPool": [
+        "How to vet and choose a contractor in Ghana: checklist",
+        "Fixed-price vs cost-plus contracts for building in Ghana",
+        "Land documentation to verify before you start building",
+        "Building permit cost and timeline in Ghana: what to budget",
+        "14 protective clauses to include in a Ghana building contract",
+        "How to avoid contractor disputes over the telephone",
+        "Should you hire a construction supervisor?",
+        "Insurance worth paying for when building in Ghana",
+        "Legal costs of buying land: stamp duty, registration, lawyers",
+        "How the diaspora can legally supervise a build from abroad"
+      ],
+      "blogKeywords": [
+        "building permit ghana",
+        "building contract ghana",
+        "how to choose a contractor in ghana"
+      ]
+    },
+    "financing-crypto": {
+      "title": "Financing & Crypto",
+      "description": "How to fund, pay for, and remit money for a build — including crypto payments.",
+      "topicPool": [
+        "How the diaspora can pay for reports and builds from abroad",
+        "MTN MoMo vs cards: best way to pay for construction services",
+        "Paying for your build with crypto: USDC, USDT, ETH and BTC",
+        "Pay-as-you-go construction finance in Ghana: what actually exists",
+        "Budgeting USD income against GHS construction costs",
+        "Why paying in dollars versus cedis changes your build budget",
+        "A 12-month savings plan to fund your build in Ghana",
+        "Cheapest remittance corridors into Ghana in 2026",
+        "How a real cost report helps you unlock financing",
+        "Crypto acceptance among Ghanaian contractors: the real picture"
+      ],
+      "blogKeywords": [
+        "build house in ghana from abroad payment",
+        "crypto payments ghana construction",
+        "diaspora financing building ghana"
+      ]
+    },
+    "safety-security": {
+      "title": "Safety & Security",
+      "description": "Protecting people, sites, and materials — and the construction costs attached.",
+      "topicPool": [
+        "Rainy season and flooding: protecting your site before it starts",
+        "7 structural warnings your build is unsafe",
+        "Site security in Ghana: fences, night guards and material theft",
+        "Fire-safe home design upgrades that cost little but save a lot",
+        "Scaffolding safety: the accident that doubles project cost",
+        "Drainage and soakaways: the cost of getting water wrong",
+        "Electrical safety on site: why wire quality matters",
+        "Designing Ghanaian homes for earthquake resilience",
+        "Structural crack or cosmetic crack? How to tell",
+        "Safeguarding materials from weather and theft: loading budgets"
+      ],
+      "blogKeywords": [
+        "rainy season building site ghana",
+        "building safety ghana",
+        "drainage cost ghana"
+      ]
+    },
+    "brand-evergreen": {
+      "title": "Brand & Stories",
+      "description": "Evergreen trust-building and story content for BuildCostGH itself.",
+      "topicPool": [
+        "Client story: how a UK-based family planned their Kumasi build",
+        "What BuildCostGH does and doesn't do for your build",
+        "Meet the 16-region cost database behind our reports",
+        "From calculator to report: how a BuildCostGH order works",
+        "Ask us anything: your Ghana building cost questions answered",
+        "How one report helped a family save 18% on a build",
+        "Why we exist: closing the transparency gap in Ghana construction",
+        "Behind the scenes: how a Premium report gets researched",
+        "Community corner: builders share their budget tips",
+        "Our roadmap: what's next for BuildCostGH this year"
+      ],
+      "blogKeywords": [
+        "buildcostgh",
+        "planning a build in ghana from abroad",
+        "diaspora construction planning service ghana"
+      ]
+    }
+  }
+}
