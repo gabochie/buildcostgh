@@ -112,13 +112,7 @@ export async function getUpcomingPlanView(plan: ContentPlan | null = null): Prom
   const resolvedPlan = plan ?? loadContentPlan()
   if (!resolvedPlan) return null
   const { existingDateKeys } = await getPlanState()
-  const slots = computePendingSlots(
-    resolvedPlan,
-    new Date(),
-    CONTENT_PLAN_HORIZON_DAYS,
-    new Set(existingDateKeys),
-    {}
-  )
+  const slots = computeWindowSlots(resolvedPlan, new Date(), CONTENT_PLAN_HORIZON_DAYS, new Set(existingDateKeys), {})
   return { plan: resolvedPlan, slots, existingDateKeys: [...existingDateKeys] }
 }
 
