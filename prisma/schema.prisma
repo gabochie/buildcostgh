@@ -526,9 +526,10 @@ model ContentDraft {
   body        String?  // extended blog/thread body (optional)
   offer       Json?    // { headline, detail, expiresInDays?, cta? }
   platforms   Json     @default("[]") // ["facebook","instagram","x","linkedin","tiktok"]
+  imageUrl    String?  // rendered social graphic under /content-images/...
   status      String   @default("draft") // draft | approved | rejected | published
   reviewNote  String?
-  source      String?  // e.g. "content-agent"
+  source      String?  // e.g. "content-agent" or "content-plan:<dateKey>:<pillar>:<index>"
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   approvedAt  DateTime?

@@ -4,10 +4,13 @@ import { runSubagent } from "./cofounder/agent"
 import { getSubagent } from "./cofounder/subagents"
 import { logAgentAction } from "./agent-log"
 import { getConfiguredPlatforms, type SocialPlatform } from "./social"
+import { CONTENT_AGENT } from "./agent-constants"
 import { generatePostImage, imageGenerationEnabled } from "./media"
-import type { PlannedSlot } from "./content-plan"
 
-export const CONTENT_AGENT = "ContentBot"
+export { CONTENT_AGENT }
+
+import type { PlannedSlot } from "./content-plan"
+import type { DraftKind } from "./content-plan"
 
 /**
  * Content Marketing Engine.
@@ -286,6 +289,291 @@ RETURN ONLY a single JSON object, no markdown, no commentary:
   })
 
   return { draft }
+}
+
+// ═══════════════════════════════════════════════════════════
+// BATCH GENERATION
+// ═══════════════════════════════════════════════════════════
+
+/**
+ * Number of plan slots sent to the LLM in a single call. Larger batches are
+ * cheaper/faster but risk timeout + token limits (a blog body is ~1.5k tokens).
+ */
+export const CONTENT_PLAN_BATCH_SIZE = Number(process.env.CONTENT_PLAN_BATCH_SIZE ?? 3) || 1
+
+export type BatchGeneratedDraft = {
+  id: string
+  title: string
+  kind: DraftKind
+  imageUrl: string | null
+  blogPostId?: string
+}
+
+const BLOG_AUTHOR = "BuildCostGH"
+const BLOG_AUTHOR_BIO =
+  "BuildCostGH is Ghana's construction cost estimation platform, helping Ghanaians at home and in the diaspora plan and budget building projects from market-verified rates."
+
+/**
+ * Map a plan pillar key to a blog category (schema default is "uncategorized").
+ */
+export function blogCategoryFor(pillarKey: string): string {
+  return pillarKey.replace(/-/g, "-")
+}
+
+/**
+ * ASCII slug from a post title, e.g. "How Much Does a 4-Bedroom House Cost in Ghana?"
+ * → "how-much-does-a-4-bedroom-house-cost-in-ghana".
+ */
+export function slugifyTitle(title: string): string {
+  const base = title
+    .toLowerCase()
+    .replace(/['’]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+  return base || "post"
+}
+
+async function uniqueBlogSlug(title: string): Promise<string> {
+  const base = slugifyTitle(title)
+  let candidate = base
+  let n = 2
+  while (await prisma.blogPost.findUnique({ where: { slug: candidate } })) {
+    candidate = `${base}-${n++}`
+  }
+  return candidate
+}
+
+function estimateReadTime(body: string | null): number {
+  if (!body) return 0
+  const words = body.split(/\s+/).length
+  return Math.max(1, Math.round(words / 200))
+}
+
+/**
+ * Create a published:false SEO BlogPost row from a drafted blog slot so the
+ * post is ready to review in the admin blog editor. Runs inside the batch.
+ */
+async function createBlogPostDraft(slot: PlannedSlot, parsed: DraftOutput): Promise<string | undefined> {
+  if (parsed.kind !== "blog" && slot.kind !== "blog") return undefined
+  const body = parsed.body || `<!-- Body for "${parsed.title}" in progress. -->${parsed.caption}`
+  const slug = await uniqueBlogSlug(parsed.title)
+
+  const post = await prisma.blogPost.create({
+    data: {
+      title: parsed.title,
+      slug,
+      excerpt: parsed.caption,
+      content: body,
+      author: BLOG_AUTHOR,
+      authorBio: BLOG_AUTHOR_BIO,
+      tags: JSON.stringify(parsed.tags?.length ? parsed.tags : [slot.pillarKey]),
+      category: blogCategoryFor(slot.pillarKey),
+      readTimeMin: estimateReadTime(body),
+      published: false,
+    },
+    select: { id: true },
+  })
+
+  await logAgentAction({
+    agent: CONTENT_AGENT,
+    action: "blog_draft_created",
+    entityType: "blog_post",
+    entityId: post.id,
+    level: "success",
+    details: { slug, pillar: slot.pillarKey, source: sourceFor(slot) },
+  })
+
+  return post.id
+}
+
+function sourceFor(slot: PlannedSlot): string {
+  return `content-plan:${slot.dateKey}:${slot.pillarKey}:${slot.topicIndex}`
+}
+
+function slotContextLines(slot: PlannedSlot): string[] {
+  return [
+    `- Date: ${slot.dateKey} (weekday ${slot.weekday})`,
+    `- Type: ${slot.kind}`,
+    `- Pillar: ${slot.pillarTitle}`,
+    `- Topic to develop: ${slot.topic}`,
+    slot.keyword ? `- Target SEO keyword (blog): ${slot.keyword}` : null,
+    `- Format hint: ${slot.formatHint}`,
+    `- Offer to feature: ${slot.offer.headline} — ${slot.offer.detail} (CTA: ${slot.offer.cta})`,
+  ].filter((l): l is string => l !== null)
+}
+
+/**
+ * Create one image for a drafted post when image generation is enabled for the
+ * platform mix. Image prompts come from the LLM output; the binary is stored
+ * under /public/content-images and the URL is recorded on the ContentDraft.
+ */
+async function attachImageToDraft(draftId: string, parsed: DraftOutput): Promise<string | null> {
+  if (!imageGenerationEnabled() || !parsed.imagePrompt) return null
+  try {
+    const { imageUrl } = await generatePostImage(parsed.imagePrompt)
+    await prisma.contentDraft.update({ where: { id: draftId }, data: { imageUrl } })
+    return imageUrl
+  } catch (err) {
+    await logAgentAction({
+      agent: CONTENT_AGENT,
+      action: "image_generation_failed",
+      entityType: "content_draft",
+      entityId: draftId,
+      level: "warning",
+      details: { error: err instanceof Error ? err.message : String(err), prompt: parsed.imagePrompt.slice(0, 120) },
+    })
+    return null
+  }
+}
+
+/**
+ * Batch content generation for the Content Plan.
+ *
+ * Sends `batchSize` plan slots per LLM call (deterministic order) and asks for
+ * one post per slot. Each returned post becomes a ContentDraft row (never
+ * auto-published); blog slots additionally get a published:false BlogPost
+ * draft; an image prompt is collected per post and rendered when image
+ * generation is enabled.
+ *
+ * Returns every draft created (in slot order) so the caller can report back.
+ */
+export async function generateContentBatch(
+  slots: PlannedSlot[],
+  options?: { batchSize?: number; generateImages?: boolean }
+): Promise<{ drafts: BatchGeneratedDraft[]; error?: string }> {
+  if (!slots.length) return { drafts: [] }
+
+  const spec = getSubagent("content")
+  if (!spec) return { drafts: [], error: "Content subagent not found" }
+  if (!process.env.OPENAI_API_KEY) {
+    return { drafts: [], error: "OPENAI_API_KEY is not configured" }
+  }
+
+  const wantImages = options?.generateImages ?? true
+  const batchSize = Math.max(1, Math.min(5, options?.batchSize ?? CONTENT_PLAN_BATCH_SIZE))
+
+  let context: string
+  try {
+    context = await buildContentContext()
+  } catch (err) {
+    return { drafts: [], error: `Failed to load business context: ${err instanceof Error ? err.message : String(err)}` }
+  }
+
+  const drafts: BatchGeneratedDraft[] = []
+
+  for (let offset = 0; offset < slots.length; offset += batchSize) {
+    const chunk = slots.slice(offset, offset + batchSize)
+    const slotLines = chunk.map((s, i) => [`-- Slot ${i} --`, ...slotContextLines(s)].join("\n")).join("\n\n")
+
+    const prompt = `Create ${chunk.length} strategic social media post(s) for BuildCostGH — one per content-plan slot below.
+
+REAL BUSINESS CONTEXT (ground every claim in this — never invent numbers, prices, or features):
+${context}
+
+CONTENT PLAN SLOTS (output EXACTLY ONE post per slot, in the SAME ORDER):
+${slotLines}
+
+TASK (apply to every post):
+1. Develop the exact topic from the slot (pillar + topic + format hint${chunk.some((c) => c.keyword) ? " + target SEO keyword on blog slots" : ""}).
+2. Write a punchy caption under 500 characters that hooks, educates, and drives a click to /calculator or /costs.
+3. Write a compelling, honest offer based ONLY on real products/prices above and the slot's offer headline. Do not invent products or prices.
+4. Blog-type slots: write a full long-form blog body (700-1100 words) with headings and a cost table/range, ending FAQ-style. Social slots: optional extended body up to 400 words.
+5. For every post, write an "imagePrompt": a single vivid sentence describing the visual for the social graphic (photorealistic, no text overlays, Ghana setting). Use null for blog-first posts.
+
+RETURN ONLY a single JSON ARRAY with EXACTLY ${chunk.length} objects, in the same order as the slots, no markdown, no commentary:
+[
+  {
+    "kind": "social" | "blog",
+    "title": "short punchy headline",
+    "caption": "the social post caption",
+    "body": "extended/blog body or null",
+    "offer": { "headline": "...", "detail": "...", "expiresInDays": <number>, "cta": "..." },
+    "platforms": [${chunk[0].platforms.map((p) => `"${p}"`).join(", ")}],
+    "imagePrompt": "visual description or null",
+    "tags": ["topic","keyword"]
+  }
+]`
+
+    let text: string
+    try {
+      // blog bodies are long; scale maxTokens by the chunk size
+      text = await runSubagent({ ...spec, maxTokens: Math.min(2800 * chunk.length, 9000) }, prompt)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err)
+      await logAgentAction({
+        agent: CONTENT_AGENT,
+        action: "batch_generation_failed",
+        entityType: "content_draft",
+        level: "error",
+        details: { chunkSize: chunk.length, error: message },
+      })
+      return { drafts, error: message }
+    }
+
+    const parsed = parseDraftOutputs(text)
+    if (!parsed) {
+      await logAgentAction({
+        agent: CONTENT_AGENT,
+        action: "batch_parse_failed",
+        entityType: "content_draft",
+        level: "warning",
+        details: { chunkSize: chunk.length, raw: text.slice(0, 500) },
+      })
+      return { drafts, error: "Content agent returned unparseable batch output; check agent logs." }
+    }
+
+    for (let i = 0; i < chunk.length; i++) {
+      const slot = chunk[i]
+      // A malformed entry in the middle should not kill the whole batch.
+      const item = parsed[i] ?? (parsed.length === 1 ? parsed[0] : null)
+      if (!item || !item.title || !item.caption) {
+        await logAgentAction({
+          agent: CONTENT_AGENT,
+          action: "batch_item_parse_failed",
+          entityType: "content_draft",
+          level: "warning",
+          details: { slot: slot.dateKey, index: i, raw: text.slice(0, 300) },
+        })
+        continue
+      }
+
+      const draftPlatforms = item.platforms.length ? item.platforms : slot.platforms
+      const draft = await prisma.contentDraft.create({
+        data: {
+          kind: slot.kind,
+          title: item.title,
+          caption: item.caption,
+          body: item.body,
+          offer: slot.offer as object,
+          platforms: slot.platforms as string[],
+          source: sourceFor(slot),
+        },
+        select: { id: true, title: true },
+      })
+
+      await logAgentAction({
+        agent: CONTENT_AGENT,
+        action: "draft_generated",
+        entityType: "content_draft",
+        entityId: draft.id,
+        level: "success",
+        details: { title: item.title, slot: slot.dateKey, pillars: slot.pillarKey, batch: true },
+      })
+
+      const blogPostId = await createBlogPostDraft(slot, item)
+      const imageUrl = wantImages ? await attachImageToDraft(draft.id, item) : null
+
+      drafts.push({
+        id: draft.id,
+        title: item.title,
+        kind: slot.kind,
+        imageUrl,
+        blogPostId,
+      })
+    }
+  }
+
+  return { drafts }
 }
 
 /**

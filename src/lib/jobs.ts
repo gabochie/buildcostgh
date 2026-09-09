@@ -4,7 +4,7 @@ import { logAgentAction } from "./agent-log"
 import { generateOrderReport } from "./pdf"
 import { generateReportWorkbook } from "./excel"
 import { generateContentDraft } from "./content-engine"
-import { publishContentDraft } from "./social"
+import { publishContentDraft, publishAllApproved } from "./social"
 import { REPORT_DIR, createReportToken } from "./report-access"
 import type { SocialPlatform } from "./social"
 import type { ContractorInsight } from "./report-content"
@@ -242,5 +242,10 @@ export function registerAllJobHandlers() {
         details: { error: err instanceof Error ? err.message : String(err) },
       })
     }
+  })
+
+  registerJobHandler("publish_all_content", async (payload) => {
+    const { draftIds } = (payload ?? {}) as { draftIds?: string[] }
+    await publishAllApproved({ draftIds })
   })
 }

@@ -10,15 +10,16 @@ export const maxDuration = 60
 /**
  * Vercel Cron entrypoint for the Content Marketing engine.
  *
- * Runs daily (see vercel.json). When the 1-year Content Plan
- * (content/content-plan.json) is present, each run fills the upcoming plan
- * slots that still need a draft (up to CONTENT_PLAN_DRAFTS_PER_RUN, default 2)
- * until the week is complete — deterministic topics, pillars, and offers from
- * the plan file. Without a plan it falls back to the legacy single-draft
- * cadence engine (CONTENT_CADENCE_HOURS, default 24).
+ * Runs weekly on Sundays (see vercel.json — 30 3 * * 0). When the 1-year
+ * Content Plan (content/content-plan.json) is present, each run batch-fills
+ * up to CONTENT_PLAN_DRAFTS_PER_RUN pending slots (default 5) in a single
+ * multi-post LLM call. The batch generates text + optional social images and
+ * creates published:false BlogPost drafts for any blog-type slots. Without a
+ * plan it falls back to the legacy single-draft cadence engine.
  *
  * Drafts are NEVER published automatically — founder approval in the admin
- * Content Marketing queue is always required.
+ * Content Marketing queue is always required. Batch publish is available
+ * via POST /api/content/publish.
  */
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get("authorization") || ""

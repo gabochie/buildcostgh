@@ -1,6 +1,6 @@
 import "server-only"
 import { prisma } from "./prisma"
-import { generateContentDraft } from "./content-engine"
+import { generateContentBatch, CONTENT_AGENT } from "./content-engine"
 import {
   computeWindowSlots,
   describeSlot,
@@ -12,7 +12,7 @@ import {
 } from "./content-plan"
 import { logAgentAction } from "./agent-log"
 
-export const CONTENT_PLAN_DRAFTS_PER_RUN = Number(process.env.CONTENT_PLAN_DRAFTS_PER_RUN ?? 2) || 2
+export const CONTENT_PLAN_DRAFTS_PER_RUN = Number(process.env.CONTENT_PLAN_DRAFTS_PER_RUN ?? 5) || 1
 export const CONTENT_PLAN_HORIZON_DAYS = Number(process.env.CONTENT_PLAN_HORIZON_DAYS ?? 10) || 1
 
 const SOURCE_PREFIX = "content-plan:"
@@ -56,7 +56,7 @@ export type PlanBatchResult = {
  * Deterministic + adjustable: every slot resolves from content/content-plan.json,
  * deduped against existing drafts. Drafts land in the admin approval queue
  * (never auto-published). Stops after `draftsPerRun` to respect function limits;
- * the daily cron keeps filling until the week is complete.
+ * the weekly cron keeps filling until the rolling window is complete.
  */
 export async function runPlanBatch(plan: ContentPlan | null = null): Promise<PlanBatchResult> {
   const resolvedPlan = plan ?? loadContentPlan()
@@ -78,27 +78,22 @@ export async function runPlanBatch(plan: ContentPlan | null = null): Promise<Pla
   }
 
   const target = pending.slice(0, CONTENT_PLAN_DRAFTS_PER_RUN)
-  const generated: PlannedSlot[] = []
-  let failing = false
-
-  for (const slot of target) {
-    if (failing) break
-    const result = await generateContentDraft({ platforms: slot.platforms, slot })
-    if (result.draft) {
-      generated.push(slot)
-    } else {
-      failing = true
-      await logAgentAction({
-        agent: "ContentBot",
-        action: "plan_draft_failed",
-        entityType: "content_draft",
-        level: "error",
-        details: { slot: describeSlot(slot), error: result.error },
-      })
-    }
+  const result = await generateContentBatch(target)
+  if (result.error && result.drafts.length === 0) {
+    return { generated: 0, slots: [], pending: pending.length, error: result.error }
   }
 
-  return { generated: generated.length, slots: generated, pending: pending.length }
+  if (result.error) {
+    await logAgentAction({
+      agent: CONTENT_AGENT,
+      action: "plan_draft_partial_failure",
+      entityType: "content_draft",
+      level: "warning",
+      details: { generated: result.drafts.length, error: result.error, firstSlot: target[0] ? describeSlot(target[0]) : null },
+    })
+  }
+
+  return { generated: result.drafts.length, slots: target.slice(0, result.drafts.length), pending: pending.length }
 }
 
 /**
