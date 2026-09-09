@@ -5104,8 +5104,6 @@ type PlanView = {
   slots: PlanSlotView[]
 }
 
-const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-
 function ContentMarketingTab() {
   const [drafts, setDrafts] = useState<ContentDraftItem[]>([])
   const [plan, setPlan] = useState<PlanView | null>(null)

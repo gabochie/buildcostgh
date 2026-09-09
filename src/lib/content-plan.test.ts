@@ -138,20 +138,25 @@ test("computeWindowSlots marks hasDraft = true for existing date keys", () => {
   assert.equal(other.hasDraft, false)
 })
 
-test("computeWindowSlots does not consume a topic for hasDraft slots", () => {
+test("drafted slots keep their original topicIndex (no extra consumption)", () => {
   const plan = testPlan()
-  const base = new Date(2026, 8, 14) // Monday
+  const base = new Date(2026, 8, 14) // Monday Sep 14 2026
+  // Monday is a social slot; Wednesday is the next social slot.
   const countsNoDraft: TopicCounts = {}
-  computeWindowSlots(plan, base, 7, new Set(), countsNoDraft)
-  const countsDraft: TopicCounts = {}
-  computeWindowSlots(plan, base, 7, new Set(["content-plan:2026-09-14:"]), countsDraft)
-  // The Monday social slot was drafted; Wednesday is the first consumed social slot.
-  const slotForMonday = plan.schedule.find((s) => s.kind === "social" && s.slotIndex === 0)!
-  const pillarForMonday = resolvePillarKey(plan, slotForMonday, weekIndexForDate(plan, "2026-09-14"))
-  assert.ok(pillarForMonday)
-  // In countsNoDraft, Mon's pillar consumed +1 for topic; in countsDraft, it was skipped.
-  assert.ok((countsNoDraft[pillarForMonday] ?? 0) >= 1)
-  assert.equal(countsDraft[pillarForMonday] ?? 0, 0, "drafted slot should not consume a topic")
+  const slotsNoDraft = computeWindowSlots(plan, base, 7, new Set(), countsNoDraft)
+  const countsDraftedMonday: TopicCounts = {}
+  const slotsDraftedMonday = computeWindowSlots(plan, base, 7, new Set(["content-plan:2026-09-14:"]), countsDraftedMonday)
+  const monPending = slotsNoDraft.find((s) => s.dateKey === "2026-09-14")
+  const monDrafted = slotsDraftedMonday.find((s) => s.dateKey === "2026-09-14")
+  assert.ok(monPending)
+  assert.ok(monDrafted)
+  // Both slots should have topicIndex=0 (the first topic of cost-guides) since the
+  // drafted slot did not consume an extra topic before it.
+  assert.equal(monPending.topicIndex, 0)
+  assert.equal(monDrafted.topicIndex, 0)
+  // The non-drafted path advanced the cost-guides counter; the drafted path did not.
+  assert.ok((countsNoDraft["cost-guides"] ?? 0) > (countsDraftedMonday["cost-guides"] ?? 0),
+    "pending path should consume more topics than the drafted path")
 })
 
 test("pendingSlotsOf filters correctly", () => {

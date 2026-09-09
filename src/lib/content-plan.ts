@@ -214,19 +214,18 @@ export function loadContentPlan(rootDir: string | undefined = process.cwd()): Co
 
 export function normalizePlan(raw: Partial<ContentPlan> | null | undefined): ContentPlan | null {
   if (!raw || !raw.schedule || !raw.pillars) return null
-  const meta = raw.meta ?? {}
+  const rawMeta = raw.meta
+  const title = (typeof rawMeta?.title === "string" ? rawMeta.title : undefined) ?? "BuildCostGH Content Plan"
+  const description = (typeof rawMeta?.description === "string" ? rawMeta.description : undefined) ?? ""
+  const rollingStart = (typeof rawMeta?.rollingStart === "string" ? rawMeta.rollingStart : undefined) ?? new Date().toISOString().slice(0, 10)
+  const rollingMonths = typeof rawMeta?.rollingMonths === "number" ? rawMeta.rollingMonths : 12
+  const postsPerWeek = typeof rawMeta?.postsPerWeek === "number" ? rawMeta.postsPerWeek : 5
+  const language = (typeof rawMeta?.language === "string" ? rawMeta.language : undefined) ?? "en"
+  const publishingMode = (typeof rawMeta?.publishingMode === "string" ? rawMeta.publishingMode : undefined) ?? "founder-approval"
+  const batchMode = (typeof rawMeta?.batchMode === "string" ? rawMeta.batchMode : undefined) ?? "fill-ahead-weekly"
   return {
     schemaVersion: raw.schemaVersion ?? 1,
-    meta: {
-      title: meta.title ?? "BuildCostGH Content Plan",
-      description: meta.description ?? "",
-      rollingStart: meta.rollingStart ?? new Date().toISOString().slice(0, 10),
-      rollingMonths: meta.rollingMonths ?? 12,
-      postsPerWeek: meta.postsPerWeek ?? 5,
-      language: meta.language ?? "en",
-      publishingMode: meta.publishingMode ?? "founder-approval",
-      batchMode: meta.batchMode ?? "fill-ahead-weekly",
-    },
+    meta: { title, description, rollingStart, rollingMonths, postsPerWeek, language, publishingMode, batchMode },
     schedule: raw.schedule,
     socialRotation: raw.socialRotation ?? [],
     blogRotation: raw.blogRotation ?? [],

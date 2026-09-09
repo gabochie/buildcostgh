@@ -21,11 +21,11 @@ export async function GET() {
   }
 
   return NextResponse.json({
-    meta: view.plan.meta,
+    meta: view.plan!.meta,
     totalSlots: view.slots.length,
     draftedSlots: view.slots.filter((s) => s.hasDraft).length,
     pillars: Object.fromEntries(
-      Object.entries(view.plan.pillars).map(([key, p]) => [key, { title: p.title, topics: p.topicPool.length }])
+      Object.entries(view.plan!.pillars).map(([key, p]) => [key, { title: p.title, topics: p.topicPool.length }])
     ),
     slots: view.slots.map((s) => ({
       date: s.dateKey,
