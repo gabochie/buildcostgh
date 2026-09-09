@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
     const eventType = event.type || ""
 
     const order = chargeCode
-      ? await prisma.order.findUnique({ where: { gatewayRef: chargeCode } })
+      ? await prisma.order.findFirst({ where: { gatewayRef: chargeCode } })
       : null
     const subscription = chargeCode
       ? await prisma.subscription.findFirst({
