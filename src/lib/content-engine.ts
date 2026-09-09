@@ -4,6 +4,7 @@ import { runSubagent } from "./cofounder/agent"
 import { getSubagent } from "./cofounder/subagents"
 import { logAgentAction } from "./agent-log"
 import { getConfiguredPlatforms, type SocialPlatform } from "./social"
+import { generatePostImage, imageGenerationEnabled } from "./media"
 import type { PlannedSlot } from "./content-plan"
 
 export const CONTENT_AGENT = "ContentBot"
@@ -36,6 +37,9 @@ type DraftOutput = {
   body: string | null
   offer: DraftOffer
   platforms: SocialPlatform[]
+  imagePrompt?: string
+  tags?: string[]
+  category?: string
 }
 
 function stripQuotes(value: string): string {
@@ -44,6 +48,56 @@ function stripQuotes(value: string): string {
     return v.slice(1, -1)
   }
   return v
+}
+
+function toDraftOutput(record: Record<string, unknown>): DraftOutput {
+  const offer = (record.offer ?? {}) as Record<string, unknown>
+  const platforms = Array.isArray(record.platforms) ? record.platforms.filter((p): p is SocialPlatform => typeof p === "string") : []
+  const tags = Array.isArray(record.tags) ? record.tags.filter((t): t is string => typeof t === "string").slice(0, 8) : []
+
+  return {
+    kind: record.kind === "blog" ? "blog" : "social",
+    title: stripQuotes(String(record.title ?? "")),
+    caption: stripQuotes(String(record.caption ?? "")),
+    body: record.body ? String(record.body) : null,
+    offer: {
+      headline: stripQuotes(String(offer.headline ?? "")),
+      detail: stripQuotes(String(offer.detail ?? "")),
+      expiresInDays: Number(offer.expiresInDays ?? 7),
+      cta: stripQuotes(String(offer.cta ?? "Get your estimate")),
+    },
+    platforms,
+    imagePrompt: typeof record.imagePrompt === "string" && record.imagePrompt.trim() ? record.imagePrompt.trim() : undefined,
+    tags,
+    category: typeof record.category === "string" && record.category.trim() ? record.category.trim() : undefined,
+  }
+}
+
+/**
+ * Parse the LLM batch response. Accepts either a JSON array of posts (batch)
+ * or a single JSON object (legacy single-draft call) and returns the posts
+ * in order, normalized. Never throws — returns null when unparseable.
+ */
+export function parseDraftOutputs(text: string): DraftOutput[] | null {
+  const trimmed = text.trim()
+
+  const arrayStart = trimmed.indexOf("[")
+  const arrayEnd = trimmed.lastIndexOf("]")
+  if (arrayStart !== -1 && arrayEnd > arrayStart) {
+    try {
+      const raw = JSON.parse(trimmed.slice(arrayStart, arrayEnd + 1))
+      if (!Array.isArray(raw)) return null
+      const out = raw
+        .map((item) => (item && typeof item === "object" ? toDraftOutput(item as Record<string, unknown>) : null))
+        .filter((r): r is DraftOutput => r !== null)
+      return out.length ? out : null
+    } catch {
+      return null
+    }
+  }
+
+  const single = parseDraftOutput(trimmed)
+  return single ? [single] : null
 }
 
 function parseDraftOutput(text: string): DraftOutput | null {
@@ -58,23 +112,8 @@ function parseDraftOutput(text: string): DraftOutput | null {
     return null
   }
 
-  const record = (obj ?? {}) as Record<string, unknown>
-  const offer = (record.offer ?? {}) as Record<string, unknown>
-  const platforms = Array.isArray(record.platforms) ? record.platforms.filter((p): p is SocialPlatform => typeof p === "string") : []
-
-  return {
-    kind: record.kind === "blog" ? "blog" : "social",
-    title: stripQuotes(String(record.title ?? "")),
-    caption: stripQuotes(String(record.caption ?? "")),
-    body: record.body ? String(record.body) : null,
-    offer: {
-      headline: stripQuotes(String(offer.headline ?? "")),
-      detail: stripQuotes(String(offer.detail ?? "")),
-      expiresInDays: Number(offer.expiresInDays ?? 7),
-      cta: stripQuotes(String(offer.cta ?? "Get your estimate")),
-    },
-    platforms,
-  }
+  if (!obj || typeof obj !== "object" || Array.isArray(obj)) return null
+  return toDraftOutput(obj as Record<string, unknown>)
 }
 
 async function buildContentContext(): Promise<string> {
