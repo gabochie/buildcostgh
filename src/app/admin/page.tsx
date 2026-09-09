@@ -15,7 +15,7 @@ import { toast } from "sonner"
 import {
   Loader2, TrendingUp, ShoppingBag, MessageSquare, Users, Mail,
   FileText, ExternalLink, Eye, Shield, CheckCircle, Clock,
-  AlertCircle, ArrowRight, Plus, Search, Download, Presentation, Printer, Crosshair, Zap, Target, Globe, Award, Lightbulb, Cpu, Activity, CheckSquare, Sliders, RefreshCw, Pause, Play, Trash2, Building2, Star, BadgeCheck, Briefcase, MapPin, Edit, ChevronDown, Megaphone, Sparkles, Send, X,
+  AlertCircle, ArrowRight, Plus, Search, Download, Presentation, Printer, Crosshair, Zap, Target, Globe, Award, Lightbulb, Cpu, Activity, CheckSquare, Sliders, RefreshCw, Pause, Play, Trash2, Building2, Star, BadgeCheck, Briefcase, MapPin, Edit, ChevronDown, Megaphone, Sparkles, Send, X, Calendar,
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 import { PasswordField } from "@/components/shared/PasswordField"
@@ -5271,6 +5271,78 @@ function ContentMarketingTab() {
           </div>
         </div>
       </div>
+
+      {plan && (
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+          <div className="flex items-center justify-between gap-3 mb-4">
+            <div className="flex items-center gap-3">
+              <Calendar className="h-6 w-6 text-emerald-600" />
+              <div>
+                <h3 className="text-lg font-bold text-slate-900">1-Year Content Plan</h3>
+                <p className="text-sm text-slate-500">
+                  {plan.meta.title} · {plan.meta.postsPerWeek} posts/week · rolling {plan.meta.rollingMonths} months
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-2 text-sm">
+                <span className="font-bold text-emerald-700">{plan.draftedSlots}/{plan.totalSlots}</span>
+                <span className="ml-1 text-emerald-900">slots drafted</span>
+              </div>
+              <Button onClick={fillPlan} disabled={planning || generating} className="bg-emerald-600 hover:bg-emerald-700 text-white shrink-0">
+                {planning ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Filling...</> : <><Sparkles className="mr-2 h-4 w-4" /> Fill week</>}
+              </Button>
+            </div>
+          </div>
+          {planError && (
+            <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 mb-3">
+              {planError}
+            </div>
+          )}
+          <div className="overflow-x-auto -mx-2 px-2">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-xs uppercase tracking-wide text-slate-400 border-b border-slate-100">
+                  <th className="py-2 pr-3">Date</th>
+                  <th className="py-2 pr-3">Type</th>
+                  <th className="py-2 pr-3">Pillar</th>
+                  <th className="py-2 pr-3">Topic</th>
+                  <th className="py-2 pr-3">Offer</th>
+                  <th className="py-2 pr-3">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {plan.slots.map((s, i) => (
+                  <tr key={`${s.date}-${i}`} className="border-b border-slate-50 align-top">
+                    <td className="py-2.5 pr-3 whitespace-nowrap">
+                      <span className="font-medium text-slate-800">{new Date(s.date).toLocaleDateString("en-GH", { weekday: "short", day: "2-digit", month: "short" })}</span>
+                    </td>
+                    <td className="py-2.5 pr-3">
+                      <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${s.kind === "blog" ? "bg-indigo-100 text-indigo-700" : "bg-emerald-100 text-emerald-700"}`}>
+                        {s.kind}
+                      </span>
+                      <div className="text-[11px] text-slate-400 mt-1">{s.platforms.map((p) => CONTENT_PLATFORM_LABELS[p] || p).join(", ")}</div>
+                    </td>
+                    <td className="py-2.5 pr-3 text-slate-700">{s.pillarTitle}</td>
+                    <td className="py-2.5 pr-3">
+                      <div className="text-slate-800">{s.topic}</div>
+                      {s.keyword && <div className="text-[11px] text-slate-400 mt-0.5">kw: {s.keyword}</div>}
+                    </td>
+                    <td className="py-2.5 pr-3 text-slate-600">{s.offer}</td>
+                    <td className="py-2.5">
+                      {s.status === "drafted" ? (
+                        <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700">drafted</span>
+                      ) : (
+                        <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">planned</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {drafts.length === 0 ? (
         <div className="bg-white rounded-2xl border border-dashed border-slate-300 p-10 text-center">

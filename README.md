@@ -13,7 +13,7 @@ Built with **Next.js 16 (App Router)**, **Prisma + PostgreSQL**, **NextAuth v5 (
 - **Subscription plans** — one-time report purchases plus optional subscription plans with a nightly expiry/renewal maintenance cron.
 - **Public V1 API** — estimate, building-types, locations, cost-rates, and permit-requirements endpoints with API-key quotas and per-key rate limiting (`Retry-After`).
 - **Admin dashboard** — content management, orders, API keys, queue inspection.
-- **Content scheduler** — cron-driven AI content generation and cross-posting (Facebook, LinkedIn, X).
+- **Content scheduler** — an adjustable 1-year content plan (`content/content-plan.json`: pillars, topics, cadence, offers) consumed by a cron-driven AI engine that fills upcoming slots and cross-posts approved drafts (Facebook, LinkedIn, X). All drafts require founder approval.
 - **i18n** — English and Twi (`en` / `tw`).
 
 ## Getting started
@@ -63,20 +63,21 @@ openssl rand -base64 32   # AUTH_SECRET, CRON_SECRET
 Set the environment variables documented in `.env.example`. Scheduled jobs run via `vercel.json` crons:
 
 - `/api/jobs/process` — daily queue + subscription expiry/renewal maintenance (3:00 AM).
-- `/api/content/scheduled` — content generation scheduler (3:30 AM).
+- `/api/content/scheduled` — content generation scheduler (3:30 AM). Reads the 1-year plan from `content/content-plan.json` and fills upcoming slots (up to `CONTENT_PLAN_DRAFTS_PER_RUN` drafts per run) until the week is complete; falls back to the legacy cadence engine if the plan file is absent.
 
-Both are protected by the `CRON_SECRET` bearer token.
+Both are protected by the `CRON_SECRET` bearer token. Env guards: set `CONTENT_CRON_ENABLED=true` + `OPENAI_API_KEY` to run the content engine; connect Facebook/X/LinkedIn keys to auto-publish approved drafts.
 
 ## Project layout
 
 ```
+├── content/                  # 1-year content plan JSON (edited here; mirrored to Desktop)
 ├── prisma/                  # schema + migrations + seed
 ├── public/                  # static assets (reports are NOT stored here)
 ├── reports-storage/         # generated PDF/XLSX (gitignored, outside public/)
 └── src/
     ├── app/                 # App Router pages + API routes
     ├── components/          # UI + calculator components
-    ├── lib/                 # engines, auth, queues, payments, i18n
+    ├── lib/                 # engines, auth, queues, payments, content planner, i18n
     └── store/               # Zustand client state
 ```
 
