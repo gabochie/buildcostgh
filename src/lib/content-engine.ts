@@ -1,6 +1,6 @@
 import "server-only"
 import { prisma } from "./prisma"
-import { runSubagent } from "./cofounder/agent"
+import { runSubagent, llmConfigured } from "./cofounder/agent"
 import { getSubagent } from "./cofounder/subagents"
 import { logAgentAction } from "./agent-log"
 import { getConfiguredPlatforms, type SocialPlatform } from "./social"
@@ -91,8 +91,8 @@ export async function generateContentDraft(options?: {
   const spec = getSubagent("content")
   if (!spec) return { draft: null, error: "Content subagent not found" }
 
-  if (!process.env.OPENAI_API_KEY) {
-    return { draft: null, error: "OPENAI_API_KEY is not configured" }
+  if (!llmConfigured()) {
+    return { draft: null, error: "No LLM provider configured (set OPENAI_API_KEY, GROQ_API_KEY or CEREBRAS_API_KEY)" }
   }
 
   const slot = options?.slot
@@ -336,8 +336,8 @@ export async function generateContentBatch(
 
   const spec = getSubagent("content")
   if (!spec) return { drafts: [], error: "Content subagent not found" }
-  if (!process.env.OPENAI_API_KEY) {
-    return { drafts: [], error: "OPENAI_API_KEY is not configured" }
+  if (!llmConfigured()) {
+    return { drafts: [], error: "No LLM provider configured (set OPENAI_API_KEY, GROQ_API_KEY or CEREBRAS_API_KEY)" }
   }
 
   const wantImages = options?.generateImages ?? true

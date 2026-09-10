@@ -25,6 +25,58 @@ export type CofounderEvent =
 
 type ChatTurn = { role: "user" | "assistant"; content: string }
 
+// ═══════════════════════════════════════════════════════════
+// LLM PROVIDER SELECTION
+// ═══════════════════════════════════════════════════════════
+// The agents prefer OpenAI when OPENAI_API_KEY is set, else fall back to
+// GROQ or Cerebras (both OpenAI-compatible chat APIs) so content generation
+// and the cofounder keep working with any one LLM key configured.
+// ═══════════════════════════════════════════════════════════
+
+export type LLMProvider = "openai" | "groq" | "cerebras"
+
+const PROVIDER_CONFIG: Record<LLMProvider, { baseURL?: string; defaultModel: string }> = {
+  openai: { baseURL: undefined, defaultModel: "gpt-4o-mini" },
+  groq: { baseURL: "https://api.groq.com/openai/v1", defaultModel: "llama-3.3-70b-versatile" },
+  cerebras: { baseURL: "https://api.cerebras.ai/v1", defaultModel: "llama-3.3-70b" },
+}
+
+export function activeLLMProvider(): LLMProvider | null {
+  if (process.env.OPENAI_API_KEY) return "openai"
+  if (process.env.GROQ_API_KEY) return "groq"
+  if (process.env.CEREBRAS_API_KEY) return "cerebras"
+  return null
+}
+
+export function llmConfigured(): boolean {
+  return activeLLMProvider() !== null
+}
+
+/**
+ * OpenAI-compatible chat client for the active provider. Used for text
+ * generation (content batches, subagents, cofounder chat). Image generation
+ * stays OpenAI-exclusive via getOpenAiClient().
+ */
+export function getLLMClient(): OpenAI {
+  const provider = activeLLMProvider() ?? "openai"
+  const cfg = PROVIDER_CONFIG[provider]
+  const apiKey =
+    provider === "openai" ? process.env.OPENAI_API_KEY :
+    provider === "groq" ? process.env.GROQ_API_KEY :
+    process.env.CEREBRAS_API_KEY
+  return new OpenAI({ apiKey, baseURL: cfg.baseURL })
+}
+
+export function getCurrentModel(): string {
+  if (process.env.OPENAI_MODEL) return process.env.OPENAI_MODEL
+  const provider = activeLLMProvider() ?? "openai"
+  return PROVIDER_CONFIG[provider].defaultModel
+}
+
+/**
+ * OpenAI-exclusive client (images, dall-e). Keep using getLLMClient() for
+ * chat/text so GROQ/Cerebras fallbacks kick in.
+ */
 export function getOpenAiClient(): OpenAI {
   return new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 }
@@ -84,7 +136,7 @@ export async function runCofounderChat(params: {
   emit: (event: CofounderEvent) => void
 }): Promise<string> {
   const { messages, emit } = params
-  const openai = getOpenAiClient()
+  const openai = getLLMClient()
 
   const history: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
     { role: "system", content: getCofounderSystemPrompt() },
@@ -98,7 +150,7 @@ export async function runCofounderChat(params: {
     const toolCalls = new Map<number, StreamedToolCall>()
 
     const stream = await openai.chat.completions.create({
-      model: COFOUNDER_MODEL,
+      model: getCurrentModel(),
       messages: history,
       tools: openAiTools(),
       tool_choice: "auto",
@@ -191,9 +243,9 @@ export async function runCofounderChat(params: {
  * Used by the delegate_task tool. Returns the subagent's text output.
  */
 export async function runSubagent(spec: SubagentSpec, taskPrompt: string): Promise<string> {
-  const openai = getOpenAiClient()
+  const openai = getLLMClient()
   const completion = await openai.chat.completions.create({
-    model: COFOUNDER_MODEL,
+    model: getCurrentModel(),
     messages: [
       { role: "system", content: spec.role },
       { role: "user", content: taskPrompt },
