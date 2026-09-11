@@ -37,7 +37,7 @@ export type LLMProvider = "openai" | "groq" | "cerebras"
 
 const PROVIDER_CONFIG: Record<LLMProvider, { baseURL?: string; defaultModel: string }> = {
   openai: { baseURL: undefined, defaultModel: "gpt-4o-mini" },
-  groq: { baseURL: "https://api.groq.com/openai/v1", defaultModel: "llama-3.3-70b-versatile" },
+  groq: { baseURL: "https://api.groq.com/openai/v1", defaultModel: "openai/gpt-oss-120b" },
   cerebras: { baseURL: "https://api.cerebras.ai/v1", defaultModel: "llama-3.3-70b" },
 }
 
