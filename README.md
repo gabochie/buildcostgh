@@ -73,6 +73,25 @@ Both are protected by the `CRON_SECRET` bearer token. Env guards:
 - Batch publish: `POST /api/content/publish` publishes every approved draft in one call (or pass `{ "draftIds": [...] }`); the admin Content Marketing tab has a "Publish all approved" button.
 - AdSense: the verification meta (`ca-pub-1299715274212521`) is set in the root layout. Set `NEXT_PUBLIC_ADSENSE_CLIENT` (public) plus `NEXT_PUBLIC_ADSENSE_AD_SLOT_BLOG` (public) to enable a responsive banner on blog article pages; without a client/slot it renders a dashed placeholder.
 
+### Autonomous Ops Watchtower
+
+Hobby/Pro plans do not run `vercel.json` crons, so scheduled work is executed by the GitHub Actions workflow `.github/workflows/crons.yml` hitting the production URL with `Authorization: Bearer $CRON_SECRET`:
+
+| Schedule (UTC)    | Endpoint                                        | What it does |
+| ----------------- | ----------------------------------------------- | ------------ |
+| Daily 03:05       | `GET /api/jobs/process`                         | Drain job queue + subscription expiry/renewal |
+| Weekly Sun 03:30  | `GET /api/content/scheduled`                    | Content Marketing agent (batch-fills plan slots) |
+| Daily 06:10       | `GET /api/ops/watchtower`                       | Autonomous ops agent (below) |
+
+The watchtower (`src/lib/ops.ts`, also runnable via the admin **Ops Watchtower** tab → "Run check now") autonomously:
+
+- **Probes** the database and the key public pages (`/`, `/blog`, `/calculator`, `/pricing`, `/api/health`).
+- **Collects** 24h business metrics (orders/revenue/leads/subscribers, queue, drafts, social backlog, agent-log errors/warnings).
+- **Self-repairs** inside the app only, never touching deploys/publishing/payments: requeues stuck `processing` jobs, drains the queue, requeues failed jobs with transient errors, and backfills overdue content-plan slots (12h cooldown).
+- **Summarizes** the run with the Ops subagent (GROQ/OpenAI) and logs every run to `AgentLog` (`agent="OpsWatchtower"`).
+
+Tunables (safe defaults on): `OPS_AUTO_RETRY_STUCK`, `OPS_STUCK_JOB_MS`, `OPS_AUTO_DRAIN`, `OPS_DRAIN_MAX`, `OPS_AUTO_RETRY_TRANSIENT`, `OPS_AUTO_CONTENT`, `OPS_SUMMARY`, `OPS_PROBE_TIMEOUT_MS`. Github repo secrets needed: `CRON_SECRET` (required) and `PROD_URL` (optional, defaults to `https://buildcostgh.com`). `vercel.json` crons are kept as a fallback for plans that do support them — every endpoint is idempotent (SKIP LOCKED queue, deduped plan slots), so double-firing is harmless.
+
 ## Project layout
 
 ```

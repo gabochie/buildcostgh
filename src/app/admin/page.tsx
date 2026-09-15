@@ -22,6 +22,7 @@ import { PasswordField } from "@/components/shared/PasswordField"
 import { fmtGhs } from "@/lib/rates"
 import { BuildingTypesAdminTab } from "@/components/admin/BuildingTypesAdminTab"
 import { PermitsAdminTab } from "@/components/admin/PermitsAdminTab"
+import { OpsTab } from "@/components/admin/OpsTab"
 
 type Stats = {
   totalOrders: number; completedOrders: number; pendingOrders: number
@@ -260,6 +261,8 @@ export default function AdminPage() {
     <BuildingTypesAdminTab />
   ) : tab === "permits" ? (
     <PermitsAdminTab />
+  ) : tab === "ops" ? (
+    <OpsTab />
   ) : null}
     </div>
   )

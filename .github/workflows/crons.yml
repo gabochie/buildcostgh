@@ -1,0 +1,52 @@
+name: Scheduled Ops
+
+on:
+  schedule:
+    # Every day 03:05 UTC — drain the job queue (receipts, reports, subscriptions)
+    - cron: "5 3 * * *"
+    # Weekly Sunday 03:30 UTC — Content Marketing agent (matches old vercel cron)
+    - cron: "30 3 * * 0"
+    # Every day 06:10 UTC — autonomous Ops Watchtower (health, repairs, report)
+    - cron: "10 6 * * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: scheduled-ops
+  cancel-in-progress: false
+
+jobs:
+  jobs-process:
+    name: Process job queue
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && github.event.schedule == '5 3 * * *')
+    steps:
+      - name: Call jobs/process
+        run: |
+          curl -fsS --max-time 300 -X GET \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "${{ secrets.PROD_URL || 'https://buildcostgh.com' }}/api/jobs/process"
+
+  content-scheduled:
+    name: Content agent (weekly)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && github.event.schedule == '30 3 * * 0')
+    steps:
+      - name: Call content/scheduled
+        run: |
+          curl -fsS --max-time 300 -X GET \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "${{ secrets.PROD_URL || 'https://buildcostgh.com' }}/api/content/scheduled"
+
+  watchtower:
+    name: Ops watchtower (daily)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && github.event.schedule == '10 6 * * *')
+    steps:
+      - name: Call ops/watchtower
+        run: |
+          curl -fsS --max-time 300 -X GET \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "${{ secrets.PROD_URL || 'https://buildcostgh.com' }}/api/ops/watchtower"
