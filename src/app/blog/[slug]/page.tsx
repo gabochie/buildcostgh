@@ -7,6 +7,7 @@ import { readingTime } from "@/lib/utils"
 import { ShareButtons } from "@/components/shared/ShareButtons"
 import { FaqSection } from "@/components/shared/FaqSection"
 import { HelpfulWidget } from "@/components/shared/HelpfulWidget"
+import { AdUnit } from "@/components/shared/AdUnit"
 
 export const dynamic = "force-dynamic"
 
@@ -186,6 +187,8 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
           <HelpfulWidget />
         </article>
+
+        <AdUnit slot={process.env.NEXT_PUBLIC_ADSENSE_AD_SLOT_BLOG ?? ""} />
 
         <div className="mt-12 p-6 rounded-2xl bg-gradient-to-br from-emerald-900 via-emerald-800 to-charcoal text-center shadow-lg">
           <div className="relative z-10">

@@ -1,22 +1,23 @@
 import crypto from "crypto"
 
-const CSRF_SECRET = process.env.AUTH_SECRET || process.env.CSRF_SECRET
 const COOKIE_NAME = "csrf-token"
 const HEADER_NAME = "x-csrf-token"
 const TOKEN_EXPIRY_MS = 60 * 60 * 1000 // 1 hour
 
-// The CSRF token is only as strong as its signing secret. Refuse to issue
-// tokens in production with a missing/fallback secret rather than silently
-// using a hardcoded value that would let anyone forge tokens.
+// The CSRF token is only as strong as its signing secret. Read at call time so
+// signing and verification always use the same currently-set secret (and tests
+// can inject one). Refuse to issue tokens in production with a missing/fallback
+// secret rather than silently using a hardcoded value that would let anyone forge tokens.
 function getCsrfSecret(): string {
-  if (!CSRF_SECRET) {
+  const secret = process.env.AUTH_SECRET || process.env.CSRF_SECRET
+  if (!secret) {
     if (process.env.NODE_ENV === "production") {
       throw new Error("CSRF signing secret missing. Set AUTH_SECRET (or CSRF_SECRET).")
     }
     console.warn("[csrf] No AUTH_SECRET/CSRF_SECRET set — CSRF protection is disabled.")
     return "dev-insecure-csrf-secret"
   }
-  return CSRF_SECRET
+  return secret
 }
 
 /**
@@ -41,7 +42,7 @@ export function createCsrfPair(): { plain: string; signed: string } {
  * Edge-compatible: uses raw Request object, no next/headers.
  */
 export function verifyCsrfFromRequest(request: Request): boolean {
-  const secret = CSRF_SECRET
+  const secret = process.env.AUTH_SECRET || process.env.CSRF_SECRET
   if (!secret) return false
 
   const headerToken = request.headers.get(HEADER_NAME)
@@ -53,7 +54,7 @@ export function verifyCsrfFromRequest(request: Request): boolean {
   const csrfCookie = cookies.find(c => c.startsWith(`${COOKIE_NAME}=`))
   if (!csrfCookie) return false
 
-  const signedValue = csrfCookie.split("=").slice(1).join("=")
+  const signedValue = decodeURIComponent(csrfCookie.split("=").slice(1).join("="))
   if (!signedValue) return false
 
   // Parse the signed cookie: token:timestamp:signature

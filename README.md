@@ -67,10 +67,11 @@ Set the environment variables documented in `.env.example`. Scheduled jobs run v
 
 Both are protected by the `CRON_SECRET` bearer token. Env guards:
 
-- Generation: `CONTENT_CRON_ENABLED=true` + `OPENAI_API_KEY`.
+- Generation: `CONTENT_CRON_ENABLED=true` + an LLM key (`OPENAI_API_KEY`, or `GROQ_API_KEY`/`CEREBRAS_API_KEY` — providers fall back in that order).
 - Social images: `CONTENT_GENERATE_IMAGES=enabled` (default: on automatically when Facebook/Instagram/TikTok credentials exist; `disabled` turns it off). Rendered to `/content-images/*`.
 - Auto-publish: Facebook (`FACEBOOK_ACCESS_TOKEN`, `FACEBOOK_PAGE_ID`), X (`X_BEARER_TOKEN`), LinkedIn (`LINKEDIN_ACCESS_TOKEN`, `LINKEDIN_URN`), Instagram (`FACEBOOK_ACCESS_TOKEN`, `INSTAGRAM_BUSINESS_ACCOUNT_ID` — needs an image on the draft; TikTok stays manual).
 - Batch publish: `POST /api/content/publish` publishes every approved draft in one call (or pass `{ "draftIds": [...] }`); the admin Content Marketing tab has a "Publish all approved" button.
+- AdSense: the verification meta (`ca-pub-1299715274212521`) is set in the root layout. Set `NEXT_PUBLIC_ADSENSE_CLIENT` (public) plus `NEXT_PUBLIC_ADSENSE_AD_SLOT_BLOG` (public) to enable a responsive banner on blog article pages; without a client/slot it renders a dashed placeholder.
 
 ## Project layout
 
