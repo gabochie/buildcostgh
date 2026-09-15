@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useEffect } from "react"
+import { useState, useEffect } from "react"
 import { toast } from "sonner"
 import { Loader2, ShieldCheck, AlertTriangle, XCircle, Activity, RefreshCw, CheckCircle, Wrench } from "lucide-react"
 
@@ -53,22 +53,20 @@ export function OpsTab() {
   const [loading, setLoading] = useState(true)
   const [running, setRunning] = useState(false)
 
-  const load = useCallback(async () => {
-    try {
-      const res = await fetch("/api/ops/history")
-      if (!res.ok) throw new Error("Failed to load ops history")
-      const data = await res.json()
-      setRuns((data.runs ?? []) as OpsRun[])
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to load ops history")
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+  const load = () => {
+    return fetch("/api/ops/history")
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to load ops history")
+        return res.json()
+      })
+      .then((data) => setRuns((data.runs ?? []) as OpsRun[]))
+      .catch((err) => toast.error(err instanceof Error ? err.message : "Failed to load ops history"))
+      .finally(() => setLoading(false))
+  }
 
   useEffect(() => {
     load()
-  }, [load])
+  }, [])
 
   const runNow = async () => {
     setRunning(true)
