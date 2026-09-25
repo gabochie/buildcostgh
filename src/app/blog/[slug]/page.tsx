@@ -104,7 +104,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                   "@type": "Organization",
                   name: "BuildCost GH",
                   url: `${baseUrl}/`,
-                  logo: { "@type": "ImageObject", url: `${baseUrl}/icon.svg` },
+                  logo: { "@type": "ImageObject", url: `${baseUrl}/brand/logo-primary-1200w.png` },
                 },
                 inLanguage: "en",
                 articleSection: post.category ?? undefined,

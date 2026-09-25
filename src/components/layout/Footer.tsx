@@ -1,5 +1,6 @@
 import Link from "next/link"
-import { Hammer, Mail, Phone, MapPin } from "lucide-react"
+import Image from "next/image"
+import { Mail, Phone, MapPin } from "lucide-react"
 import { NewsletterForm } from "@/components/shared/NewsletterForm"
 import { SafeEmail, EmailText } from "@/components/shared/SafeEmail"
 
@@ -99,10 +100,15 @@ export function Footer() {
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
           <div>
-            <div className="flex items-center gap-2 font-bold text-xl text-white mb-4">
-              <Hammer className="h-6 w-6 text-emerald-400" />
-              BuildCost GH
-            </div>
+            <Link href="/" className="flex items-center mb-4" aria-label="BuildCost GH home">
+              <Image
+                src="/brand/logo-white.png"
+                alt="BuildCost GH — Estimate. Plan. Build with Confidence."
+                width={200}
+                height={166}
+                className="h-10 w-auto"
+              />
+            </Link>
             <p className="text-sm leading-relaxed mb-4">
               The leading construction cost estimation platform for Ghanaians and the global African diaspora. Plan your
               dream home or real estate investment with accurate, real-time cost data.

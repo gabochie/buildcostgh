@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
-import { Hammer, Download, ArrowRight } from "lucide-react"
+import Image from "next/image"
+import { Download, ArrowRight } from "lucide-react"
 import { SafeEmail, EmailText } from "@/components/shared/SafeEmail"
 
 export const metadata: Metadata = {
@@ -13,8 +14,8 @@ export default function PressKitPage() {
       <section className="bg-gradient-to-br from-emerald-900 via-emerald-800 to-charcoal py-20">
         <div className="container mx-auto px-4 text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
-            <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center backdrop-blur-sm border border-white/10">
-              <Hammer className="h-7 w-7 text-gold" />
+            <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center backdrop-blur-sm border border-white/10 overflow-hidden">
+              <Image src="/brand/logo-icon-192.png" alt="BuildCost GH mark" width={48} height={48} className="h-8 w-8" />
             </div>
           </div>
           <h1 className="text-4xl md:text-5xl font-heading font-bold text-white mb-4">Press Kit</h1>
@@ -37,36 +38,34 @@ export default function PressKitPage() {
                 name: "Logo — Horizontal",
                 desc: "Full logo with wordmark, ideal for websites and articles",
                 color: "bg-white border border-gray-200",
-                iconColor: "text-emerald-600",
-                bgIcon: "bg-emerald-50",
+                src: "/brand/logo-transparent.png",
+                alt: "BuildCost GH horizontal logo",
               },
               {
                 name: "Logo — Icon Only",
-                desc: "Hammer icon for favicons, avatars, and social media",
+                desc: "House + calculator mark for favicons, avatars, and social media",
                 color: "bg-emerald-600",
-                iconColor: "text-white",
-                bgIcon: "bg-white/20",
+                src: "/brand/logo-icon-512.png",
+                alt: "BuildCost GH icon",
               },
               {
                 name: "Logo — Dark Background",
                 desc: "White logo variant for dark backgrounds",
                 color: "bg-charcoal",
-                iconColor: "text-white",
-                bgIcon: "bg-white/10",
+                src: "/brand/logo-white.png",
+                alt: "BuildCost GH white logo",
               },
               {
-                name: "Brand Guidelines",
-                desc: "Color palette, typography, and usage guidelines (PDF)",
+                name: "Logo — Primary",
+                desc: "High-resolution primary logo (1200w) for print and presentations",
                 color: "bg-white border border-gray-200",
-                iconColor: "text-emerald-600",
-                bgIcon: "bg-emerald-50",
+                src: "/brand/logo-primary-1200w.png",
+                alt: "BuildCost GH primary logo",
               },
             ].map((asset) => (
               <div key={asset.name} className={`rounded-xl overflow-hidden ${asset.color} shadow-glass`}>
                 <div className={`p-8 flex items-center justify-center ${asset.color}`}>
-                  <div className={`w-16 h-16 rounded-2xl ${asset.bgIcon} flex items-center justify-center`}>
-                    <Hammer className={`h-8 w-8 ${asset.iconColor}`} />
-                  </div>
+                  <Image src={asset.src} alt={asset.alt} width={240} height={200} className="h-16 w-auto" />
                 </div>
                 <div className="p-4 bg-white border-t border-gray-100">
                   <div className="flex items-center justify-between">

@@ -6,7 +6,7 @@ export function organizationLd() {
     "@type": "Organization",
     name: "BuildCost GH",
     url: baseUrl(),
-    logo: `${baseUrl()}/logo.png`,
+    logo: `${baseUrl()}/brand/logo-primary-1200w.png`,
     contactPoint: {
       "@type": "ContactPoint",
       telephone: "+233-53-936-4716",
@@ -51,7 +51,7 @@ export function websiteLd() {
       "@type": "Organization",
       name: "BuildCost GH",
       url: baseUrl(),
-      logo: `${baseUrl()}/icon.svg`,
+      logo: `${baseUrl()}/brand/logo-primary-1200w.png`,
     },
   }
 }
