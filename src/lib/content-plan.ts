@@ -26,6 +26,13 @@ export type PillarSpec = {
   blogKeywords: string[]
 }
 
+export type PublishingTiers = {
+  /** Publishing rule for slots grounded by a fully-verified research brief. */
+  verifiedGrounding?: string // "auto" | "founder-approval"
+  /** Fallback rule for everything else. */
+  default?: string
+}
+
 export type ContentPlan = {
   schemaVersion: number
   meta: {
@@ -37,6 +44,8 @@ export type ContentPlan = {
     language: string
     publishingMode: string
     batchMode: string
+    /** Tiered publishing rules (ResearchBot era). Optional — engine defaults apply when absent. */
+    publishingTiers?: PublishingTiers
   }
   schedule: ScheduleSlot[]
   socialRotation: string[]
@@ -223,9 +232,16 @@ export function normalizePlan(raw: Partial<ContentPlan> | null | undefined): Con
   const language = (typeof rawMeta?.language === "string" ? rawMeta.language : undefined) ?? "en"
   const publishingMode = (typeof rawMeta?.publishingMode === "string" ? rawMeta.publishingMode : undefined) ?? "founder-approval"
   const batchMode = (typeof rawMeta?.batchMode === "string" ? rawMeta.batchMode : undefined) ?? "fill-ahead-weekly"
+  const rawTiers = (rawMeta as Partial<ContentPlan["meta"]> | undefined)?.publishingTiers
+  const publishingTiers: PublishingTiers | undefined = rawTiers && typeof rawTiers === "object"
+    ? {
+        verifiedGrounding: rawTiers.verifiedGrounding === "auto" ? "auto" : "founder-approval",
+        default: rawTiers.default === "auto" ? "auto" : "founder-approval",
+      }
+    : undefined
   return {
     schemaVersion: raw.schemaVersion ?? 1,
-    meta: { title, description, rollingStart, rollingMonths, postsPerWeek, language, publishingMode, batchMode },
+    meta: { title, description, rollingStart, rollingMonths, postsPerWeek, language, publishingMode, batchMode, ...(publishingTiers ? { publishingTiers } : {}) },
     schedule: raw.schedule,
     socialRotation: raw.socialRotation ?? [],
     blogRotation: raw.blogRotation ?? [],

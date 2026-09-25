@@ -8,6 +8,10 @@
     "postsPerWeek": 5,
     "language": "en",
     "publishingMode": "founder-approval",
+    "publishingTiers": {
+      "verifiedGrounding": "auto",
+      "default": "founder-approval"
+    },
     "batchMode": "fill-ahead-weekly"
   },
   "schedule": [
