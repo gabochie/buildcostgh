@@ -9,7 +9,7 @@ export async function GET() {
   const session = await auth()
   if (!isAdmin(session?.user)) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 
-  const agents = ["PaymentBot", "ReportBot", "LeadBot", "PriceBot", "SupportBot", "MCP"]
+  const agents = ["PaymentBot", "ReportBot", "LeadBot", "PriceBot", "SupportBot", "ResearchBot", "MCP"]
 
   const stats = await Promise.all(
     agents.map(async (agent) => {

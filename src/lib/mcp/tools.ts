@@ -76,6 +76,18 @@ export const toolDefinitions = [
     },
   },
   {
+    name: "get_research_brief",
+    description: "Get an evidence brief (verified prices, quotables, auto-publish eligibility) for a content pillar",
+    inputSchema: {
+      type: "object",
+      properties: {
+        pillar: { type: "string", description: "Content pillar key (e.g. materials-prices, region-pricing)", default: "materials-prices" },
+        topic: { type: "string", description: "Topic the brief should support" },
+        region: { type: "string", description: "Optional region slug to focus the brief on" },
+      },
+    },
+  },
+  {
     name: "get_lead_score",
     description: "Get lead score for a prospect email",
     inputSchema: {
