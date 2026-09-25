@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma"
 import { logAgentAction } from "@/lib/agent-log"
 import { generateReportForOrder } from "@/lib/jobs"
+import { buildBriefForSlot } from "@/lib/research-brief"
 import type { Prisma } from "@prisma/client"
 
 const BASE_PRICES: Record<number, number> = { 1: 80000, 2: 120000, 3: 180000, 4: 250000, 5: 400000 }
@@ -25,6 +26,8 @@ type ToolArgs = {
   currency?: string
   month?: number
   region?: string
+  pillar?: string
+  topic?: string
   question?: string
   status?: string
   category?: string
@@ -232,6 +235,25 @@ export async function executeTool(name: string, args: ToolArgs): Promise<ToolRes
           select: { title: true, slug: true, excerpt: true, category: true, createdAt: true },
         })
         result = posts
+        break
+      }
+
+      case "get_research_brief": {
+        const pillarKey = args.pillar || "materials-prices"
+        const where: Prisma.RegionRateWhereInput = { published: true }
+        const rates = await prisma.regionRate.findMany({ where })
+        const focused = args.region
+          ? rates.filter((r) => r.slug === args.region)
+          : rates
+        const brief = buildBriefForSlot(
+          {
+            dateKey: new Date().toISOString().slice(0, 10),
+            pillarKey,
+            topic: args.topic || `Latest ${pillarKey.replace(/-/g, " ")} intelligence`,
+          },
+          focused.length > 0 ? focused : rates
+        )
+        result = brief
         break
       }
 

@@ -4,6 +4,8 @@ on:
   schedule:
     # Every day 03:05 UTC — drain the job queue (receipts, reports, subscriptions)
     - cron: "5 3 * * *"
+    # Weekly Saturday 03:30 UTC — ResearchBot (evidence briefs + rate proposals, ahead of Sunday content run)
+    - cron: "30 3 * * 6"
     # Weekly Sunday 03:30 UTC — Content Marketing agent (matches old vercel cron)
     - cron: "30 3 * * 0"
     # Every day 06:10 UTC — autonomous Ops Watchtower (health, repairs, report)
@@ -26,6 +28,18 @@ jobs:
           curl -fsS --max-time 300 -X GET \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
             "${{ secrets.PROD_URL || 'https://buildcostgh.com' }}/api/jobs/process"
+
+  research-run:
+    name: ResearchBot (weekly)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && github.event.schedule == '30 3 * * 6')
+    steps:
+      - name: Call research/run
+        run: |
+          curl -fsS --max-time 300 -X GET \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "${{ secrets.PROD_URL || 'https://buildcostgh.com' }}/api/research/run"
 
   content-scheduled:
     name: Content agent (weekly)
