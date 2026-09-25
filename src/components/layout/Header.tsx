@@ -38,15 +38,23 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/20 glass">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <Link href="/" className="flex items-center" aria-label="BuildCost GH home">
+        <Link href="/" className="flex items-center gap-2.5" aria-label="BuildCost GH home">
           <Image
-            src="/brand/logo-transparent.png"
-            alt="BuildCost GH — Estimate. Plan. Build with Confidence."
-            width={200}
-            height={166}
-            className="h-10 w-auto"
+            src="/brand/logo-mark.png"
+            alt="BuildCost GH logo"
+            width={48}
+            height={48}
+            className="h-10 w-10"
             priority
           />
+          <span className="flex flex-col leading-none">
+            <span className="font-bold text-lg text-gray-900">
+              BuildCost <span className="text-emerald-700">GH</span>
+            </span>
+            <span className="hidden sm:block text-[10px] font-medium tracking-wide text-gray-500 mt-1">
+              ESTIMATE. PLAN. BUILD WITH CONFIDENCE.
+            </span>
+          </span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-6">

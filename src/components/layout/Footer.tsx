@@ -100,14 +100,22 @@ export function Footer() {
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
           <div>
-            <Link href="/" className="flex items-center mb-4" aria-label="BuildCost GH home">
+            <Link href="/" className="flex items-center gap-2.5 mb-4" aria-label="BuildCost GH home">
               <Image
-                src="/brand/logo-white.png"
-                alt="BuildCost GH — Estimate. Plan. Build with Confidence."
-                width={200}
-                height={166}
-                className="h-10 w-auto"
+                src="/brand/logo-mark.png"
+                alt="BuildCost GH logo"
+                width={48}
+                height={48}
+                className="h-10 w-10"
               />
+              <span className="flex flex-col leading-none">
+                <span className="font-bold text-xl text-white">
+                  BuildCost <span className="text-emerald-400">GH</span>
+                </span>
+                <span className="text-[10px] font-medium tracking-wide text-gray-400 mt-1">
+                  ESTIMATE. PLAN. BUILD WITH CONFIDENCE.
+                </span>
+              </span>
             </Link>
             <p className="text-sm leading-relaxed mb-4">
               The leading construction cost estimation platform for Ghanaians and the global African diaspora. Plan your
