@@ -50,3 +50,6 @@ next-env.d.ts
 
 # generated report files (private — served only via authenticated download route)
 /reports-storage
+
+# local dev logs (were tracked by accident)
+*.log
