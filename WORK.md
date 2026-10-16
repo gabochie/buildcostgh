@@ -1,6 +1,10 @@
 # BuildCostGH Deployment Notes
 
-## Status (as of 2026-10-16): PWA + HARDENING BATCH (uncommitted — see CHANGELOG.md)
+## Status (as of 2026-10-16): PWA + HARDENING BATCH — DEPLOYED LIVE
+- Commits `24efc0c` (feat) + `bd62d2d` (docs) pushed to `origin/master`; Vercel auto-deployed.
+- Live-verified: `/manifest.webmanifest` 200 (standalone, maskable icons, shortcuts), `/sw.js` serving, `/offline` renders with bottom nav, homepage 200 through new proxy (Edge rate limits active).
+- Push migration `20261016000000_add_push_subscriptions` applied via `migrate deploy` in the Vercel build (deploy green = migration clean).
+- Still open: set VAPID keys in Vercel Production to activate Web Push (code no-ops safely until then).
 - PWA shippable: manifest, zero-dep service worker, `/offline`, install prompt, bottom nav, full offline calculator (IndexedDB queue + sync), Web Push (needs VAPID keys in Vercel — see `.env.example`).
 - Hardening: global Edge rate limits in `proxy.ts`, sanitized error boundaries + `global-error.tsx`, no-stack 5xx, `puppeteer` → `puppeteer-core + @sparticuz/chromium`, `exceljs` → `xlsx`, CI gates (unit + e2e + audit report-only + Dependabot), Next 16.2.10 → **16.2.12** (middleware-bypass GHSA fix — was NOT cosmetic).
 - Verified: `tsc` clean, `eslint` 0 errors, unit 54/54, `next build` green.
