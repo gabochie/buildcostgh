@@ -1,4 +1,4 @@
-import ExcelJS from "exceljs"
+import * as XLSX from "xlsx"
 import { materialQuantityRows, timelineRows } from "./report-content"
 import type { CalculatorInput, EstimateResult } from "@/types"
 
@@ -12,32 +12,34 @@ export interface WorkbookContext {
   estimate: EstimateResult | null
 }
 
-function headerRow(ws: ExcelJS.Worksheet, values: string[]): void {
-  const row = ws.addRow(values)
-  row.font = { bold: true, color: { argb: "FFFFFFFF" } }
-  row.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF059669" } }
-  row.height = 20
-}
-
 function money(n: number): number {
   return Math.round(n)
 }
 
-export async function generateReportWorkbook(ctx: WorkbookContext): Promise<Buffer> {
-  const wb = new ExcelJS.Workbook()
-  wb.creator = "BuildCost GH"
-  wb.created = new Date()
+// SheetJS community edition cannot write cell styles (fills/fonts), so
+// sheets use structure instead: a title row, a blank row, then a header row.
+// Number formats (!cols widths, merges, numFmt) are fully supported.
+function finalizeSheet(ws: XLSX.WorkSheet, colWidths: number[], merges?: XLSX.Range[]) {
+  ws["!cols"] = colWidths.map((wch) => ({ wch }))
+  if (merges) ws["!merges"] = merges
+}
 
-  const summary = wb.addWorksheet("Summary")
-  summary.columns = [
-    { header: "Field", key: "field", width: 28 },
-    { header: "Value", key: "value", width: 40 },
-  ]
-  summary.getRow(1).font = { bold: true, size: 14, color: { argb: "FF059669" } }
-  summary.getCell("A1").value = "BuildCost GH — Construction Cost Report"
-  summary.mergeCells("A1:B1")
-  summary.addRow([])
-  const summaryRows: [string, string][] = [
+function applyNumFmt(ws: XLSX.WorkSheet, col: number, fromRow: number, toRow: number) {
+  for (let r = fromRow; r <= toRow; r++) {
+    const addr = XLSX.utils.encode_cell({ c: col, r })
+    const cell = ws[addr]
+    if (cell && typeof cell.v === "number") cell.z = "#,##0"
+  }
+}
+
+export async function generateReportWorkbook(ctx: WorkbookContext): Promise<Buffer> {
+  const wb = XLSX.utils.book_new()
+  wb.Props = { Title: "BuildCost GH — Construction Cost Report", Author: "BuildCost GH", CreatedDate: new Date() }
+
+  // ── Summary ──
+  const summaryRows: (string | number)[][] = [
+    ["BuildCost GH — Construction Cost Report"],
+    [],
     ["Order Reference", ctx.reference],
     ["Customer", ctx.fullName],
     ["Package", ctx.packageName],
@@ -45,95 +47,78 @@ export async function generateReportWorkbook(ctx: WorkbookContext): Promise<Buff
     ["Report Date", ctx.createdAt.toLocaleDateString("en-GH", { year: "numeric", month: "long", day: "numeric" })],
   ]
   if (ctx.input) {
-    summaryRows.push(["Bedrooms", ctx.input.bedrooms])
-    summaryRows.push(["Location", ctx.input.location])
-    summaryRows.push(["Floor Area", `${ctx.input.floorArea} m²`])
-    summaryRows.push(["Floors", ctx.input.floors])
-    summaryRows.push(["Finishing Grade", ctx.input.grade])
+    summaryRows.push(
+      ["Bedrooms", ctx.input.bedrooms],
+      ["Location", ctx.input.location],
+      ["Floor Area", `${ctx.input.floorArea} m²`],
+      ["Floors", ctx.input.floors],
+      ["Finishing Grade", ctx.input.grade],
+    )
   }
   if (ctx.estimate) {
-    summaryRows.push(["Price per m²", `GHS ${money(ctx.estimate.summary.pricePerSqm).toLocaleString("en-GH")}`])
-    summaryRows.push(["Total Area", `${ctx.estimate.summary.totalSqm} m²`])
-    summaryRows.push(["Estimated Total Cost", `GHS ${money(ctx.estimate.breakdown.total).toLocaleString("en-GH")}`])
+    summaryRows.push(
+      ["Price per m²", `GHS ${money(ctx.estimate.summary.pricePerSqm).toLocaleString("en-GH")}`],
+      ["Total Area", `${ctx.estimate.summary.totalSqm} m²`],
+      ["Estimated Total Cost", `GHS ${money(ctx.estimate.breakdown.total).toLocaleString("en-GH")}`],
+    )
   }
-  summaryRows.forEach(([f, v]) => summary.addRow({ field: f, value: v }))
-  summary.addRow([])
-  summary.addRow({ field: "Notes", value: "Preliminary estimate. Verify with a contractor before purchase. Rates vary by region and season." })
+  summaryRows.push([], ["Notes", "Preliminary estimate. Verify with a contractor before purchase. Rates vary by region and season."])
+  const summary = XLSX.utils.aoa_to_sheet(summaryRows)
+  finalizeSheet(summary, [28, 60], [{ s: { c: 0, r: 0 }, e: { c: 1, r: 0 } }])
+  XLSX.utils.book_append_sheet(wb, summary, "Summary")
 
-  const breakdown = wb.addWorksheet("Cost Breakdown")
-  breakdown.columns = [
-    { header: "Category", key: "category", width: 30 },
-    { header: "Share", key: "share", width: 12 },
-    { header: "Amount (GHS)", key: "amount", width: 18 },
-  ]
-  headerRow(breakdown, ["Category", "Share", "Amount (GHS)"])
+  // ── Cost Breakdown ──
+  const breakdownRows: (string | number)[][] = [["Category", "Share", "Amount (GHS)"]]
   if (ctx.estimate) {
     const e = ctx.estimate
-    const rows = [
-      { category: "Foundation", share: "18%", amount: money(e.breakdown.baseCost * 0.18) },
-      { category: "Structure", share: "34%", amount: money(e.breakdown.baseCost * 0.34) },
-      { category: "Finishing", share: "38%", amount: money(e.breakdown.baseCost * 0.38) },
-      { category: "Services & Add-ons", share: "10%", amount: money(e.breakdown.baseCost * 0.1 + e.breakdown.addonsCost) },
-    ]
-    rows.forEach((r) => {
-      const row = breakdown.addRow(r)
-      row.getCell("amount").numFmt = "#,##0"
-    })
-    const total = breakdown.addRow({ category: "Estimated Total", share: "100%", amount: money(e.breakdown.total) })
-    total.font = { bold: true }
-    total.getCell("amount").numFmt = "#,##0"
+    breakdownRows.push(
+      ["Foundation", "18%", money(e.breakdown.baseCost * 0.18)],
+      ["Structure", "34%", money(e.breakdown.baseCost * 0.34)],
+      ["Finishing", "38%", money(e.breakdown.baseCost * 0.38)],
+      ["Services & Add-ons", "10%", money(e.breakdown.baseCost * 0.1 + e.breakdown.addonsCost)],
+      ["Estimated Total", "100%", money(e.breakdown.total)],
+    )
   } else {
-    breakdown.addRow({ category: "Run the free calculator to see your breakdown", share: "", amount: 0 })
+    breakdownRows.push(["Run the free calculator to see your breakdown", "", 0])
   }
+  const breakdown = XLSX.utils.aoa_to_sheet(breakdownRows)
+  finalizeSheet(breakdown, [30, 12, 18])
+  applyNumFmt(breakdown, 2, 1, breakdownRows.length - 1)
+  XLSX.utils.book_append_sheet(wb, breakdown, "Cost Breakdown")
 
-  const materials = wb.addWorksheet("Material Quantities")
-  materials.columns = [
-    { header: "Material", key: "material", width: 32 },
-    { header: "Quantity", key: "qty", width: 14 },
-    { header: "Unit", key: "unit", width: 12 },
-    { header: "Indicative Unit Price (GHS)", key: "unitPrice", width: 28 },
-    { header: "Est. Cost (GHS)", key: "estCost", width: 18 },
-    { header: "Use", key: "note", width: 42 },
+  // ── Material Quantities ──
+  const materialsRows: (string | number)[][] = [
+    ["Material", "Quantity", "Unit", "Indicative Unit Price (GHS)", "Est. Cost (GHS)", "Use"],
   ]
-  headerRow(materials, ["Material", "Quantity", "Unit", "Indicative Unit Price (GHS)", "Est. Cost (GHS)", "Use"])
   const area = ctx.estimate?.summary.totalSqm ?? (parseFloat(ctx.input?.floorArea ?? "0") || 0)
   if (area > 0) {
     const rows = materialQuantityRows(area, ctx.estimate?.regionRates)
-    rows.forEach((r) => {
-      const row = materials.addRow({
-        material: r.material,
-        qty: r.qty,
-        unit: r.unit,
-        unitPrice: r.unitPrice,
-        estCost: money(r.qty * r.unitPrice),
-        note: r.note,
-      })
-      row.getCell("qty").numFmt = "#,##0"
-      row.getCell("unitPrice").numFmt = "#,##0"
-      row.getCell("estCost").numFmt = "#,##0"
-    })
+    for (const r of rows) {
+      materialsRows.push([r.material, r.qty, r.unit, r.unitPrice, money(r.qty * r.unitPrice), r.note])
+    }
     const materialsTotal = rows.reduce((sum, r) => sum + r.qty * r.unitPrice, 0)
-    const totalRow = materials.addRow({ material: "Total (materials only)", qty: "", unit: "", unitPrice: "", estCost: money(materialsTotal), note: "Excludes labour, plant & fees" })
-    totalRow.font = { bold: true }
-    totalRow.getCell("estCost").numFmt = "#,##0"
+    materialsRows.push(["Total (materials only)", "", "", "", money(materialsTotal), "Excludes labour, plant & fees"])
   } else {
-    materials.addRow({ material: "Run the free calculator to see material quantities", qty: "", unit: "", unitPrice: "", estCost: "", note: "" })
+    materialsRows.push(["Run the free calculator to see material quantities", "", "", "", "", ""])
   }
+  const materials = XLSX.utils.aoa_to_sheet(materialsRows)
+  finalizeSheet(materials, [32, 14, 12, 28, 18, 42])
+  applyNumFmt(materials, 1, 1, materialsRows.length - 1)
+  applyNumFmt(materials, 3, 1, materialsRows.length - 1)
+  applyNumFmt(materials, 4, 1, materialsRows.length - 1)
+  XLSX.utils.book_append_sheet(wb, materials, "Material Quantities")
 
-  const timeline = wb.addWorksheet("Construction Timeline")
-  timeline.columns = [
-    { header: "Stage", key: "month", width: 14 },
-    { header: "Activity", key: "phase", width: 46 },
-    { header: "Share of Cost", key: "costSharePct", width: 16 },
-    { header: "Cumulative", key: "cumulative", width: 14 },
-  ]
-  headerRow(timeline, ["Stage", "Activity", "Share of Cost", "Cumulative"])
+  // ── Construction Timeline ──
+  const timelineData: (string | number)[][] = [["Stage", "Activity", "Share of Cost", "Cumulative"]]
   let cumulative = 0
-  timelineRows().forEach((r) => {
+  for (const r of timelineRows()) {
     cumulative += r.costSharePct
-    timeline.addRow({ month: r.month, phase: r.phase, costSharePct: `${r.costSharePct}%`, cumulative: `${cumulative}%` })
-  })
+    timelineData.push([r.month, r.phase, `${r.costSharePct}%`, `${cumulative}%`])
+  }
+  const timeline = XLSX.utils.aoa_to_sheet(timelineData)
+  finalizeSheet(timeline, [14, 46, 16, 14])
+  XLSX.utils.book_append_sheet(wb, timeline, "Construction Timeline")
 
-  const buffer = await wb.xlsx.writeBuffer()
-  return Buffer.from(buffer)
+  const out = XLSX.write(wb, { type: "buffer", bookType: "xlsx" })
+  return Buffer.from(out)
 }

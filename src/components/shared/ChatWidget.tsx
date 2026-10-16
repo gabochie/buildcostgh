@@ -52,7 +52,7 @@ export function ChatWidget() {
   return (
     <>
       {open && (
-        <div className="fixed bottom-24 right-6 z-50 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col" style={{ maxHeight: "calc(100vh - 180px)" }}>
+        <div className="fixed bottom-40 md:bottom-24 right-6 z-50 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col" style={{ maxHeight: "calc(100vh - 180px)" }}>
           <div className="flex items-center justify-between px-4 py-3 bg-gradient-primary text-white">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
@@ -132,7 +132,7 @@ export function ChatWidget() {
 
       <button
         onClick={() => setOpen(!open)}
-        className="fixed bottom-8 right-6 z-50 w-14 h-14 rounded-full bg-gradient-primary text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center justify-center"
+        className="fixed bottom-24 md:bottom-8 right-6 z-50 w-14 h-14 rounded-full bg-gradient-primary text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center justify-center"
         aria-label={open ? "Close chat" : "Open chat"}
       >
         {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}

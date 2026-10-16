@@ -705,6 +705,20 @@ model Authority {
 // PROJECT SAVING & SCENARIO COMPARISON (Master Upgrade §30-31)
 // ═══════════════════════════════════════════════════════════
 
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String?
+  email     String?
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([email])
+}
+
 model SavedEstimate {
   id            String   @id @default(cuid())
   userId        String?

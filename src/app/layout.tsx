@@ -3,12 +3,16 @@ import { Inter, Playfair_Display, Geist_Mono } from "next/font/google"
 import "./globals.css"
 import { Header } from "@/components/layout/Header"
 import { Footer } from "@/components/layout/Footer"
+import { BottomNav } from "@/components/layout/BottomNav"
 import { Providers } from "@/components/Providers"
 import { Analytics } from "@/components/shared/Analytics"
 import { ChatWidget } from "@/components/shared/ChatWidget"
 import { CookieConsent } from "@/components/shared/CookieConsent"
 import { WhatsAppButton } from "@/components/shared/WhatsAppButton"
 import { ExitIntentPopup } from "@/components/shared/ExitIntentPopup"
+import { ServiceWorkerRegister } from "@/components/pwa/ServiceWorkerRegister"
+import { PwaInstallPrompt } from "@/components/pwa/PwaInstallPrompt"
+import { PushPrompt } from "@/components/pwa/PushPrompt"
 import { ServerInit } from "@/components/ServerInit"
 import { organizationLd, websiteLd } from "./ld"
 
@@ -60,12 +64,16 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/icon.svg", type: "image/svg+xml" },
-      { url: "/icon.png", sizes: "512x512", type: "image/png" },
       { url: "/assets/icon-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/assets/icon-512x512.png", sizes: "512x512", type: "image/png" },
     ],
-    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
+    apple: [{ url: "/assets/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
     shortcut: "/assets/favicon.ico",
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "BuildCost GH",
   },
   alternates: {
     canonical: "/",
@@ -92,6 +100,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  viewportFit: "cover",
   themeColor: "#059669",
 }
 
@@ -102,8 +111,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ServerInit />
         <Providers>
           <Header />
-          <main className="flex-1">{children}</main>
+          <main className="flex-1 pb-20 md:pb-0">{children}</main>
           <Footer />
+          <BottomNav />
+          <ServiceWorkerRegister />
+          <PwaInstallPrompt />
+          <PushPrompt />
           <Analytics />
           <CookieConsent />
           <WhatsAppButton />

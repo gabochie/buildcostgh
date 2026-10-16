@@ -1,0 +1,20 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    # Security-only auto-updates keep the audit backlog shrinking without
+    # churning feature deps. Group transitive chains to single PRs.
+    open-pull-requests-limit: 5
+    groups:
+      security:
+        applies-to: security-updates
+        patterns:
+          - "*"
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3

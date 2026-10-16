@@ -23,10 +23,13 @@ export async function GET() {
       uptime: process.uptime(),
     })
   } catch (err) {
+    // Public endpoint: never leak DB internals (Prisma errors can embed
+    // hosts, connection strings, or SQL). Log server-side only.
+    console.error("[health] DB check failed", err)
     return NextResponse.json({
       status: "unhealthy",
       timestamp: new Date().toISOString(),
-      db: { connected: false, error: err instanceof Error ? err.message : String(err) },
+      db: { connected: false },
     }, { status: 503 })
   }
 }

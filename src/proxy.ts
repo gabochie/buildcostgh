@@ -1,6 +1,7 @@
 import { getToken } from "next-auth/jwt"
 import { NextRequest, NextResponse } from "next/server"
 import { verifyCsrfFromRequest } from "@/lib/csrf"
+import { checkEdgeRateLimit, clientIpFromHeaders, edgeLimitFor } from "@/lib/edge-rate-limit"
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || ""
 
@@ -50,6 +51,28 @@ export default async function proxy(req: NextRequest) {
 
   if (BYPASS_PATHS.some((p) => pathname.startsWith(p)) || skipProxy(pathname)) {
     return NextResponse.next()
+  }
+
+  // Global Edge rate limit for /api/* (first line of defense; per-route
+  // DB-backed limits in lib/rate-limit.ts still apply downstream).
+  const edgeLimit = edgeLimitFor(pathname, req.method)
+  if (edgeLimit) {
+    const ip = clientIpFromHeaders(req.headers)
+    const { allowed, info } = checkEdgeRateLimit(ip, edgeLimit.scope, edgeLimit.limit)
+    if (!allowed) {
+      return NextResponse.json(
+        { error: "Rate limit exceeded. Please slow down and try again." },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(info.retryAfterSec),
+            "X-RateLimit-Limit": String(info.limit),
+            "X-RateLimit-Remaining": "0",
+            "X-RateLimit-Reset": String(info.retryAfterSec),
+          },
+        }
+      )
+    }
   }
 
   // Maintenance mode check — block public pages and API, allow admin through.

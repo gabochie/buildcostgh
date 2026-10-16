@@ -43,6 +43,8 @@ export interface EstimateResult {
     grade: string
     location: string
   }
+  /** True when computed on-device while offline (no seasonal/region-rate data). */
+  offline?: boolean
   // Extended fields from the new calculation engine
   extended?: {
     costRange: { low: number; high: number }

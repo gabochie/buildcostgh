@@ -17,6 +17,8 @@ import { AssumptionsPanel } from "@/components/calculator/AssumptionsPanel"
 import { PermitChecklist } from "@/components/calculator/PermitChecklist"
 import { SaveEstimateDialog } from "@/components/calculator/SaveEstimateDialog"
 import { useCsrfFetch } from "@/hooks/useCsrfFetch"
+import { calculateOfflineEstimate } from "@/lib/offline/estimate-offline"
+import { queueEstimate, flushEstimateQueue, getQueuedEstimates } from "@/lib/offline/db"
 
 function AnimatedPrice({ value }: { value: number }) {
   const [display, setDisplay] = useState(0)
@@ -52,29 +54,60 @@ export function Step5Result() {
   const [selectedRegion, setSelectedRegion] = useState(step1.location)
   const [showComparison, setShowComparison] = useState(false)
   const [permitData, setPermitData] = useState<Record<string, unknown> | null>(null)
+  const [isOffline, setIsOffline] = useState(false)
+  const [queuedCount, setQueuedCount] = useState(0)
   const csrfFetch = useCsrfFetch()
 
   const hasExtended = !!result?.extended
 
   useEffect(() => {
+    const payload = {
+      ...step1, ...step2, ...step3, ...step4,
+      buildingCategorySlug: buildingType?.categorySlug || "residential",
+      buildingSubtypeSlug: buildingType?.subtypeSlug || undefined,
+    }
     const fetchEstimate = async () => {
       try {
         const res = await csrfFetch("/api/calculator", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ...step1, ...step2, ...step3, ...step4,
-            buildingCategorySlug: buildingType?.categorySlug || "residential",
-            buildingSubtypeSlug: buildingType?.subtypeSlug || undefined,
-          }),
+          body: JSON.stringify(payload),
         })
         const data = await res.json()
         if (res.ok) {
           setResult(data)
           persistResult(data)
+          // Online again: flush any estimates queued while offline.
+          try {
+            await flushEstimateQueue(async (inputs) => {
+              try {
+                const r = await csrfFetch("/api/calculator", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(inputs),
+                })
+                return r.ok
+              } catch {
+                return false
+              }
+            })
+            setQueuedCount((await getQueuedEstimates()).length)
+          } catch {
+            // queue flush is best-effort
+          }
         } else setError(data.error)
       } catch {
-        setError("Failed to calculate estimate. Please try again.")
+        // Offline (or server unreachable): compute on-device + queue for sync.
+        try {
+          const offline = calculateOfflineEstimate({ ...step1, ...step2, ...step3, ...step4 })
+          setResult(offline)
+          persistResult(offline)
+          setIsOffline(true)
+          await queueEstimate(payload)
+          setQueuedCount((await getQueuedEstimates()).length)
+        } catch {
+          setError("Failed to calculate estimate. Please try again.")
+        }
       } finally {
         setLoading(false)
       }
@@ -159,6 +192,15 @@ export function Step5Result() {
         <h2 className="text-xl font-semibold text-gray-900 mb-1">Your Cost Estimate</h2>
         <p className="text-sm text-gray-500">Step 8 of 8</p>
       </div>
+
+      {(isOffline || result.offline) && (
+        <div className="bg-sky-50 border border-sky-200 rounded-xl p-4 text-sm text-sky-800" role="status">
+          <strong>Offline estimate.</strong> Computed on your device without live rates
+          (seasonal adjustment unavailable). Your inputs are queued
+          {queuedCount > 0 && <> ({queuedCount} pending)</>} and will sync automatically when
+          you&apos;re back online.
+        </div>
+      )}
 
       {/* ── Cost Range (extended) or Animated Total (legacy) ── */}
       {hasExtended && result.extended ? (

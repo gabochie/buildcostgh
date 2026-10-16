@@ -43,14 +43,9 @@ export async function GET(req: NextRequest) {
       ts: new Date().toISOString(),
     })
   } catch (err) {
-    return NextResponse.json(
-      {
-        error: err instanceof Error ? err.message : String(err),
-        code: (err as { code?: string })?.code ?? null,
-        meta: (err as { meta?: unknown })?.meta ?? null,
-        stack: err instanceof Error ? err.stack : null,
-      },
-      { status: 500 }
-    )
+    // Never leak internals (message/code/meta/stack can embed SQL, paths,
+    // or secrets) to the caller — log server-side, return a generic 500.
+    console.error("[jobs/process] queue drain failed", err)
+    return NextResponse.json({ error: "Job processing failed" }, { status: 500 })
   }
 }

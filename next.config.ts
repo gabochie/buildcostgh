@@ -17,6 +17,17 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        source: "/sw.js",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=0, must-revalidate" },
+          { key: "Content-Type", value: "application/javascript; charset=utf-8" },
+        ],
+      },
+      {
+        source: "/manifest.webmanifest",
+        headers: [{ key: "Cache-Control", value: "public, max-age=86400, must-revalidate" }],
+      },
+      {
         source: "/(.*)",
         headers: [
           { key: "X-Frame-Options", value: "DENY" },
@@ -34,6 +45,8 @@ const nextConfig: NextConfig = {
               "font-src 'self' https://fonts.gstatic.com",
               "connect-src 'self' https://open.er-api.com https://api.coinbase.com https://api.paystack.co https://neon.tech wss://voice.buildcostgh.com https://www.google-analytics.com https://analytics.google.com https://www.google.com https://*.googletagmanager.com",
               "frame-src 'self' https://js.paystack.co https://challenges.cloudflare.com",
+              "worker-src 'self'",
+              "manifest-src 'self'",
             ].join("; "),
           },
         ],
