@@ -1,0 +1,40 @@
+name: Preview Smoke
+
+on:
+  pull_request:
+    branches: [master, staging]
+
+jobs:
+  smoke:
+    name: Smoke-test Vercel preview deployment
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Wait for Vercel preview deployment
+        id: vercel
+        uses: patheard/vercel-preview-url@v1.0.4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          vercel_token: ${{ secrets.VERCEL_TOKEN }}
+          vercel_project_id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel_team_id: ${{ secrets.VERCEL_TEAM_ID }}
+          max_timeout: 600
+
+      - name: Liveness probe
+        run: |
+          curl -fsS --max-time 30 "${{ steps.vercel.outputs.preview_url }}/api/health/live" | grep -q '"alive"'
+
+      - name: Readiness probe
+        run: |
+          curl -fsS --max-time 60 "${{ steps.vercel.outputs.preview_url }}/api/health/ready" | grep -q '"ready"'
+
+      - name: Homepage + CSP headers
+        run: |
+          HDRS=$(curl -fsSI --max-time 30 "${{ steps.vercel.outputs.preview_url }}/")
+          echo "$HDRS" | grep -qi 'content-security-policy' || (echo "CSP header missing" && exit 1)
+          echo "$HDRS" | grep -qi 'worker-src' || (echo "worker-src missing" && exit 1)
+
+      - name: PWA manifest + SW served
+        run: |
+          curl -fsS --max-time 30 "${{ steps.vercel.outputs.preview_url }}/manifest.webmanifest" | grep -q '"standalone"'
+          curl -fsS --max-time 30 "${{ steps.vercel.outputs.preview_url }}/sw.js" | grep -q 'bcgh-v1'

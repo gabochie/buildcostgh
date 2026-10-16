@@ -19,8 +19,7 @@ All notable changes, newest first. Dates in UTC.
 - Patch-only + npm-only, squash, executes only when required CI checks pass.
   Minor/major stay manual. Needs "Allow auto-merge" enabled on the repo.
 
-### Backup safety net (`scripts/backup-db.mjs`)
-- Pure-Node (no `pg_dump` needed): dumps business tables to `backups/<ts>/`
+### Backup safety net (`scripts/backup-db.mjs`)- Pure-Node (no `pg_dump` needed): dumps business tables to `backups/<ts>/`
   as JSON + manifest (row counts, git SHA, pg version). Sensitive columns
   (`User.passwordHash`) excluded in SQL so they never leave the DB; missing
   tables recorded as `"missing"` (schema-drift tolerant).
@@ -30,6 +29,12 @@ All notable changes, newest first. Dates in UTC.
 - `/backups` gitignored. Weekly Task Scheduler job "BuildCostGH weekly backup"
   registered (Sundays 02:00 via `scripts\backup-weekly.cmd`); test-fired
   successfully (10s full dump). Restore = Neon snapshot/PITR first, JSON dumps as fallback.
+
+### Preview smoke (`preview-smoke.yml`)
+- New PR workflow: waits for the Vercel preview deployment, then probes
+  `/api/health/live` + `/api/health/ready` + CSP/`worker-src` headers +
+  manifest + SW. Needs repo secrets `VERCEL_TOKEN`, `VERCEL_PROJECT_ID`,
+  `VERCEL_TEAM_ID` (see manual todos).
 
 ### Verification (this batch)
 - `tsc --noEmit` clean (incl. Sentry v11 + Prisma JSON fixes), `eslint` 0 errors,
