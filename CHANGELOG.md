@@ -35,6 +35,21 @@ All notable changes, newest first. Dates in UTC.
   `/api/health/live` + `/api/health/ready` + CSP/`worker-src` headers +
   manifest + SW. Needs repo secrets `VERCEL_TOKEN`, `VERCEL_PROJECT_ID`,
   `VERCEL_TEAM_ID` (see manual todos).
+- New `smoke-prod.yml`: same probes against production on every master push.
+
+### 2026-10-16 — Machine-automated ops (gh + Vercel CLI/API)
+- `OPS_AGENT_KEY` + VAPID keypair generated and set in Vercel Production via
+  REST API (PowerShell stdin appends CRLF — caught via live `public-key`
+  check showing `\r\n`, fixed byte-exact, verified clean). CLI `vercel env add`
+  avoided for secrets for the same reason. Redeploy triggered via git push
+  (local `vercel --prod` hits the known `.omo` trace-packaging bug).
+- Repo: auto-merge + delete-branch enabled; `VERCEL_TOKEN/PROJECT_ID/TEAM_ID`
+  secrets set; Preview env repaired (unscoped `DATABASE_URL` + 4 build vars —
+  branch-scoped dependabot entries were shadowing nothing); CI secrets set.
+- CI fixed: `env` block re-indented under job, `ADMIN_EMAIL` added, standalone
+  `voice-agent/` ignored by root lint (6 pre-existing errors). CI green 5m57s.
+- Preview deploys build green (`Ready`); PR #12 merged; `VERCEL_BYPASS` still
+  needs dashboard copy (no API exists) for smoke probes to pass SSO.
 
 ### Verification (this batch)
 - `tsc --noEmit` clean (incl. Sentry v11 + Prisma JSON fixes), `eslint` 0 errors,

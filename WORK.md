@@ -1,5 +1,10 @@
 # BuildCostGH Deployment Notes
 
+## Status (as of 2026-10-16): MACHINE-AUTOMATED OPS DONE (CI green, prod smoke green)
+- Secrets/CI/env all set from this machine (gh + Vercel API): OPS_AGENT_KEY, VAPID pair, auto-merge + delete-branch, Preview env, CI secrets. CI green 5m57s; post-deploy smoke green on master; preview builds Ready.
+- Human-only remainder: VERCEL_BYPASS (dashboard), staging migrate (needs URL), Sentry signup, Neon snapshot/drill, device checks, live payments. See manual todos file.
+- Prior live state below — unchanged.
+
 ## Status (as of 2026-10-16): DEVOPS PREREQS COMPLETE PENDING HUMAN STEPS (see manual todos)
 - Item 2 (OPS_AGENT_KEY), item 4 (VAPID) set via Vercel API with byte-exact values (PowerShell stdin was appending CRLF — caught via live `public-key` check, fixed via REST API, verified clean).
 - Item 3: auto-merge + delete-branch enabled via `gh`; VERCEL_TOKEN/PROJECT_ID/TEAM_ID repo secrets set; Preview env repaired (unscoped DATABASE_URL + 4 build vars). Preview deploys build green (`Ready` verified). PR #12 merged; branch auto-deleted.
