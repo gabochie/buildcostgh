@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Standalone Cloudflare Workers subproject (own package.json + README);
+    // not covered by the Next.js app's lint rules.
+    "voice-agent/**",
   ]),
 ]);
 
