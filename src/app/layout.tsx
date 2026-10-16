@@ -8,7 +8,6 @@ import { Providers } from "@/components/Providers"
 import { Analytics } from "@/components/shared/Analytics"
 import { ChatWidget } from "@/components/shared/ChatWidget"
 import { CookieConsent } from "@/components/shared/CookieConsent"
-import { WhatsAppButton } from "@/components/shared/WhatsAppButton"
 import { ExitIntentPopup } from "@/components/shared/ExitIntentPopup"
 import { ServiceWorkerRegister } from "@/components/pwa/ServiceWorkerRegister"
 import { PwaInstallPrompt } from "@/components/pwa/PwaInstallPrompt"
@@ -119,7 +118,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <PushPrompt />
           <Analytics />
           <CookieConsent />
-          <WhatsAppButton />
           <ChatWidget />
           <ExitIntentPopup />
           <script
