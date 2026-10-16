@@ -111,3 +111,9 @@ Tunables (safe defaults on): `OPS_AUTO_RETRY_STUCK`, `OPS_STUCK_JOB_MS`, `OPS_AU
 - Reports are served only through `/api/reports/download` after validating an HMAC token and / or session ownership; static report URLs are not exposed.
 - CSRF and payment secrets have no hardcoded fallbacks — misconfiguration fails loudly in production.
 - V1 API keys are consumed atomically and rate-limited to prevent quota-bypass.
+
+## Live Demo ✅ Verified Oct 16 2026
+Live: https://buildcostgh.com — estimator + PDF/XLSX, MTN MoMo + cards.
+
+## Case Study — Quote in minutes, not days
+Problem: guesswork quotes lose jobs. Build: Next16 + Prisma + PDF/XLSX + crons. Result: contractor sends pro quote same day. Service: $1,500 MVP in 14 days.
