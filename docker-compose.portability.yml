@@ -1,0 +1,51 @@
+# Portability proof: app + VANILLA Postgres (not Neon).
+# Usage:  docker compose -f docker-compose.portability.yml up --build
+# Smoke:  node scripts/portability-smoke.mjs
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: buildcost
+      POSTGRES_PASSWORD: buildcost
+      POSTGRES_DB: buildcostgh
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U buildcost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  migrate:
+    build:
+      context: .
+      target: migrate
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://buildcost:buildcost@db:5432/buildcostgh?schema=public
+
+  app:
+    build:
+      context: .
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: postgresql://buildcost:buildcost@db:5432/buildcostgh?schema=public
+      AUTH_SECRET: portability-test-secret-min-32-chars-long!
+      ADMIN_EMAIL: admin@example.com
+      ADMIN_PASSWORD: portability-test-password
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/api/health | grep -q healthy || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+volumes:
+  pgdata:

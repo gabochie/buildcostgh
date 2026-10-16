@@ -6,6 +6,7 @@ import { generateReportWorkbook } from "./excel"
 import { generateContentDraft } from "./content-engine"
 import { publishContentDraft, publishAllApproved } from "./social"
 import { REPORT_DIR, createReportToken } from "./report-access"
+import { sendEmail, isEmailConfigured } from "./email-send"
 import type { SocialPlatform } from "./social"
 import type { ContractorInsight } from "./report-content"
 import type { CalculatorInput, EstimateResult } from "@/types"
@@ -111,8 +112,7 @@ export async function sendReceiptForOrder(orderId: string): Promise<void> {
   const order = await prisma.order.findUnique({ where: { id: orderId } })
   if (!order) throw new Error(`Order ${orderId} not found`)
 
-  const resentKey = process.env.RESEND_API_KEY
-  if (!resentKey) {
+  if (!isEmailConfigured()) {
     await logAgentAction({
       agent: "PaymentBot",
       action: "receipt_skipped_no_api_key",
@@ -130,17 +130,11 @@ export async function sendReceiptForOrder(orderId: string): Promise<void> {
   const spreadsheetUrl = typeof metadata.spreadsheetUrl === "string" ? `${domain}${metadata.spreadsheetUrl}` : null
 
   try {
-    await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${resentKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: "BuildCost GH <reports@buildcostgh.com>",
-        to: order.email,
-        subject: `Your ${order.package} Report — BuildCost GH`,
-        html: `
+    const result = await sendEmail({
+      from: "BuildCost GH <reports@buildcostgh.com>",
+      to: order.email,
+      subject: `Your ${order.package} Report — BuildCost GH`,
+      html: `
           <h2>Thank you for your purchase, ${order.fullName}!</h2>
           <p>Your <strong>${order.package}</strong> report is ready.</p>
           <p><strong>Order Reference:</strong> ${order.reference}</p>
@@ -150,8 +144,8 @@ export async function sendReceiptForOrder(orderId: string): Promise<void> {
           <hr>
           <p style="color:#6b7280;font-size:12px;">BuildCost GH — buildcostgh.com</p>
         `,
-      }),
     })
+    if (!result.ok) throw new Error(result.error || "all email channels failed")
 
     await logAgentAction({
       agent: "PaymentBot",
@@ -159,7 +153,7 @@ export async function sendReceiptForOrder(orderId: string): Promise<void> {
       entityType: "order",
       entityId: orderId,
       level: "success",
-      details: { email: order.email },
+      details: { email: order.email, channel: result.channel },
     })
   } catch (err) {
     await logAgentAction({
@@ -199,22 +193,15 @@ export function registerAllJobHandlers() {
   registerJobHandler("nurture_lead", async (payload) => {
     const { email, name } = payload as { email: string; name?: string }
     const domain = process.env.NEXT_PUBLIC_APP_URL || "https://buildcostgh.com"
-    const resentKey = process.env.RESEND_API_KEY
 
-    if (!resentKey) return
+    if (!isEmailConfigured()) return
 
     try {
-      await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${resentKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          from: "BuildCost GH <hello@buildcostgh.com>",
-          to: email,
-          subject: `Plan Your Dream Home in Ghana — Free Guide`,
-          html: `
+      const result = await sendEmail({
+        from: "BuildCost GH <hello@buildcostgh.com>",
+        to: email,
+        subject: `Plan Your Dream Home in Ghana — Free Guide`,
+        html: `
             <h2>Hi ${name || "there"}!</h2>
             <p>Thanks for checking out BuildCost GH. We help Ghanaians and the diaspora plan and budget for construction projects in Ghana.</p>
             <p><a href="${domain}/calculator" style="display:inline-block;padding:12px 24px;background:#059669;color:white;border-radius:8px;text-decoration:none;">Get Your Free Estimate</a></p>
@@ -222,8 +209,8 @@ export function registerAllJobHandlers() {
             <hr>
             <p style="color:#6b7280;font-size:12px;">BuildCost GH — buildcostgh.com</p>
           `,
-        }),
       })
+      if (!result.ok) throw new Error(result.error || "all email channels failed")
 
       await logAgentAction({
         agent: "LeadBot",
@@ -231,6 +218,7 @@ export function registerAllJobHandlers() {
         entityType: "lead",
         entityId: email,
         level: "success",
+        details: { channel: result.channel },
       })
     } catch (err) {
       await logAgentAction({

@@ -1,0 +1,11 @@
+node_modules
+.next
+.git
+reports-storage
+.env*
+*.log
+test-results
+playwright-report
+.next
+.vercel
+uploads

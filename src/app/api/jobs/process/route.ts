@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { getQueueStats, processJobQueue } from "@/lib/queue"
 import { processExpiredSubscriptions } from "@/lib/subscriptions"
 import { secureEqual } from "@/lib/secure-compare"
+import { captureError } from "@/lib/observe"
 
 export const dynamic = "force-dynamic"
 export const maxDuration = 60
@@ -46,6 +47,7 @@ export async function GET(req: NextRequest) {
     // Never leak internals (message/code/meta/stack can embed SQL, paths,
     // or secrets) to the caller — log server-side, return a generic 500.
     console.error("[jobs/process] queue drain failed", err)
+    await captureError(err, { scope: "jobs/process" })
     return NextResponse.json({ error: "Job processing failed" }, { status: 500 })
   }
 }

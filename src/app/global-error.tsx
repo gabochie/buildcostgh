@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
+import { captureError } from "@/lib/observe"
 
 // Root layout crash handler. Must render its own <html>/<body> because the
 // root layout itself failed. Never renders raw error internals.
@@ -13,6 +14,7 @@ export default function GlobalError({
 }) {
   useEffect(() => {
     console.error("[Global Error]", error instanceof Error ? { message: error.message, digest: error.digest, stack: error.stack } : error)
+    void captureError(error, { scope: "global-error" })
   }, [error])
 
   return (

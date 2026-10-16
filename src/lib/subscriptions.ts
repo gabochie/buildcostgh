@@ -1,5 +1,6 @@
 import { prisma } from "./prisma"
 import { logAgentAction } from "./agent-log"
+import { sendEmail, isEmailConfigured } from "./email-send"
 
 /**
  * A subscription grants paid access for the quoted period. This helper is the
@@ -57,7 +58,7 @@ export async function processExpiredSubscriptions(): Promise<{ expired: number; 
     })
 
     // Renewal nudge for anyone who didn't cancel. Only if email is configured.
-    if (!sub.cancelAtPeriodEnd && process.env.RESEND_API_KEY) {
+    if (!sub.cancelAtPeriodEnd && isEmailConfigured()) {
       try {
         await sendRenewalReminder(sub.email, sub.reference)
         remindedCount++
@@ -79,17 +80,11 @@ export async function processExpiredSubscriptions(): Promise<{ expired: number; 
 
 async function sendRenewalReminder(email: string, reference: string): Promise<void> {
   const domain = process.env.NEXT_PUBLIC_APP_URL || "https://buildcostgh.com"
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${process.env.RESEND_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from: "BuildCost GH <billing@buildcostgh.com>",
-      to: email,
-      subject: "Your BuildCost GH subscription has expired",
-      html: `
+  const result = await sendEmail({
+    from: "BuildCost GH <billing@buildcostgh.com>",
+    to: email,
+    subject: "Your BuildCost GH subscription has expired",
+    html: `
         <h2>Your BuildCost GH subscription has ended</h2>
         <p>Your subscription (<strong>${reference}</strong>) has expired.</p>
         <p>Renew for unlimited estimates and tools:</p>
@@ -97,9 +92,8 @@ async function sendRenewalReminder(email: string, reference: string): Promise<vo
         <hr>
         <p style="color:#6b7280;font-size:12px;">BuildCost GH — buildcostgh.com</p>
       `,
-    }),
   })
-  if (!res.ok) {
-    throw new Error(`Resend returned ${res.status}: ${await res.text()}`)
+  if (!result.ok) {
+    throw new Error(result.error || "all email channels failed")
   }
 }

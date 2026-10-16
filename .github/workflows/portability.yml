@@ -1,0 +1,30 @@
+name: Portability Smoke
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    # Quarterly DB-portability proof, first day of each quarter 04:00 UTC.
+    - cron: "0 4 1 1,4,7,10 *"
+
+jobs:
+  smoke:
+    name: Boot on vanilla Postgres (no Neon)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run portability smoke test
+        run: node scripts/portability-smoke.mjs
+
+      - name: Upload compose logs on failure
+        if: failure()
+        run: docker compose -f docker-compose.portability.yml logs > portability-logs.txt || true
+
+      - name: Upload logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: portability-logs
+          path: portability-logs.txt
+          retention-days: 14

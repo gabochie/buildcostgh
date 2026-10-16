@@ -1,18 +1,10 @@
-import { Resend } from "resend"
-import { sendPasswordResetEmail as gmailSendPasswordReset, sendEmail as gmailSend } from "./mail"
+import { sendEmail, DEFAULT_FROM, type SendEmailResult } from "./email-send"
+import { sendPasswordResetEmail as gmailSendPasswordReset } from "./mail"
 
-function getResend() {
-  const key = process.env.RESEND_API_KEY
-  if (!key) return null
-  return new Resend(key)
-}
+const from = DEFAULT_FROM
 
-const from = "BuildCost GH <reports@buildcostgh.com>"
-
-export async function sendReportReceipt(to: string, name: string, packageName: string, reference: string) {
-  const resend = getResend()
-  if (!resend) return
-  return resend.emails.send({
+export async function sendReportReceipt(to: string, name: string, packageName: string, reference: string): Promise<SendEmailResult> {
+  return sendEmail({
     from,
     to,
     subject: `Your ${packageName} Construction Cost Report - BuildCost GH`,
@@ -33,10 +25,8 @@ export async function sendReportReceipt(to: string, name: string, packageName: s
   })
 }
 
-export async function sendLeadNurture(email: string) {
-  const resend = getResend()
-  if (!resend) return
-  return resend.emails.send({
+export async function sendLeadNurture(email: string): Promise<SendEmailResult> {
+  return sendEmail({
     from,
     to: email,
     subject: "Continue Your Construction Cost Estimate - BuildCost GH",
@@ -65,10 +55,8 @@ export async function sendPasswordReset(to: string, resetUrl: string) {
   return gmailSendPasswordReset(to, resetUrl)
 }
 
-export async function sendGuideDownload(email: string) {
-  const resend = getResend()
-  if (!resend) return
-  return resend.emails.send({
+export async function sendGuideDownload(email: string): Promise<SendEmailResult> {
+  return sendEmail({
     from,
     to: email,
     subject: "Your Free Construction Cost Guide - BuildCost GH",

@@ -1,5 +1,7 @@
 "use client"
 
+import { captureError } from "@/lib/observe"
+
 // ── Never render raw error messages to users ──
 // `error.message` from a server component / Prisma / fetch can embed table
 // names, SQL fragments, file paths, or auth internals. Error boundaries must
@@ -20,7 +22,9 @@ export function logClientError(scope: string, error: unknown) {
     const { message, stack } = error
     const digest = (error as ErrorWithDigest).digest
     console.error(`[${scope}]`, { message, digest, stack })
+    void captureError(error, { scope, extra: digest ? { digest } : undefined })
     return
   }
   console.error(`[${scope}]`, error)
+  void captureError(error, { scope })
 }

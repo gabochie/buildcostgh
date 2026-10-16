@@ -1,6 +1,9 @@
 import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
+  // Slim `standalone` output only for Docker builds — Vercel uses its own
+  // packaging and must not be affected.
+  ...(process.env.DOCKER_BUILD === "1" ? { output: "standalone" as const } : {}),
   outputFileTracingRoot: import.meta.dirname,
   outputFileTracingIncludes: {
     "/api/content": ["./content/content-plan.json"],

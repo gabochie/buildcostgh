@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { captureError } from "@/lib/observe"
 
 export const dynamic = "force-dynamic"
 
@@ -26,6 +27,7 @@ export async function GET() {
     // Public endpoint: never leak DB internals (Prisma errors can embed
     // hosts, connection strings, or SQL). Log server-side only.
     console.error("[health] DB check failed", err)
+    await captureError(err, { scope: "health" })
     return NextResponse.json({
       status: "unhealthy",
       timestamp: new Date().toISOString(),

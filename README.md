@@ -8,6 +8,9 @@ Built with **Next.js 16 (App Router, pinned exact — see CHANGELOG)**, **Prisma
 
 - **Cost estimator** — 8-step calculator with elemental cost breakdown, professional fees, permit intelligence, and FX-aware currency output. **Works fully offline**: on-device estimate via the same pricing constants, inputs queued in IndexedDB and synced when back online (`src/lib/offline/`).
 - **PWA** — installable (`/manifest.webmanifest`, standalone, maskable icons), zero-dependency service worker (`public/sw.js`: app-shell precache, navigation/API caching, `/offline` fallback, Background Sync), install prompt + update toast, mobile bottom navigation (Home · Costs · Calculate · Pros · Account).
+- **Vendor-neutral observability** — `src/lib/observe.ts` wraps error reporting; Sentry (free Developer plan, errors-only) loads only when `SENTRY_DSN`/`NEXT_PUBLIC_SENTRY_DSN` is set, otherwise calls are no-ops. Adopted in error boundaries and job/health routes.
+- **Email** — one `sendEmail()` interface (`src/lib/email-send.ts`): Resend SDK → Resend HTTP → Gmail SMTP fallback, first success wins. Admin-only `POST /api/admin/email-test` for delivery drills.
+- **Portable** — `Dockerfile` + `docker-compose.portability.yml` prove the app boots on vanilla Postgres (no Neon); quarterly CI smoke via `portability.yml`.
 - **Web Push** — VAPID price-drop/rate alerts (`PushSubscription` model, `/api/push/*`, `PushPrompt` UI). Needs `NEXT_PUBLIC_VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` (generate: `npx web-push generate-vapid-keys`); quietly no-ops when unconfigured.
 - **Building types** — catalog of residential / commercial / industrial categories with subtypes and indicative cost ranges.
 - **Reports** — PDF and XLSX reports delivered under a signed, time-limited download URL (protected by report-access tokens).
@@ -58,6 +61,15 @@ npx web-push generate-vapid-keys   # VAPID_PUBLIC_KEY / VAPID_PRIVATE_KEY
 | `npm run lint`          | ESLint                                         |
 | `npm test`              | Run unit tests (`tsx --test`)                  |
 | `npm run test:e2e`      | Run Playwright E2E (CSP + gating)              |
+
+### Portability smoke test (needs Docker)
+
+```bash
+node scripts/portability-smoke.mjs        # build → migrate → vanilla Postgres → health + homepage → down
+node scripts/portability-smoke.mjs --keep # leave containers up for inspection
+```
+
+Also runs quarterly + on demand via the `Portability Smoke` GitHub workflow.
 | `npm run db:migrate`    | Apply Prisma migrations                        |
 | `npm run db:seed`       | Seed the database                              |
 | `npm run db:studio`     | Open Prisma Studio                             |
@@ -110,6 +122,12 @@ Tunables (safe defaults on): `OPS_AUTO_RETRY_STUCK`, `OPS_STUCK_JOB_MS`, `OPS_AU
     │   └── offline/         # IndexedDB queue + client-side estimate fallback (PWA)
     ├── store/               # Zustand client state
     └── proxy.ts             # Edge middleware: maintenance, CSRF, auth gates, global rate limits
+```
+
+```
+├── Dockerfile               # multi-stage, standalone only when DOCKER_BUILD=1
+├── docker-compose.portability.yml  # app + vanilla Postgres (no Neon)
+├── scripts/portability-smoke.mjs   # quarterly portability proof
 ```
 
 See [CHANGELOG.md](./CHANGELOG.md) for the documented history of changes (PWA, offline, push, hardening batches).

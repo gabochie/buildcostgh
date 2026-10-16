@@ -1,6 +1,11 @@
 # BuildCostGH Deployment Notes
 
-## Status (as of 2026-10-16): PWA + HARDENING BATCH — DEPLOYED LIVE
+## Status (as of 2026-10-16): ANTI-LOCK-IN BATCH (uncommitted — see CHANGELOG.md)
+- `src/lib/observe.ts` vendor-neutral wrapper + Sentry v11 errors-only wiring (env-gated, build config untouched); adopted in error boundaries + jobs/health routes. New env `SENTRY_DSN`/`NEXT_PUBLIC_SENTRY_DSN` (unset = no-op).
+- Email unified: `src/lib/email-send.ts` (resend-sdk → resend-http → SMTP), all senders migrated, admin `POST /api/admin/email-test` for drills.
+- Portability: `Dockerfile` (+`DOCKER_BUILD=1` standalone flag — Vercel unaffected), compose with vanilla Postgres 16, `scripts/portability-smoke.mjs`, quarterly `portability.yml` CI. Local Docker daemon unavailable — first container run deferred to CI on demand.
+- Verified: `tsc` clean, `eslint` 0 errors, unit 54/54. Production `next build` re-run pending before push.
+- Prior live state (2026-10-16, commit `7a1cb4d`) below — unchanged.
 - Commits `24efc0c` (feat) + `bd62d2d` (docs) pushed to `origin/master`; Vercel auto-deployed.
 - Live-verified: `/manifest.webmanifest` 200 (standalone, maskable icons, shortcuts), `/sw.js` serving, `/offline` renders with bottom nav, homepage 200 through new proxy (Edge rate limits active).
 - Push migration `20261016000000_add_push_subscriptions` applied via `migrate deploy` in the Vercel build (deploy green = migration clean).

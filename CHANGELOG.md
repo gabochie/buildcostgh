@@ -2,6 +2,44 @@
 
 All notable changes, newest first. Dates in UTC.
 
+## 2026-10-16 — Anti-lock-in batch: observability, email, portability
+
+### Vendor-neutral observability (`src/lib/observe.ts`)
+- New `observe` interface (`captureError`, `setObserveContext`, `isObservabilityEnabled`).
+  Sentry SDK is lazy-loaded and only when a DSN is set — no DSN = no-op, zero
+  vendor code in the bundle. Errors-only (tracing + replay permanently off,
+  PII never attached) so the free Developer tier (~5k/mo, no card) can't bill.
+- `src/instrumentation.ts` + `src/instrumentation-client.ts` init Sentry on
+  server/client only when configured. Build config untouched (no
+  `withSentryConfig`) — swapping to GlitchTip/Axiom/DB-sink means editing one file.
+- Adopted in: `logClientError`, `global-error.tsx`, `api/jobs/process`,
+  `api/health`. New env: `SENTRY_DSN` / `NEXT_PUBLIC_SENTRY_DSN` (see `.env.example`).
+
+### Email unification (`src/lib/email-send.ts`)
+- One `sendEmail()` interface, channel order resend-sdk → resend-http → SMTP
+  (Gmail, the vendor exit path), first success wins; returns `{ok, channel}`.
+  `forceChannel` supports fallback drills.
+- `lib/email.ts` templates, `jobs.ts` receipt + nurture, and
+  `subscriptions.ts` renewal reminders all go through it (SMTP-only setups now
+  deliver too; channel logged to `AgentLog`). Direct `api.resend.com` fetches removed.
+- New admin-only `POST /api/admin/email-test` (`{to, channel?}`, 10/min) for
+  delivery tests and drills.
+
+### Portability exit-proof
+- `Dockerfile` (multi-stage, `standalone` output only when `DOCKER_BUILD=1` —
+  Vercel packaging untouched), `.dockerignore`,
+  `docker-compose.portability.yml` (app + **vanilla Postgres 16**, no Neon),
+  `scripts/portability-smoke.mjs` (build → migrate → poll `/api/health` +
+  `/` → down; proves no Neon-only queries).
+- New `portability.yml` workflow: manual + quarterly cron smoke in CI.
+- Local Docker daemon unavailable in this environment — first full container
+  run happens on demand via the workflow, not asserted locally.
+
+### Verification (this batch)
+- `tsc --noEmit` clean, `eslint` 0 errors, `npm test` 54/54 pass.
+- Sentry v11 note: `sendDefaultPii` no longer exists (PII off by default) —
+  removed from init options after typecheck caught it.
+
 ## 2026-10-16 — PWA + offline-first + Web Push + hardening batch
 
 ### PWA (installable app)
