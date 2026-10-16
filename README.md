@@ -147,3 +147,18 @@ Live: https://buildcostgh.com — estimator + PDF/XLSX, MTN MoMo + cards.
 
 ## Case Study — Quote in minutes, not days
 Problem: guesswork quotes lose jobs. Build: Next16 + Prisma + PDF/XLSX + crons. Result: contractor sends pro quote same day. Service: $1,500 MVP in 14 days.
+
+## Architecture
+
+```mermaid
+flowchart LR
+    U[Homeowner / Contractor] --> WEB[Next.js 16 App Router<br/>Tailwind + Zustand]
+    WEB --> API[API routes<br/>NextAuth v5 JWT]
+    API --> P[Prisma]
+    P --> DB[(PostgreSQL)]
+    CRON[Vercel crons<br/>OpsWatchtower] --> Q[Job queue<br/>SKIP LOCKED]
+    Q --> API
+    API --> R[PDF / XLSX reports<br/>signed URLs]
+    R --> U
+    API --> PAY[MoMo / ExpressPay / Paystack / Crypto]
+```
