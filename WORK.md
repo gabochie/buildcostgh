@@ -1,5 +1,12 @@
 # BuildCostGH Deployment Notes
 
+## Status (as of 2026-10-16): PWA + HARDENING BATCH (uncommitted — see CHANGELOG.md)
+- PWA shippable: manifest, zero-dep service worker, `/offline`, install prompt, bottom nav, full offline calculator (IndexedDB queue + sync), Web Push (needs VAPID keys in Vercel — see `.env.example`).
+- Hardening: global Edge rate limits in `proxy.ts`, sanitized error boundaries + `global-error.tsx`, no-stack 5xx, `puppeteer` → `puppeteer-core + @sparticuz/chromium`, `exceljs` → `xlsx`, CI gates (unit + e2e + audit report-only + Dependabot), Next 16.2.10 → **16.2.12** (middleware-bypass GHSA fix — was NOT cosmetic).
+- Verified: `tsc` clean, `eslint` 0 errors, unit 54/54, `next build` green.
+- Before deploy: set VAPID keys in Vercel Production; migration `20261016000000_add_push_subscriptions` runs via `migrate deploy` in build.
+- Prior live state (2026-09-09) below — unchanged.
+
 ## Status (as of 2026-09-09): DEPLOYED — LIVE
 - `https://buildcostgh.com` is READY (production) and serves current `master` = `febcd52` (committed 2026-09-08T04:07:41Z, deployed seconds later).
 - All major routes return 200 with real content: `/`, `/calculator`, `/blog`, `/about`, `/admin`, `/login`, `/api/health`.
@@ -28,3 +35,4 @@
 1. Real payments: user sets live Paystack (MOMO) / MTN MoMo / ExpressPay keys in Vercel Production → redeploy → smoke-test deposit + withdrawal flows per gateway.
 2. (Optional) Confirm dev/tier of the READY deploy costs; clean up old ERROR deploys.
 3. (Optional) Consider bumping Next 16.2.10 → 16.2.12 eventually; cosmetic only.
+   → DONE 2026-10-16 (and it was a security fix: middleware/proxy bypass GHSA, not cosmetic).

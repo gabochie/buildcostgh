@@ -2,11 +2,13 @@
 
 Construction cost estimating platform for Ghana. Estimate the cost to build a house, commercial property, or industrial facility in Ghana — with elemental breakdowns, building-type catalogs, professional fees, permit requirements, and downloadable PDF/XLSX reports.
 
-Built with **Next.js 16 (App Router)**, **Prisma + PostgreSQL**, **NextAuth v5 (JWT)**, **Tailwind CSS v4**, **Zustand**, and **TanStack Query**.
+Built with **Next.js 16 (App Router, pinned exact — see CHANGELOG)**, **Prisma + PostgreSQL**, **NextAuth v5 (JWT)**, **Tailwind CSS v4**, **Zustand**, and **TanStack Query**.
 
 ## Features
 
-- **Cost estimator** — 8-step calculator with elemental cost breakdown, professional fees, permit intelligence, and FX-aware currency output.
+- **Cost estimator** — 8-step calculator with elemental cost breakdown, professional fees, permit intelligence, and FX-aware currency output. **Works fully offline**: on-device estimate via the same pricing constants, inputs queued in IndexedDB and synced when back online (`src/lib/offline/`).
+- **PWA** — installable (`/manifest.webmanifest`, standalone, maskable icons), zero-dependency service worker (`public/sw.js`: app-shell precache, navigation/API caching, `/offline` fallback, Background Sync), install prompt + update toast, mobile bottom navigation (Home · Costs · Calculate · Pros · Account).
+- **Web Push** — VAPID price-drop/rate alerts (`PushSubscription` model, `/api/push/*`, `PushPrompt` UI). Needs `NEXT_PUBLIC_VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` (generate: `npx web-push generate-vapid-keys`); quietly no-ops when unconfigured.
 - **Building types** — catalog of residential / commercial / industrial categories with subtypes and indicative cost ranges.
 - **Reports** — PDF and XLSX reports delivered under a signed, time-limited download URL (protected by report-access tokens).
 - **Payments** — MTN Mobile Money (USSD push), Moolre, ExpressPay (accepts Mobile Money, Ghana Pay, and cards), Paystack cards, and crypto via Coinbase Commerce (USDC, USDT, ETH, BTC and 100+ coins). A customer-facing gateway selector lets users pick at checkout, and callbacks/redirects are always re-verified server-side against the provider (never trusted from the raw body).
@@ -37,12 +39,13 @@ Copy `.env.example` to `.env.local` and fill in your values.
 copy .env.example .env.local
 ```
 
-At minimum you need `DATABASE_URL`, `AUTH_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and `NEXT_PUBLIC_APP_URL` — the app refuses to boot in production without them.
+At minimum you need `DATABASE_URL`, `AUTH_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and `NEXT_PUBLIC_APP_URL` — the app refuses to boot in production without them. Optional but recommended: VAPID keys for Web Push (see Features above).
 
 Generate secrets:
 
 ```bash
 openssl rand -base64 32   # AUTH_SECRET, CRON_SECRET
+npx web-push generate-vapid-keys   # VAPID_PUBLIC_KEY / VAPID_PRIVATE_KEY
 ```
 
 ## Useful commands
@@ -54,6 +57,7 @@ openssl rand -base64 32   # AUTH_SECRET, CRON_SECRET
 | `npm run typecheck`     | TypeScript type checking (`tsc --noEmit`)      |
 | `npm run lint`          | ESLint                                         |
 | `npm test`              | Run unit tests (`tsx --test`)                  |
+| `npm run test:e2e`      | Run Playwright E2E (CSP + gating)              |
 | `npm run db:migrate`    | Apply Prisma migrations                        |
 | `npm run db:seed`       | Seed the database                              |
 | `npm run db:studio`     | Open Prisma Studio                             |
@@ -103,14 +107,20 @@ Tunables (safe defaults on): `OPS_AUTO_RETRY_STUCK`, `OPS_STUCK_JOB_MS`, `OPS_AU
     ├── app/                 # App Router pages + API routes
     ├── components/          # UI + calculator components
     ├── lib/                 # engines, auth, queues, payments, content planner + batch/output/media, i18n
-    └── store/               # Zustand client state
+    │   └── offline/         # IndexedDB queue + client-side estimate fallback (PWA)
+    ├── store/               # Zustand client state
+    └── proxy.ts             # Edge middleware: maintenance, CSRF, auth gates, global rate limits
 ```
+
+See [CHANGELOG.md](./CHANGELOG.md) for the documented history of changes (PWA, offline, push, hardening batches).
 
 ## Security notes
 
 - Reports are served only through `/api/reports/download` after validating an HMAC token and / or session ownership; static report URLs are not exposed.
 - CSRF and payment secrets have no hardcoded fallbacks — misconfiguration fails loudly in production.
 - V1 API keys are consumed atomically and rate-limited to prevent quota-bypass.
+- Edge middleware enforces global API rate limits (`/api/auth|admin`: 30/min/IP; writes: 120/min; reads: 300/min) with `Retry-After`; per-route DB-backed limits apply downstream.
+- Error boundaries never render raw `error.message` (Prisma/SQL/auth internals); users see a support reference (`digest`), details go to server logs. No `stack` in any 5xx response.
 
 ## Live Demo ✅ Verified Oct 16 2026
 Live: https://buildcostgh.com — estimator + PDF/XLSX, MTN MoMo + cards.
