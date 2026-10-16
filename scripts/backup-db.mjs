@@ -6,9 +6,10 @@
 //   node --env-file=.env.local scripts/backup-db.mjs
 //   node --env-file=.env.local scripts/backup-db.mjs --dir backups
 //
-// Schedule weekly (Windows Task Scheduler, Sundays 02:00):
-//   schtasks /create /tn "BuildCostGH weekly backup" /tr "node --env-file=.env.local scripts/backup-db.mjs" /sc weekly /d SUN /st 02:00
-//   (run from the repo root; adjust the /tr path to your checkout)
+// Schedule weekly (Windows Task Scheduler, Sundays 02:00) — REGISTERED on this
+// machine as "BuildCostGH weekly backup" (scripts\backup-weekly.cmd).
+// To re-register elsewhere:
+//   schtasks /create /tn "BuildCostGH weekly backup" /tr "<repo>\scripts\backup-weekly.cmd" /sc weekly /d SUN /st 02:00
 
 import { Client } from "pg"
 import { execFileSync } from "node:child_process"

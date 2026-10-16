@@ -27,8 +27,9 @@ All notable changes, newest first. Dates in UTC.
 - Verified live against the staging DB: BlogPost 44, Contractor 48,
   RegionRate 16, CalculatorLead 3 rows dumped; no `passwordHash` in output.
   Noted: this DB lacks `SavedEstimate` (behind on migrations) — flagged, not fatal.
-- `/backups` gitignored. Schedule weekly via Task Scheduler (command in script
-  header). Restore = Neon snapshot/PITR first, JSON dumps as fallback.
+- `/backups` gitignored. Weekly Task Scheduler job "BuildCostGH weekly backup"
+  registered (Sundays 02:00 via `scripts\backup-weekly.cmd`); test-fired
+  successfully (10s full dump). Restore = Neon snapshot/PITR first, JSON dumps as fallback.
 
 ### Verification (this batch)
 - `tsc --noEmit` clean (incl. Sentry v11 + Prisma JSON fixes), `eslint` 0 errors,
