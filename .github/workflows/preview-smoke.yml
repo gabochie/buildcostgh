@@ -52,20 +52,32 @@ jobs:
           echo "Probing $URL"
 
       - name: Liveness probe
+        env:
+          BYPASS: ${{ secrets.VERCEL_BYPASS }}
         run: |
-          curl -fsS --max-time 30 "${{ steps.preview.outputs.preview_url }}/api/health/live" | grep -q '"alive"'
+          HDR=(); [ -n "$BYPASS" ] && HDR=(-H "x-vercel-protection-bypass: $BYPASS")
+          curl -fsS --max-time 30 "${HDR[@]}" "${{ steps.preview.outputs.preview_url }}/api/health/live" | grep -q '"alive"'
 
       - name: Readiness probe
+        env:
+          BYPASS: ${{ secrets.VERCEL_BYPASS }}
         run: |
-          curl -fsS --max-time 60 "${{ steps.preview.outputs.preview_url }}/api/health/ready" | grep -q '"ready"'
+          HDR=(); [ -n "$BYPASS" ] && HDR=(-H "x-vercel-protection-bypass: $BYPASS")
+          curl -fsS --max-time 60 "${HDR[@]}" "${{ steps.preview.outputs.preview_url }}/api/health/ready" | grep -q '"ready"'
 
       - name: Homepage + CSP headers
+        env:
+          BYPASS: ${{ secrets.VERCEL_BYPASS }}
         run: |
-          HDRS=$(curl -fsSI --max-time 30 "${{ steps.preview.outputs.preview_url }}/")
+          HDR=(); [ -n "$BYPASS" ] && HDR=(-H "x-vercel-protection-bypass: $BYPASS")
+          HDRS=$(curl -fsSI --max-time 30 "${HDR[@]}" "${{ steps.preview.outputs.preview_url }}/")
           echo "$HDRS" | grep -qi 'content-security-policy' || (echo "CSP header missing" && exit 1)
           echo "$HDRS" | grep -qi 'worker-src' || (echo "worker-src missing" && exit 1)
 
       - name: PWA artifacts
+        env:
+          BYPASS: ${{ secrets.VERCEL_BYPASS }}
         run: |
-          curl -fsS --max-time 30 "${{ steps.preview.outputs.preview_url }}/manifest.webmanifest" | grep -q '"standalone"'
-          curl -fsS --max-time 30 "${{ steps.preview.outputs.preview_url }}/sw.js" | grep -q 'bcgh-v1'
+          HDR=(); [ -n "$BYPASS" ] && HDR=(-H "x-vercel-protection-bypass: $BYPASS")
+          curl -fsS --max-time 30 "${HDR[@]}" "${{ steps.preview.outputs.preview_url }}/manifest.webmanifest" | grep -q '"standalone"'
+          curl -fsS --max-time 30 "${HDR[@]}" "${{ steps.preview.outputs.preview_url }}/sw.js" | grep -q 'bcgh-v1'
