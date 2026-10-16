@@ -1,6 +1,11 @@
 # BuildCostGH Deployment Notes
 
-## Status (as of 2026-10-16): AGENTIC DEVOPS PREREQS (uncommitted — see CHANGELOG.md)
+## Status (as of 2026-10-16): DEVOPS PREREQS COMPLETE PENDING HUMAN STEPS (see manual todos)
+- Item 2 (OPS_AGENT_KEY), item 4 (VAPID) set via Vercel API with byte-exact values (PowerShell stdin was appending CRLF — caught via live `public-key` check, fixed via REST API, verified clean).
+- Item 3: auto-merge + delete-branch enabled via `gh`; VERCEL_TOKEN/PROJECT_ID/TEAM_ID repo secrets set; Preview env repaired (unscoped DATABASE_URL + 4 build vars). Preview deploys build green (`Ready` verified). PR #12 merged; branch auto-deleted.
+- Diagnosed along the way: preview builds failed on missing DATABASE_URL; smoke workflow initially referenced a nonexistent action (rewritten to Vercel API poll, no third-party action).
+- Still human-only: `VERCEL_BYPASS` (no API — dashboard copy), staging migrate, Neon snapshot, Sentry signup, device checks, live payments.
+- Prior live state (commit `57c88db` merged) below — unchanged.
 - `/api/health/live` + `/api/health/ready` split; Watchtower probes `/ready`; legacy `/api/health` kept.
 - `POST /api/ops/agent/intake` stub live (signed, log-only, kill-switched). Needs `OPS_AGENT_KEY` in Vercel (falls back to `CRON_SECRET`).
 - `automerge.yml` (Dependabot patch-only auto-merge on green CI). Needs "Allow auto-merge" enabled on the repo.
