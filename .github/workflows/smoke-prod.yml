@@ -1,0 +1,37 @@
+name: Post-deploy Smoke
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  smoke:
+    name: Smoke-test production after deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Wait for deploy to go live
+        run: sleep 180
+
+      - name: Liveness probe
+        run: |
+          curl -fsS --max-time 30 "https://buildcostgh.com/api/health/live" | grep -q '"alive"'
+
+      - name: Readiness probe
+        run: |
+          curl -fsS --max-time 60 "https://buildcostgh.com/api/health/ready" | grep -q '"ready"'
+
+      - name: Security headers
+        run: |
+          HDRS=$(curl -fsSI --max-time 30 "https://buildcostgh.com/")
+          echo "$HDRS" | grep -qi 'content-security-policy' || (echo "CSP header missing" && exit 1)
+          echo "$HDRS" | grep -qi 'worker-src' || (echo "worker-src missing" && exit 1)
+
+      - name: PWA artifacts
+        run: |
+          curl -fsS --max-time 30 "https://buildcostgh.com/manifest.webmanifest" | grep -q '"standalone"'
+          curl -fsS --max-time 30 "https://buildcostgh.com/sw.js" | grep -q 'bcgh-v1'
+
+      - name: Push config present
+        run: |
+          curl -fsS --max-time 30 "https://buildcostgh.com/api/push/public-key" | grep -q '"publicKey"'
