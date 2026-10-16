@@ -2,6 +2,40 @@
 
 All notable changes, newest first. Dates in UTC.
 
+## 2026-10-16 — Agentic DevOps prerequisites (Phase 1, this machine)
+
+### Health probes split
+- New `GET /api/health/live` (cheap, unauthenticated, no DB — deploy-gate target)
+  and `GET /api/health/ready` (DB + queue, sanitized 503). Legacy `/api/health`
+  kept for existing monitors. Watchtower probes now hit `/ready`.
+
+### Agent intake stub (`POST /api/ops/agent/intake`)
+- Signed (`OPS_AGENT_KEY`, falls back to `CRON_SECRET`), zod-validated
+  `{source, title, fingerprint?, url?, payload?}`. Log-only: records to
+  `AgentLog` (`OpsAgent/intake_received`, 202) and takes NO action — honors
+  `OPS_AGENT_ENABLED=false` kill switch. Triage runners arrive in Phase 2.
+
+### Dependabot auto-merge (`.github/workflows/automerge.yml`)
+- Patch-only + npm-only, squash, executes only when required CI checks pass.
+  Minor/major stay manual. Needs "Allow auto-merge" enabled on the repo.
+
+### Backup safety net (`scripts/backup-db.mjs`)
+- Pure-Node (no `pg_dump` needed): dumps business tables to `backups/<ts>/`
+  as JSON + manifest (row counts, git SHA, pg version). Sensitive columns
+  (`User.passwordHash`) excluded in SQL so they never leave the DB; missing
+  tables recorded as `"missing"` (schema-drift tolerant).
+- Verified live against the staging DB: BlogPost 44, Contractor 48,
+  RegionRate 16, CalculatorLead 3 rows dumped; no `passwordHash` in output.
+  Noted: this DB lacks `SavedEstimate` (behind on migrations) — flagged, not fatal.
+- `/backups` gitignored. Schedule weekly via Task Scheduler (command in script
+  header). Restore = Neon snapshot/PITR first, JSON dumps as fallback.
+
+### Verification (this batch)
+- `tsc --noEmit` clean (incl. Sentry v11 + Prisma JSON fixes), `eslint` 0 errors,
+  `npm test` 54/54 pass.
+- Local Docker daemon unavailable, so the portability smoke still awaits its
+  first container run (CI workflow on demand).
+
 ## 2026-10-16 — Anti-lock-in batch: observability, email, portability
 
 ### Vendor-neutral observability (`src/lib/observe.ts`)

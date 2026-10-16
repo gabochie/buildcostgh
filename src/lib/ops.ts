@@ -11,7 +11,7 @@ import { getSubagent } from "./cofounder/subagents"
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://buildcostgh.com"
 const STUCK_JOB_MS = Number(process.env.OPS_STUCK_JOB_MS ?? 30 * 60 * 1000) || 30 * 60 * 1000
 const PROBE_TIMEOUT_MS = Number(process.env.OPS_PROBE_TIMEOUT_MS ?? 8000) || 8000
-const PROBE_PATHS = ["/", "/blog", "/calculator", "/pricing", "/api/health"]
+const PROBE_PATHS = ["/", "/blog", "/calculator", "/pricing", "/api/health/ready"]
 
 export function opsFlagEnabled(name: string, def = true): boolean {
   const v = process.env[name]

@@ -1,5 +1,14 @@
 # BuildCostGH Deployment Notes
 
+## Status (as of 2026-10-16): AGENTIC DEVOPS PREREQS (uncommitted — see CHANGELOG.md)
+- `/api/health/live` + `/api/health/ready` split; Watchtower probes `/ready`; legacy `/api/health` kept.
+- `POST /api/ops/agent/intake` stub live (signed, log-only, kill-switched). Needs `OPS_AGENT_KEY` in Vercel (falls back to `CRON_SECRET`).
+- `automerge.yml` (Dependabot patch-only auto-merge on green CI). Needs "Allow auto-merge" enabled on the repo.
+- `scripts/backup-db.mjs` verified against staging DB (44/48/16/3 rows, no hashes leaked); not yet scheduled — register the weekly Task Scheduler job on this machine.
+- Staging DB is behind on migrations (no `SavedEstimate` table) — run `migrate deploy` there or accept drift.
+- Verified: `tsc` clean, `eslint` 0 errors, unit 54/54. Production `next build` re-run pending before push.
+- Prior live state (2026-10-16, commit `4203d87`) below — unchanged.
+
 ## Status (as of 2026-10-16): ANTI-LOCK-IN BATCH (uncommitted — see CHANGELOG.md)
 - `src/lib/observe.ts` vendor-neutral wrapper + Sentry v11 errors-only wiring (env-gated, build config untouched); adopted in error boundaries + jobs/health routes. New env `SENTRY_DSN`/`NEXT_PUBLIC_SENTRY_DSN` (unset = no-op).
 - Email unified: `src/lib/email-send.ts` (resend-sdk → resend-http → SMTP), all senders migrated, admin `POST /api/admin/email-test` for drills.

@@ -1,0 +1,32 @@
+name: Auto-merge Dependabot
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  automerge:
+    name: Auto-merge patch updates (CI-green only)
+    # Conservative by design: semver-patch + npm only. Minor/major and
+    # github-actions updates stay manual. Requires "Allow auto-merge" enabled
+    # on the repo; merge only executes once required CI checks pass.
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Fetch Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Enable auto-merge (squash) for patch updates
+        if: steps.metadata.outputs.update-type == 'version-update:semver-patch' && steps.metadata.outputs.package-ecosystem == 'npm'
+        run: gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

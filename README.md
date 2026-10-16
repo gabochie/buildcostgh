@@ -11,6 +11,8 @@ Built with **Next.js 16 (App Router, pinned exact — see CHANGELOG)**, **Prisma
 - **Vendor-neutral observability** — `src/lib/observe.ts` wraps error reporting; Sentry (free Developer plan, errors-only) loads only when `SENTRY_DSN`/`NEXT_PUBLIC_SENTRY_DSN` is set, otherwise calls are no-ops. Adopted in error boundaries and job/health routes.
 - **Email** — one `sendEmail()` interface (`src/lib/email-send.ts`): Resend SDK → Resend HTTP → Gmail SMTP fallback, first success wins. Admin-only `POST /api/admin/email-test` for delivery drills.
 - **Portable** — `Dockerfile` + `docker-compose.portability.yml` prove the app boots on vanilla Postgres (no Neon); quarterly CI smoke via `portability.yml`.
+- **Ops readiness** — `/api/health/live` (liveness, deploy-gate target) + `/api/health/ready` (readiness, DB + queue); signed agent-intake stub at `POST /api/ops/agent/intake` (log-only, `OPS_AGENT_KEY` or `CRON_SECRET`, honors `OPS_AGENT_ENABLED=false`).
+- **Backups** — `node --env-file=.env.local scripts/backup-db.mjs` dumps business tables to `backups/<ts>/` (JSON + manifest, secrets excluded in SQL, `/backups` gitignored). Schedule weekly; see script header for the Task Scheduler command.
 - **Web Push** — VAPID price-drop/rate alerts (`PushSubscription` model, `/api/push/*`, `PushPrompt` UI). Needs `NEXT_PUBLIC_VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` (generate: `npx web-push generate-vapid-keys`); quietly no-ops when unconfigured.
 - **Building types** — catalog of residential / commercial / industrial categories with subtypes and indicative cost ranges.
 - **Reports** — PDF and XLSX reports delivered under a signed, time-limited download URL (protected by report-access tokens).
