@@ -11,30 +11,61 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Wait for Vercel preview deployment
-        id: vercel
-        uses: patheard/vercel-preview-url@v1.0.4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          vercel_token: ${{ secrets.VERCEL_TOKEN }}
-          vercel_project_id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel_team_id: ${{ secrets.VERCEL_TEAM_ID }}
-          max_timeout: 600
+        id: preview
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          URL=$(python3 - <<'EOF'
+          import json, os, time, urllib.request
+
+          token = os.environ["VERCEL_TOKEN"]
+          project = os.environ["VERCEL_PROJECT_ID"]
+          team = os.environ.get("VERCEL_TEAM_ID", "")
+          sha = os.environ["HEAD_SHA"]
+
+          def api(path):
+              req = urllib.request.Request(
+                  f"https://api.vercel.com{path}",
+                  headers={"Authorization": f"Bearer {token}"},
+              )
+              with urllib.request.urlopen(req, timeout=30) as res:
+                  return json.load(res)
+
+          qs = f"?projectId={project}&teamId={team}&limit=20&target=preview" if team else f"?projectId={project}&limit=20&target=preview"
+          for _ in range(40):
+              deps = api(f"/v6/deployments{qs}").get("deployments", [])
+              match = next((d for d in deps if (d.get("meta") or {}).get("githubCommitSha") == sha), None)
+              if match and match.get("readyState") == "READY":
+                  print(f"https://{match['url']}", end="")
+                  break
+              if match and match.get("readyState") in ("ERROR", "CANCELED"):
+                  raise SystemExit(f"preview deployment {match['readyState'].lower()}: inspect in Vercel dashboard")
+              time.sleep(15)
+          else:
+              raise SystemExit("timed out waiting for preview deployment")
+          EOF
+          )
+          echo "preview_url=$URL" >> "$GITHUB_OUTPUT"
+          echo "Probing $URL"
 
       - name: Liveness probe
         run: |
-          curl -fsS --max-time 30 "${{ steps.vercel.outputs.preview_url }}/api/health/live" | grep -q '"alive"'
+          curl -fsS --max-time 30 "${{ steps.preview.outputs.preview_url }}/api/health/live" | grep -q '"alive"'
 
       - name: Readiness probe
         run: |
-          curl -fsS --max-time 60 "${{ steps.vercel.outputs.preview_url }}/api/health/ready" | grep -q '"ready"'
+          curl -fsS --max-time 60 "${{ steps.preview.outputs.preview_url }}/api/health/ready" | grep -q '"ready"'
 
       - name: Homepage + CSP headers
         run: |
-          HDRS=$(curl -fsSI --max-time 30 "${{ steps.vercel.outputs.preview_url }}/")
+          HDRS=$(curl -fsSI --max-time 30 "${{ steps.preview.outputs.preview_url }}/")
           echo "$HDRS" | grep -qi 'content-security-policy' || (echo "CSP header missing" && exit 1)
           echo "$HDRS" | grep -qi 'worker-src' || (echo "worker-src missing" && exit 1)
 
-      - name: PWA manifest + SW served
+      - name: PWA artifacts
         run: |
-          curl -fsS --max-time 30 "${{ steps.vercel.outputs.preview_url }}/manifest.webmanifest" | grep -q '"standalone"'
-          curl -fsS --max-time 30 "${{ steps.vercel.outputs.preview_url }}/sw.js" | grep -q 'bcgh-v1'
+          curl -fsS --max-time 30 "${{ steps.preview.outputs.preview_url }}/manifest.webmanifest" | grep -q '"standalone"'
+          curl -fsS --max-time 30 "${{ steps.preview.outputs.preview_url }}/sw.js" | grep -q 'bcgh-v1'
