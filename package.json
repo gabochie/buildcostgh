@@ -48,7 +48,7 @@
     "nodemailer": "^7.0.13",
     "openai": "^6.45.0",
     "pg": "^8.23.1",
-    "prisma": "^6.19.3",
+    "prisma": "^7.10.0",
     "puppeteer-core": "^25.14.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
