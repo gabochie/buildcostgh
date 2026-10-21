@@ -38,8 +38,8 @@ export const services: Service[] = [
       "DIY vs Contractor cost comparison",
       "Ready to print, share, or present",
     ],
-    includedIn: "Basic package (GHS 99)",
-    ctaText: "Get PDF Report — GHS 99",
+    includedIn: "Basic package ($29)",
+    ctaText: "Get PDF Report — $29",
   },
   {
     slug: "excel-spreadsheets",
@@ -54,8 +54,8 @@ export const services: Service[] = [
       "Payment schedule and milestone tracker",
       "Supplier comparison and quote management",
     ],
-    includedIn: "Detailed package (GHS 249) and above",
-    ctaText: "Get Excel Spreadsheet — GHS 249",
+    includedIn: "Detailed package ($79) and above",
+    ctaText: "Get Excel Spreadsheet — $79",
   },
   {
     slug: "contractor-contacts",
@@ -70,8 +70,8 @@ export const services: Service[] = [
       "Past project references and portfolio links",
       "Price range information for each contractor",
     ],
-    includedIn: "Detailed (GHS 249) and Premium (GHS 499) packages",
-    ctaText: "Get Contractor Contacts — GHS 249",
+    includedIn: "Detailed ($79) and Premium ($199) packages",
+    ctaText: "Get Contractor Contacts — $79",
   },
   {
     slug: "consultation",
@@ -86,8 +86,8 @@ export const services: Service[] = [
       "Contractor selection guidance",
       "Project timeline and milestone planning",
     ],
-    includedIn: "Premium package (GHS 499)",
-    ctaText: "Book Consultation — GHS 499",
+    includedIn: "Premium package ($199)",
+    ctaText: "Book Consultation — $199",
   },
   {
     slug: "project-monitoring",
@@ -102,8 +102,8 @@ export const services: Service[] = [
       "Cost overrun alerts and notifications",
       "Monthly progress reports",
     ],
-    includedIn: "Premium package (GHS 499)",
-    ctaText: "Get Project Monitoring — GHS 499",
+    includedIn: "Premium package ($199)",
+    ctaText: "Get Project Monitoring — $199",
   },
 ]
 

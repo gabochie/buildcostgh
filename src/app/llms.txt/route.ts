@@ -15,7 +15,7 @@ export async function GET() {
 - [Construction Cost Calculator](${baseUrl}/calculator): Free, instant cost estimate for residential construction in Ghana — no credit card required.
 - [Regional Cost Database](${baseUrl}/costs): Live construction material and labour rates for all 16 regions of Ghana, updated monthly.
 - [How It Works](${baseUrl}/how-it-works): How BuildCost GH estimates costs and what you get in a report.
-- [Pricing](${baseUrl}/pricing): One-time reports from GHS 99 and unlimited subscriptions from GHS 67/month.
+- [Pricing](${baseUrl}/pricing): One-time reports from $29 and unlimited subscriptions from $19/month.
 - [Services](${baseUrl}/services): Cost estimation, PDF reports, Excel spreadsheets, contractor contacts, consultation, and project monitoring.
 - [Construction Cost Blog](${baseUrl}/blog): Guides on construction costs, material prices, permits, and building in Ghana.
 - [Flood-Safe Land](${baseUrl}/flood-safe-land): Flood risk information for land buyers in Ghana.
