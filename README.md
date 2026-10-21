@@ -1,8 +1,37 @@
 # BuildCost GH
 
+**What it is:** a live construction-cost estimating web app for Ghana — enter your project (location, size, finishing grade), get an instant elemental cost breakdown in GHS or USD, and buy a downloadable PDF/XLSX report. Full production system: payments, subscriptions, admin, public API, PWA, i18n.
+
+🔗 **Live:** https://buildcostgh.com
+
 Construction cost estimating platform for Ghana. Estimate the cost to build a house, commercial property, or industrial facility in Ghana — with elemental breakdowns, building-type catalogs, professional fees, permit requirements, and downloadable PDF/XLSX reports.
 
 Built with **Next.js 16 (App Router, pinned exact — see CHANGELOG)**, **Prisma + PostgreSQL**, **NextAuth v5 (JWT)**, **Tailwind CSS v4**, **Zustand**, and **TanStack Query**.
+
+## Screenshots
+
+| Estimator | Pricing |
+| --- | --- |
+| ![Calculator](docs/screenshots/calculator.jpg) | ![Pricing](docs/screenshots/pricing.jpg) |
+
+| Home | Services |
+| --- | --- |
+| ![Home](docs/screenshots/home.jpg) | ![Services](docs/screenshots/services.jpg) |
+
+_Live captures from https://buildcostgh.com (see `scripts/capture-screenshots.mjs`)._
+
+## Pricing
+
+| Plan | Price | What you get |
+| --- | --- | --- |
+| Estimator | Free | Instant on-screen cost estimate, no card required |
+| **Basic** report | **$29** | PDF cost report (elemental breakdown, material/labour detail) |
+| **Detailed** report | **$79** | Everything in Basic + editable Excel spreadsheet, contractor contacts |
+| **Premium** report | **$199** | Everything in Detailed + expert consultation + project monitoring |
+| Monthly subscription | **$19/mo** | Unlimited reports + full toolkit |
+| Annual subscription | **$99/yr** | Unlimited reports, ~57% cheaper than monthly |
+
+GHS and USD both supported at checkout (live FX, GHS is default). Prices in code: [`src/lib/pricing.ts`](src/lib/pricing.ts).
 
 ## Features
 
